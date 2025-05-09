@@ -7,6 +7,7 @@ import {
   Gift,
   Globe,
   Instagram,
+  FacebookIcon,
   Facebook,
 } from "lucide-react";
 import { getIntroductionText } from "@/utils/getIntroductionText";

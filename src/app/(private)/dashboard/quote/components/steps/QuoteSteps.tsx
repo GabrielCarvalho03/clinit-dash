@@ -17,6 +17,7 @@ import { StepsProgress } from "./StepsProgress";
 import { useStepNavigation } from "@/hooks/use-step-navigation/use-step-navigation";
 import { QuoteFormData, quoteSchema } from "@/hooks/use-quote/schema";
 import { useRouter } from "next/navigation";
+import { useAnalytics } from "@/hooks/use-analitycs/use-analitycs";
 
 interface QuoteStepsProps {
   isEdit?: boolean;
@@ -25,9 +26,12 @@ interface QuoteStepsProps {
 export const QuoteSteps = ({ isEdit = false }: QuoteStepsProps) => {
   const [saving, setSaving] = useState(false);
   const [hasCreatedQuote, setHasCreatedQuote] = useState(false);
-  const { createQuote, updateQuote, draftQuote, setDraftQuote } = useQuote();
+  const { createQuote, updateQuote, draftQuote, setDraftQuote, quotes } =
+    useQuote();
+  const { dentists } = useAnalytics();
   const { clinic, user } = useAuth();
   const router = useRouter();
+  console.log("isEdit", draftQuote);
   const isEditMode =
     isEdit ||
     (draftQuote && draftQuote.id && draftQuote.id.indexOf("draft-") !== 0);
@@ -36,24 +40,24 @@ export const QuoteSteps = ({ isEdit = false }: QuoteStepsProps) => {
     //@ts-ignore
     resolver: zodResolver(quoteSchema),
     defaultValues: {
-      patientName: "",
-      patientGender: "male",
-      patientProfile: "aesthetic-emotional", // padrão para perfil do paciente
-      patientAge: undefined, // Isso é válido porque é opcional
-      patientBirthdate: undefined,
-      dentistId: "",
-      ageGroup: "adult", // Definido como "adult" por padrão
-      relationship: "new", // Definido como "new" por padrão
-      treatments: [],
-      observations: "", // Pode ser vazio ou algum valor padrão
-      gift: "", // Pode ser vazio ou algum valor padrão
-      anchoragePercentage: 10,
-      downPayment: 0,
-      installments: 1,
-      paymentConditions: "",
-      paymentPreviewText: "",
-      validityDays: undefined,
-      validityCustomDate: undefined, // Já é opcional no schema
+      patientName: draftQuote?.patientName || "",
+      patientGender: draftQuote?.patientGender || "male",
+      patientProfile: draftQuote?.patientProfile || "aesthetic-emotional", // padrão para perfil do paciente
+      patientAge: draftQuote?.patientAge || undefined, // Isso é válido porque é opcional
+      patientBirthdate: draftQuote?.patientBirthdate || undefined,
+      dentistId: draftQuote?.dentistId || "",
+      ageGroup: draftQuote?.ageGroup || "adult", // Definido como "adult" por padrão
+      relationship: draftQuote?.relationship || "new", // Definido como "new" por padrão
+      treatments: draftQuote?.treatments || [],
+      observations: draftQuote?.observations || "", // Pode ser vazio ou algum valor padrão
+      gift: draftQuote?.gift || "", // Pode ser vazio ou algum valor padrão
+      anchoragePercentage: draftQuote?.anchoragePercentage || 10,
+      downPayment: draftQuote?.downPayment || 0,
+      installments: draftQuote?.installments || 1,
+      paymentConditions: draftQuote?.paymentConditions || "",
+      paymentPreviewText: draftQuote?.paymentPreviewText || "",
+      validityDays: draftQuote?.validityDays || undefined,
+      validityCustomDate: draftQuote?.validityCustomDate || undefined, // Já é opcional no schema
     },
   });
 
@@ -65,7 +69,7 @@ export const QuoteSteps = ({ isEdit = false }: QuoteStepsProps) => {
     setHasCreatedQuote(false);
   }, [isEditMode, draftQuote?.id]);
 
-  const onSubmit = (data: QuoteFormData) => {
+  const onSubmit = async (data: QuoteFormData) => {
     if (hasCreatedQuote) {
       return;
     }
@@ -89,11 +93,7 @@ export const QuoteSteps = ({ isEdit = false }: QuoteStepsProps) => {
           ...data,
           status: "final" as const,
         } as Quote;
-        updateQuote(finalQuote);
-
-        toast.error("Orçamento atualizado", {
-          description: "O orçamento foi atualizado com sucesso.",
-        });
+        await updateQuote(finalQuote);
       } else {
         finalQuote = {
           ...data,
@@ -102,7 +102,7 @@ export const QuoteSteps = ({ isEdit = false }: QuoteStepsProps) => {
           createdAt: new Date(),
           status: "final" as const,
         } as Quote;
-        createQuote(finalQuote);
+        await createQuote(finalQuote);
       }
 
       setDraftQuote(null);
@@ -110,7 +110,7 @@ export const QuoteSteps = ({ isEdit = false }: QuoteStepsProps) => {
 
       if (isEdit) {
         setTimeout(() => {
-          router.push("/reports");
+          router.push("/dashboard/reports");
         }, 2000);
       }
     } catch (error) {

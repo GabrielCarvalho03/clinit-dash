@@ -9,10 +9,10 @@ import { UseTreataments } from "@/hooks/use-treataments/use-treataments";
 
 const NewQuote = () => {
   const { clinic, isLoading, setClinic, setIsLoading } = useAuth();
-  const { handleGetDentists } = useAnalytics();
-  const { handleGetProcedure } = UseTreataments();
+  const { handleGetDentists, dentists } = useAnalytics();
+  const { handleGetProcedure, procedures } = UseTreataments();
   useEffect(() => {
-    loadScreen();
+    if (!clinic?.id || !dentists.length || !procedures.length) loadScreen();
   }, []);
 
   const loadScreen = async () => {

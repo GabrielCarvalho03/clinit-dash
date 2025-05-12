@@ -3,16 +3,21 @@ import { create } from "zustand";
 import { Quote, StandardTreatment, QuoteStatus } from "@/@types/quotes";
 import { useQuoteActions } from "@/hooks/use-cotes/use-cotes-actions";
 import { useQuoteQueries } from "@/hooks/use-cotes/use-quote-queries";
+import { getUserRefresh } from "@/utils/get-user-refresh";
+import { useAuth } from "../use-auth/use-auth";
+import { toast } from "sonner";
+import { api } from "@/lib/axios/axios";
 
 interface QuoteStore {
   quotes: Quote[];
+  setQuotes: (quotes: Quote[]) => void;
   draftQuote: Quote | null;
   standardTreatments: StandardTreatment[];
   setDraftQuote: (quote: Quote | null) => void;
-  createQuote: (quote: Quote) => Quote;
-  updateQuote: (quote: Quote) => void;
-  deleteQuote: (id: string) => void;
-  getQuote: (id: string) => Quote | undefined;
+  createQuote: (quote: Quote) => Promise<Quote | undefined>;
+  updateQuote: (quote: Quote) => Promise<void>;
+  deleteQuote: (id: string) => Promise<void>;
+  getQuote: (clinicId: string) => Promise<Quote | undefined>;
   getDentistQuotes: (dentistId: string) => Quote[];
   getRecentQuotes: (limit?: number) => Quote[];
   getQuotesCount: (dentistId?: string) => number;
@@ -27,6 +32,7 @@ interface QuoteStore {
 
 export const useQuote = create<QuoteStore>((set, get) => {
   const quotes: Quote[] = [];
+  const setQuotes: (quotes: Quote[]) => void = (quotes) => set({ quotes });
   const standardTreatments: any = [];
 
   const updateLocalStorage = (procedures: StandardTreatment[]) => {
@@ -36,7 +42,6 @@ export const useQuote = create<QuoteStore>((set, get) => {
   const loadUserQuotes = (userId: string) => {
     const { setDraftQuote } = get();
     const { getQuotesFromLocalStorage } = useQuoteActions(
-      userId,
       get().quotes,
       (q: Quote[]) => set({ quotes: q })
     );
@@ -58,7 +63,6 @@ export const useQuote = create<QuoteStore>((set, get) => {
   };
 
   const { getQuotesFromLocalStorage, ...quoteActions } = useQuoteActions(
-    "",
     get()?.quotes,
     (q: Quote[]) => set({ quotes: q })
   );
@@ -66,14 +70,128 @@ export const useQuote = create<QuoteStore>((set, get) => {
 
   return {
     quotes,
+    setQuotes: (quotes) => set({ quotes }),
     draftQuote: null,
     standardTreatments,
     setDraftQuote: (quote) => set({ draftQuote: quote }),
 
-    createQuote: (quote) => quoteActions.createQuote(quote),
-    updateQuote: (quote) => quoteActions.updateQuote(quote),
-    deleteQuote: (id) => quoteActions.deleteQuote(id),
-    getQuote: (id) => quoteQueries.getQuote(id),
+    createQuote: async (quote: Quote) => {
+      const { clinic, setClinic } = useAuth.getState();
+      const { quotes, setQuotes } = useQuote.getState();
+      const getClinic = await getUserRefresh(setClinic);
+      console.log("getClinic", getClinic);
+
+      if (!clinic) {
+        toast.error("Erro", {
+          description: ` Vocé precisa estar logado para criar orçamentos`,
+        });
+        return;
+      }
+      // Verificação para evitar duplicação
+      const existingQuote = quotes?.find((q) => q.id === quote.id);
+      if (existingQuote) {
+        console.log("Orçamento já existe, não será duplicado:", quote.id);
+        return quote;
+      }
+      let newQuote = {
+        ...quote,
+        ageGroup: quote.ageGroup,
+        anchoragePercentage: quote.anchoragePercentage,
+        dentistId: quote.dentistId,
+        downPayment: quote.downPayment,
+        gift: quote.gift,
+        installments: quote.installments,
+        observations: quote.observations,
+        patientAge: quote.patientAge,
+        patientBirthdate: quote.patientBirthdate,
+        patientGender: quote.patientGender,
+        patientName: quote.patientName,
+        patientProfile: quote.patientProfile,
+        paymentConditions: quote.paymentConditions,
+        paymentPreviewText: quote.paymentPreviewText,
+        relationship: quote.relationship,
+        treatments: quote.treatments,
+        validityCustomDate: quote.validityCustomDate,
+        validityDays: quote.validityDays,
+        createdAt: new Date(),
+        clinicId: clinic?.id,
+        id: "",
+      };
+
+      try {
+        const handleCreate = await api.post("/quotes/create", newQuote);
+        newQuote = {
+          ...newQuote,
+          id: handleCreate.data.id,
+        };
+        const updatedQuotes = [newQuote, ...quotes];
+        setQuotes(updatedQuotes);
+        toast("Orçamento criado", {
+          description: `Orçamento para ${quote.patientName} criado com sucesso`,
+        });
+      } catch (err) {
+        console.log(err);
+        toast.error("Erro", {
+          description: "Erro ao criar orçamento",
+        });
+      }
+
+      return newQuote;
+    },
+
+    getQuote: async (clinicId: string) => {
+      const { setQuotes } = useQuote.getState();
+
+      try {
+        const resQuote = await api.post("/quotes/get", {
+          clinicId,
+        });
+
+        setQuotes(resQuote.data.quotes);
+
+        return resQuote.data.quotes;
+      } catch (err) {
+        console.log(err);
+        toast.error("Erro", {
+          description: "Erro ao buscar orçamento",
+        });
+      }
+    },
+
+    updateQuote: async (quote) => {
+      const { quotes, setQuotes } = useQuote.getState();
+
+      try {
+        const res = await api.post("/quotes/update", quote);
+        const updatedQuotes = quotes.map((q) =>
+          q.id === quote.id ? quote : q
+        );
+
+        setQuotes(updatedQuotes);
+      } catch (err) {
+        console.log(err);
+        toast.error("Erro", {
+          description: "Erro ao atualizar orçamento",
+        });
+      }
+    },
+
+    deleteQuote: async (id) => {
+      try {
+        const res = await api.post("/quotes/delete", { id });
+        toast("Orçamento excluído", {
+          description: `Orçamento excluído com sucesso`,
+        });
+
+        const updatedQuotes = get().quotes.filter((q) => q.id !== id);
+        set({ quotes: updatedQuotes });
+      } catch (err) {
+        console.log(err);
+        toast.error("Erro", {
+          description: "Erro ao excluir orçamento",
+        });
+      }
+    },
     getDentistQuotes: (dentistId) => quoteQueries.getDentistQuotes(dentistId),
     getRecentQuotes: (limit) => quoteQueries?.getRecentQuotes(limit),
     getQuotesCount: (dentistId) => quoteQueries.getQuotesCount(dentistId),

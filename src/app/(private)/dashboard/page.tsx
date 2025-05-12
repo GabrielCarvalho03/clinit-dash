@@ -28,10 +28,10 @@ const Dashboard = () => {
     setIsLoading,
     setNeedsOnboarding,
   } = useAuth();
-  const { handleGetDentists } = useAnalytics();
+  const { handleGetDentists, dentists } = useAnalytics();
 
   useEffect(() => {
-    loadScreen();
+    if (!clinic?.id || !dentists.length) loadScreen();
   }, []);
 
   const loadScreen = async () => {

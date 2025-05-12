@@ -1,5 +1,10 @@
 import { Quote } from "@/@types/quotes";
+import axios from "axios";
+import { ca, id } from "date-fns/locale";
 import { toast } from "sonner";
+import { useAuth } from "../use-auth/use-auth";
+import { getUserRefresh } from "@/utils/get-user-refresh";
+import { api } from "@/lib/axios/axios";
 
 // Save data to localStorage
 const saveToLocalStorage = (userId: string, quotes: Quote[]) => {
@@ -34,43 +39,13 @@ const getQuotesFromLocalStorage = (userId: string): Quote[] => {
 };
 
 export const useQuoteActions = (
-  userId: string | undefined,
   quotes: Quote[],
   setQuotes: (quotes: Quote[]) => void
 ) => {
-  const createQuote = (quote: Quote) => {
-    if (!userId) {
-      toast.error("Erro", {
-        description: "Você precisa estar logado para criar orçamentos",
-      });
-      return quote;
-    }
-
-    // Verificação para evitar duplicação
-    const existingQuote = quotes.find((q) => q.id === quote.id);
-    if (existingQuote) {
-      console.log("Orçamento já existe, não será duplicado:", quote.id);
-      return quote;
-    }
-
-    const newQuote = {
-      ...quote,
-      id: quote.id || crypto.randomUUID(),
-      createdAt: new Date(),
-    };
-
-    const updatedQuotes = [newQuote, ...quotes];
-    setQuotes(updatedQuotes);
-    saveToLocalStorage(userId, updatedQuotes);
-    toast("Orçamento criado", {
-      description: `Orçamento para ${quote.patientName} criado com sucesso`,
-    });
-
-    return newQuote;
-  };
+  const { clinic, setClinic } = useAuth.getState();
 
   const updateQuote = (updatedQuote: Quote) => {
-    if (!userId) {
+    if (!clinic?.id) {
       toast.error("Erro", {
         description: `Você precisa estar logado para atualizar orçamentos`,
       });
@@ -85,7 +60,7 @@ export const useQuoteActions = (
         "Orçamento não encontrado para atualização, será criado:",
         updatedQuote.id
       );
-      createQuote(updatedQuote);
+      // createQuote(updatedQuote);
       return;
     }
 
@@ -93,7 +68,7 @@ export const useQuoteActions = (
       q.id === updatedQuote.id ? updatedQuote : q
     );
     setQuotes(updatedQuotes);
-    saveToLocalStorage(userId, updatedQuotes);
+    saveToLocalStorage(clinic?.id, updatedQuotes);
 
     toast("Orçamento atualizado", {
       description: `Orçamento para ${updatedQuote.patientName} atualizado com sucesso`,
@@ -101,7 +76,7 @@ export const useQuoteActions = (
   };
 
   const deleteQuote = (id: string) => {
-    if (!userId) {
+    if (!clinic?.id) {
       toast.error("Erro", {
         description: `Você precisa estar logado para excluir orçamentos`,
       });
@@ -111,14 +86,13 @@ export const useQuoteActions = (
 
     const filteredQuotes = quotes.filter((q) => q.id !== id);
     setQuotes(filteredQuotes);
-    saveToLocalStorage(userId, filteredQuotes);
+    saveToLocalStorage(clinic?.id, filteredQuotes);
     toast("Orçamento excluído", {
       description: `Orçamento excluído com sucesso`,
     });
   };
 
   return {
-    createQuote,
     updateQuote,
     deleteQuote,
     getQuotesFromLocalStorage,

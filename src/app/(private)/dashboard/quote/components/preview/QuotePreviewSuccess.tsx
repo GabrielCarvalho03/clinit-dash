@@ -11,7 +11,7 @@ export const QuotePreviewSuccess = ({ message }: QuotePreviewSuccessProps) => {
   const route = useRouter();
 
   const handleGoToReports = () => {
-    route.push("/reports");
+    route.push("/dashboard/reports");
   };
 
   return (

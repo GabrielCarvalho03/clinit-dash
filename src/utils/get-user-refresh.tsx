@@ -2,11 +2,13 @@ import jwt from "jsonwebtoken";
 import cookies from "js-cookie";
 import { api } from "@/lib/axios/axios";
 
-export const getUserRefresh = async (setClinic: any, setIsLoading: any) => {
+export const getUserRefresh = async (setClinic: any, setIsLoading?: any) => {
   const token = cookies.get("tokenClinitt");
   const decoded = token && jwt.decode(token);
 
-  setIsLoading(true);
+  if (setIsLoading) {
+    setIsLoading(true);
+  }
 
   const res = await api.post("/user/get-by-id", {
     //@ts-ignore
@@ -19,7 +21,9 @@ export const getUserRefresh = async (setClinic: any, setIsLoading: any) => {
     name: res.data.ClinicName,
   });
 
-  setIsLoading(false);
+  if (setIsLoading) {
+    setIsLoading(false);
+  }
 
   return res.data;
 };

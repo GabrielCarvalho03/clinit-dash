@@ -13,7 +13,7 @@ export default function Profile() {
   const { handleGetDentists } = useAnalytics();
 
   useEffect(() => {
-    loadScreen();
+    if (!clinic?.id) loadScreen();
   }, []);
 
   const loadScreen = async () => {

@@ -22,7 +22,7 @@ export const Sidebar = () => {
     const isActive = pathname === to;
     return (
       <a
-        href={to}
+        onClick={() => router.push(to)}
         className={cn(
           "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors",
           isActive
@@ -103,7 +103,7 @@ export const Sidebar = () => {
           label="Gerar Orçamento"
         />
         <NavLink
-          to="/reports"
+          to="/dashboard/reports"
           icon={<BarChart3 size={20} />}
           label="Relatórios"
         />

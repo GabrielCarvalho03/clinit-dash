@@ -21,10 +21,12 @@ import {
 } from "@/components/ui/alert-dialog";
 import { ExportDialog } from "../preview/ExportDialog";
 import { useAnalytics } from "@/hooks/use-analitycs/use-analitycs";
+import { create } from "domain";
+import { useQuoteActions } from "@/hooks/use-cotes/use-cotes-actions";
 
 interface PreviewStepProps {
   form: UseFormReturn<any>;
-  onSubmit: (data: any) => void;
+  onSubmit: (data: any) => Promise<void>;
   isLoading: boolean;
   isEditMode?: boolean;
 }
@@ -42,6 +44,7 @@ export const PreviewStep = ({
   const [successMessage, setSuccessMessage] = useState("");
   const [quoteSaved, setQuoteSaved] = useState(false);
   const { exporting, handleExport } = useQuoteExport();
+  const { createQuote } = useQuote();
 
   const formValues = form.getValues();
   const dentist = dentists?.find((d) => d.id === formValues.dentistId);
@@ -56,18 +59,21 @@ export const PreviewStep = ({
     }
   };
 
-  const handleConfirmSave = () => {
+  const handleConfirmSave = async () => {
     // Só envia o formulário se ainda não foi salvo
     console.log("formValues", formValues);
-    // if (!quoteSaved) {
-    //   onSubmit(formValues);
-    //   setQuoteSaved(true);
-    //   setSuccessMessage(
-    //     isEditMode
-    //       ? "Orçamento atualizado com sucesso. Vá até a aba Relatórios para baixar o documento em PDF e alterar o status do orçamento."
-    //       : "Orçamento gerado com sucesso. Vá até a aba Relatórios para baixar o documento em PDF e alterar o status do orçamento."
-    //   );
-    // }
+    if (!quoteSaved) {
+      await onSubmit(formValues);
+      setSuccessMessage(
+        isEditMode
+          ? "Orçamento atualizado com sucesso. Vá até a aba Relatórios para baixar o documento em PDF e alterar o status do orçamento."
+          : "Orçamento gerado com sucesso. Vá até a aba Relatórios para baixar o documento em PDF e alterar o status do orçamento."
+      );
+
+      return;
+    }
+    await createQuote(formValues);
+    setQuoteSaved(false);
     setShowConfirmDialog(false);
   };
 

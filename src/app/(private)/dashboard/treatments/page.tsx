@@ -45,7 +45,7 @@ export default function Treataments() {
   console.log("clinic", clinic);
 
   useEffect(() => {
-    if (!clinic?.id) {
+    if (!clinic?.id || !procedures.length) {
       loadScreen();
     }
   }, []);

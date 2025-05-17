@@ -42,21 +42,21 @@ export async function generateProposalPDF({ setExporting }: Props) {
       "#dentist-name"
     ) as HTMLElement;
     if (dentistNamenClone) {
-      dentistNamenClone.style.marginTop = "0px";
+      // dentistNamenClone.style.marginTop = "0px";
     }
 
     const dentistAreaInClone = clone.querySelector(
       "#dentist-area"
     ) as HTMLElement;
     if (dentistAreaInClone) {
-      dentistAreaInClone.style.marginTop = "-13px";
+      // dentistAreaInClone.style.marginTop = "-13px";
     }
 
-    (clone.querySelector("#clinic-cnpj") as HTMLElement).style.marginTop =
-      "-8px";
+    // (clone.querySelector("#clinic-cnpj") as HTMLElement).style.marginTop =
+    //   "-8px";
 
-    (clone.querySelector("#clinic-address") as HTMLElement).style.marginTop =
-      "-13px";
+    // (clone.querySelector("#clinic-address") as HTMLElement).style.marginTop =
+    //   "-13px";
 
     const DentistPhoto = clone.querySelector(
       "#dentist-photo"

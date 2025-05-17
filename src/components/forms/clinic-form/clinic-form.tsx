@@ -17,6 +17,8 @@ import {
 import { getUserRefresh } from "@/utils/get-user-refresh";
 import { api } from "@/lib/axios/axios";
 import { useAnalytics } from "@/hooks/use-analitycs/use-analitycs";
+import { useClinic } from "@/hooks/use-clinic/use-clinic";
+import { Loader2 } from "lucide-react";
 
 interface ClinicFormProps {
   onFormSubmit?: () => void;
@@ -39,6 +41,7 @@ export const ClinicForm = ({
   const [logoPreview, setLogoPreview] = useState<string | null>(
     typeof clinic?.logo === "string" ? clinic.logo : ""
   );
+  const { saveIsLoading, setSaveIsLoading } = useClinic();
   const [activeTab, setActiveTab] = useState<"clinic" | "dentists">(
     initialActiveTab
   );
@@ -145,8 +148,9 @@ export const ClinicForm = ({
         website: updatedClinic.socialMedia.website,
       },
     };
-
+    setSaveIsLoading(true);
     const save = await api.post("/user/update", obj);
+    setSaveIsLoading(false);
     console.log("save", save);
 
     setClinic(updatedClinic);
@@ -232,7 +236,8 @@ export const ClinicForm = ({
         )}
 
         <div className="flex justify-end">
-          <Button type="submit">
+          <Button disabled={saveIsLoading} type="submit">
+            {saveIsLoading && <Loader2 className=" h-4 w-4 animate-spin" />}
             {submitButtonText}
             {submitButtonIcon}
           </Button>

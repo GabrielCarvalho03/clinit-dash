@@ -18,8 +18,11 @@ import { useEffect } from "react";
 import { getUserRefresh } from "@/utils/get-user-refresh";
 import { AnalyticsDashboard } from "./components/analytics/AnalyticsDashboard";
 import { useAnalytics } from "@/hooks/use-analitycs/use-analitycs";
+import { useQuote } from "@/hooks/use-cotes/use-cotes";
+import { useRouter } from "next/navigation";
 
 const Dashboard = () => {
+  const route = useRouter();
   const {
     clinic,
     needsOnboarding,
@@ -28,16 +31,20 @@ const Dashboard = () => {
     setIsLoading,
     setNeedsOnboarding,
   } = useAuth();
+  const { getQuote, quotes } = useQuote();
   const { handleGetDentists, dentists } = useAnalytics();
 
   useEffect(() => {
-    if (!clinic?.id || !dentists.length) loadScreen();
+    if (!clinic?.id || !dentists.length || !quotes.length) loadScreen();
   }, []);
 
   const loadScreen = async () => {
     setNeedsOnboarding(false);
     const clinicData = await getUserRefresh(setClinic, setIsLoading);
-    handleGetDentists(clinicData?.id || "");
+    Promise.all([
+      handleGetDentists(clinicData?.id || ""),
+      getQuote(clinicData?.id || ""),
+    ]);
   };
 
   if (isLoading) {
@@ -60,7 +67,7 @@ const Dashboard = () => {
           </p>
         </div>
         <Button asChild className="bg-primary hover:bg-primary/90 rounded-lg">
-          <a href="/quote/new">
+          <a onClick={() => route.push("/dashboard/quote/new-quote")}>
             <Plus className="mr-2 h-4 w-4" />
             Novo Orçamento
           </a>

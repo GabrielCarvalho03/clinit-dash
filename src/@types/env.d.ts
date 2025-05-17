@@ -12,6 +12,8 @@ declare namespace NodeJS {
     NEXT_PUBLIC_AWS_ACCESS_KEY: string;
     NEXT_PUBLIC_AWS_SECRET_KEY: string;
 
+    NEXT_PUBLIC_OPEN_AI_KEY: string;
+
     FIREBASE_TYPE: string;
     FIREBASE_PROJECT_ID: string;
     FIREBASE_PRIVATE_KEY_ID: string;

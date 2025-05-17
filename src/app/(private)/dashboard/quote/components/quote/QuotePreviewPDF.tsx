@@ -41,12 +41,14 @@ export const QuotePreviewPDF = ({
 
   // Calculate pricing for display
   const totalValue = treatments.reduce((sum, t) => sum + t.discountPrice, 0);
+
   const originalTotal = treatments.reduce(
     (sum, t) => sum + (t.originalPrice || t.discountPrice),
     0
   );
   const discountAmount = originalTotal - totalValue;
   const hasDiscount = originalTotal > totalValue;
+  console.log("treatments", discountAmount);
 
   // Generate personalized introduction text
   const introductionText = getIntroductionText(
@@ -73,7 +75,7 @@ export const QuotePreviewPDF = ({
 
   return (
     <div
-      id={"quote-preview-container"}
+      id="quote-preview-container"
       className="font-sans bg-white mx-auto relative"
       style={{
         width: "210mm",
@@ -103,9 +105,13 @@ export const QuotePreviewPDF = ({
           <div>
             <h1 className="text-2xl font-bold text-gray-800">{clinic.name}</h1>
             {clinic.cnpj && (
-              <p className="text-sm text-gray-500">{clinic.cnpj}</p>
+              <p id="clinic-cnpj" className="text-sm text-gray-500">
+                {clinic.cnpj}
+              </p>
             )}
-            <p className="text-xs text-gray-500">{clinic.address}</p>
+            <p id="clinic-address" className="text-xs text-gray-500">
+              {clinic.address}
+            </p>
           </div>
         </div>
         <div className="text-right">
@@ -131,6 +137,7 @@ export const QuotePreviewPDF = ({
           <div className="flex items-center">
             {dentist.photo && (
               <img
+                id="dentist-photo"
                 src={dentist.photo}
                 alt={dentist.name}
                 className="w-10 h-10 rounded-full object-cover mr-2"
@@ -140,8 +147,12 @@ export const QuotePreviewPDF = ({
               />
             )}
             <div>
-              <p className="font-medium text-gray-800">Dr. {dentist.name}</p>
-              <p className="text-sm text-gray-500">{dentist.specialty}</p>
+              <p id="dentist-name" className="font-medium text-gray-800">
+                Dr. {dentist.name}
+              </p>
+              <p id="dentist-area" className="text-sm text-gray-500">
+                {dentist.specialty}
+              </p>
             </div>
           </div>
         </div>
@@ -234,15 +245,30 @@ export const QuotePreviewPDF = ({
         )}
 
         {/* Pricing Section */}
-        <div className="mt-5 bg-gray-50 p-4 rounded-md">
+        <div className="mt-5 bg-gray-50 px-4 py-2 rounded-md  ">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div>
               {hasDiscount && (
                 <p className="font-medium mb-1 text-gray-800">
                   <span>De: </span>
-                  <s className="text-gray-500">
+                  <span
+                    className="text-gray-500 relative inline-block"
+                    style={{ paddingRight: "0.2em" }}
+                  >
                     {formatCurrency(originalTotal)}
-                  </s>
+                    <span
+                      style={{
+                        position: "absolute",
+                        top: "90%",
+                        left: 0,
+                        right: 0,
+                        height: "1px",
+                        backgroundColor: "currentColor",
+                        transform: "translateY(-40%)",
+                        pointerEvents: "none",
+                      }}
+                    />
+                  </span>
                 </p>
               )}
             </div>
@@ -276,9 +302,12 @@ export const QuotePreviewPDF = ({
           {gift && (
             <div className="mt-3 bg-green-50 p-3 rounded-md border border-green-100">
               <h3 className="flex items-center font-bold text-sm text-green-700 mb-1">
-                <Gift className="h-4 w-4 mr-1" /> Brinde Especial
+                <Gift id="gift-icon" className="h-4 w-4 mr-1" />{" "}
+                <h1 id="gift-title">Brinde Especial</h1>
               </h3>
-              <p className="text-sm text-green-700">{gift}</p>
+              <p id="gift-text" className="text-sm text-green-700">
+                {gift}
+              </p>
             </div>
           )}
         </div>
@@ -322,8 +351,11 @@ export const QuotePreviewPDF = ({
         <div className="flex flex-wrap justify-center gap-4 mb-3">
           {clinic.phoneNumber && (
             <div className="flex items-center">
-              <MessageSquareText className="h-4 w-4 text-green-600 mr-1" />
-              <span className="text-sm text-gray-800">
+              <MessageSquareText
+                id="phone-icon"
+                className="h-4 w-4 text-green-600 mr-1"
+              />
+              <span id="phone-text" className="text-sm text-gray-800">
                 {clinic.phoneNumber}
               </span>
             </div>
@@ -331,8 +363,11 @@ export const QuotePreviewPDF = ({
 
           {clinic.phoneNumber2 && (
             <div className="flex items-center">
-              <MessageSquareText className="h-4 w-4 text-green-600 mr-1" />
-              <span className="text-sm text-gray-800">
+              <MessageSquareText
+                id="phone-icon2"
+                className="h-4 w-4 text-green-600 mr-1"
+              />
+              <span id="phone-text2" className="text-sm text-gray-800">
                 {clinic.phoneNumber2}
               </span>
             </div>
@@ -357,6 +392,7 @@ export const QuotePreviewPDF = ({
               <div className="flex items-center">
                 <Globe className="h-4 w-4 text-gray-800 mr-1" />
                 <a
+                  id="globe-link"
                   href={
                     clinic.socialMedia.website.startsWith("http")
                       ? clinic.socialMedia.website
@@ -375,6 +411,7 @@ export const QuotePreviewPDF = ({
               <div className="flex items-center">
                 <Instagram className="h-4 w-4 text-gray-800 mr-1" />
                 <a
+                  id="instagram-link"
                   href={`https://instagram.com/${clinic.socialMedia.instagram.replace(
                     "@",
                     ""
@@ -392,6 +429,7 @@ export const QuotePreviewPDF = ({
               <div className="flex items-center">
                 <Facebook className="h-4 w-4 text-gray-800 mr-1" />
                 <a
+                  id="facebook-link"
                   href={
                     clinic.socialMedia.facebook.startsWith("http")
                       ? clinic.socialMedia.facebook

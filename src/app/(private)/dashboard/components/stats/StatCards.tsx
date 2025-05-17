@@ -3,6 +3,7 @@ import { FileText, Users, TrendingUp } from "lucide-react";
 import { formatCurrency } from "@/utils/formart";
 import { Clinic } from "@/@types/auth";
 import { Quote } from "@/@types/quotes";
+import { useAnalytics } from "@/hooks/use-analitycs/use-analitycs";
 
 interface StatCardsProps {
   clinic: Clinic | null;
@@ -19,6 +20,7 @@ export const StatCards = ({
   conversionRate,
   paidFilteredValue,
 }: StatCardsProps) => {
+  const { dentists } = useAnalytics();
   return (
     <div className="grid gap-4 md:grid-cols-3">
       <Card className="bg-white hover:shadow-lg transition-shadow">
@@ -51,7 +53,7 @@ export const StatCards = ({
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold text-primary">
-            {clinic?.dentists?.length || 0}
+            {dentists?.length || 0}
           </div>
           <p className="text-xs text-muted-foreground">
             Cadastrados no sistema

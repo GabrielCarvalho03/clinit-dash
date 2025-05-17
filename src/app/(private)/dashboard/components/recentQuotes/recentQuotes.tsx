@@ -5,11 +5,13 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { formatCurrency } from "@/utils/formart";
 import { useQuote } from "@/hooks/use-cotes/use-cotes";
+import { useAnalytics } from "@/hooks/use-analitycs/use-analitycs";
 
 export const RecentQuotes = () => {
   const { quotes } = useQuote();
   const { getRecentQuotes } = useQuoteQueries(quotes);
   const { clinic } = useAuth();
+  const { dentists } = useAnalytics();
 
   const recentQuotes = getRecentQuotes(5);
 
@@ -56,7 +58,7 @@ export const RecentQuotes = () => {
               </thead>
               <tbody className="divide-y">
                 {recentQuotes.map((quote) => {
-                  const dentist = clinic?.dentists?.find(
+                  const dentist = dentists?.find(
                     (d) => d.id === quote.dentistId
                   );
                   const totalValue = quote.treatments.reduce(

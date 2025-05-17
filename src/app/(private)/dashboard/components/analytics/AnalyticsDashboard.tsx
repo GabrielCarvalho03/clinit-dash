@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Select,
   SelectContent,
@@ -13,8 +15,11 @@ import { useAnalytics } from "@/hooks/use-analitycs/use-analitycs";
 import { ClinicProfileDescription } from "./ClinicProfileDescription";
 import { TreatmentRanking } from "./TreatmentRanking";
 import { SuggestionsList } from "./SuggestionsList";
+import { useQuote } from "@/hooks/use-cotes/use-cotes";
+import { useEffect } from "react";
 
 export const AnalyticsDashboard = () => {
+  const { quotes } = useQuote();
   const {
     dentistFilter,
     setDentistFilter,
@@ -22,9 +27,11 @@ export const AnalyticsDashboard = () => {
     bestConversionProfileData,
     suggestions,
     treatmentStats,
-    getProfileDisplayName,
     dentists,
+    getProfileDisplayName,
     getClinicProfileDescription,
+    generateAnalytics,
+    generateSuggestionWithIA,
   } = useAnalytics();
 
   // Add period filtering with a proper default empty array
@@ -37,7 +44,7 @@ export const AnalyticsDashboard = () => {
     setEndDate,
     getFilteredQuotes,
   } = usePeriodFilter();
-  const filteredQuotes = getFilteredQuotes([]);
+  const filteredQuotes = getFilteredQuotes(quotes);
 
   // Get profile description based on current filters
   const clinicProfileDescription = getClinicProfileDescription(
@@ -61,6 +68,15 @@ export const AnalyticsDashboard = () => {
       : `Sugestões de Melhoria (${
           dentists.find((d: any) => d.id === dentistFilter)?.name || "Dentista"
         })`;
+
+  useEffect(() => {
+    generateAnalytics(quotes, filteredQuotes, dentistFilter);
+  }, []);
+
+  useEffect(() => {
+    generateAnalytics(quotes, filteredQuotes, dentistFilter);
+    generateSuggestionWithIA(quotes, dentistFilter);
+  }, [dentistFilter]);
 
   return (
     <div className="space-y-6">
@@ -118,6 +134,7 @@ export const AnalyticsDashboard = () => {
           type="conversion"
           title="Perfil com Maior Conversão"
           description="Análise do perfil que mais fecha orçamentos"
+          // @ts-ignore
           psychologicalProfile={bestConversionProfileData.psychologicalProfile}
           avgAge={bestConversionProfileData.avgAge}
           relationshipAvg={bestConversionProfileData.relationshipAvg}

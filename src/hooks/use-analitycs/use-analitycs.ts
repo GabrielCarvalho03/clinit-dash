@@ -2,9 +2,7 @@
 import { create } from "zustand";
 import { Quote, PatientProfile, Relationship } from "@/@types/quotes";
 import { differenceInYears } from "date-fns";
-import { ca } from "date-fns/locale";
 import { toast } from "sonner";
-import { useAuth } from "../use-auth/use-auth";
 import { api } from "@/lib/axios/axios";
 
 type ProfileData = {
@@ -46,13 +44,27 @@ interface AnalyticsStore {
   setDentistFilter: (id: FilterType) => void;
   mostCommonProfileData: ProfileData;
   bestConversionProfileData: ProfileData;
-  suggestions: string[];
-  generateAnalytics: () => void;
+
+  seggestionsIsLoading: boolean;
+  setSeggestionsIsLoading: (seggestionsIsLoading: boolean) => void;
+
+  suggestions: { phrase: string }[];
+  setSuggestions: (suggestions: { phrase: string }[]) => void;
+
+  generateAnalytics: (
+    quotes: Quote[],
+    paidQuotes: Quote[],
+    dentistFilter: FilterType
+  ) => void;
   getProfileDisplayName: (profile?: PatientProfile) => string;
   getClinicProfileDescription: (
     dentistId: FilterType,
     quotes: Quote[]
   ) => string;
+  generateSuggestionWithIA: (
+    quotes: Quote[],
+    dentistFilter: FilterType
+  ) => Promise<string | null>;
 }
 
 export const useAnalytics = create<AnalyticsStore>((set, get) => ({
@@ -91,7 +103,13 @@ export const useAnalytics = create<AnalyticsStore>((set, get) => ({
 
   mostCommonProfileData: {},
   bestConversionProfileData: {},
+
+  seggestionsIsLoading: false,
+  setSeggestionsIsLoading: (seggestionsIsLoading) =>
+    set({ seggestionsIsLoading }),
+
   suggestions: [],
+  setSuggestions: (suggestions) => set({ suggestions }),
 
   getProfileDisplayName: (profile) => {
     switch (profile) {
@@ -143,8 +161,7 @@ export const useAnalytics = create<AnalyticsStore>((set, get) => ({
     }
   },
 
-  generateAnalytics: () => {
-    const { quotes, paidQuotes, dentistFilter } = get();
+  generateAnalytics: (quotes, paidQuotes, dentistFilter) => {
     const filtered =
       dentistFilter === "all"
         ? quotes
@@ -284,9 +301,24 @@ export const useAnalytics = create<AnalyticsStore>((set, get) => ({
       mostCommonProfileData: mostCommon,
       bestConversionProfileData: bestProfile,
       suggestions: [
-        `Exemplo de sugestão com base no perfil ${mostCommon.psychologicalProfile}`,
+        {
+          phrase: `Exemplo de sugestão com base no perfil ${mostCommon.psychologicalProfile}`,
+        },
       ],
       treatmentStats,
     });
+  },
+
+  generateSuggestionWithIA: async (quotes: Quote[], dentistFilter: string) => {
+    const { setSuggestions, setSeggestionsIsLoading } = useAnalytics.getState();
+    setSeggestionsIsLoading(true);
+    const filtered =
+      dentistFilter === "all"
+        ? quotes
+        : quotes.filter((q) => q.dentistId === dentistFilter);
+    const res = await api.post("/suggestions/create", { quotes: filtered });
+    setSuggestions(res?.data);
+    setSeggestionsIsLoading(false);
+    return res.data;
   },
 }));

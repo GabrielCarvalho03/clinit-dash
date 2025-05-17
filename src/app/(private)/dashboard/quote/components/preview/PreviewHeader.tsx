@@ -26,16 +26,6 @@ export function PreviewHeader({
             Revise o orçamento antes de salvar e exportar
           </p>
         </div>
-        {onExportClick && (
-          <Button
-            variant="outline"
-            onClick={() => onExportClick()}
-            className="flex items-center gap-2"
-          >
-            <FileText className="h-4 w-4" />
-            Exportar
-          </Button>
-        )}
       </div>
 
       {validityDate && (

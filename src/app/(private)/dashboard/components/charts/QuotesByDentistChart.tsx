@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart } from "./BarChart";
 import { Clinic } from "@/@types/auth";
 import { Quote } from "@/@types/quotes";
+import { useAnalytics } from "@/hooks/use-analitycs/use-analitycs";
 
 interface QuotesByDentistChartProps {
   clinic: Clinic | null;
@@ -12,8 +13,10 @@ export const QuotesByDentistChart = ({
   clinic,
   filteredQuotes,
 }: QuotesByDentistChartProps) => {
+  const { dentists } = useAnalytics();
+
   const chartData =
-    clinic?.dentists?.map((dentist) => {
+    dentists?.map((dentist) => {
       const dentistQuotes = filteredQuotes?.filter(
         (q) => q.dentistId === dentist.id
       );

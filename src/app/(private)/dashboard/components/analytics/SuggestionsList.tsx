@@ -5,10 +5,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { useAnalytics } from "@/hooks/use-analitycs/use-analitycs";
 import { LightbulbIcon } from "lucide-react";
 
 interface SuggestionsListProps {
-  suggestions: string[];
+  suggestions: { phrase: string }[];
   title?: string;
   isDentistSpecific?: boolean;
 }
@@ -18,6 +19,10 @@ export const SuggestionsList = ({
   title = "Sugestões de Melhoria",
   isDentistSpecific = false,
 }: SuggestionsListProps) => {
+  const { seggestionsIsLoading } = useAnalytics();
+
+  console.log("suggestions", seggestionsIsLoading);
+
   // Now showing empty state only when suggestions array is completely empty
   if (!suggestions || suggestions.length === 0) {
     return (
@@ -57,13 +62,22 @@ export const SuggestionsList = ({
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <ul className="space-y-4">
-          {suggestions.map((suggestion, index) => (
-            <li key={index} className="border-l-4 border-yellow-400 pl-4 py-1">
-              <p className="text-gray-700">{suggestion}</p>
-            </li>
-          ))}
-        </ul>
+        {seggestionsIsLoading ? (
+          <div className="w-full h-full flex items-center justify-center">
+            <div className="h-6 w-6 animate-spin rounded-full border border-t-transparent border-primary"></div>
+          </div>
+        ) : (
+          <ul className="space-y-4">
+            {suggestions?.map((suggestion, index) => (
+              <li
+                key={index}
+                className="border-l-4 border-yellow-400 pl-4 py-1"
+              >
+                <p className="text-gray-700">{suggestion.phrase}</p>
+              </li>
+            ))}
+          </ul>
+        )}
       </CardContent>
     </Card>
   );

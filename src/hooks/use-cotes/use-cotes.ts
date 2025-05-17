@@ -28,6 +28,8 @@ interface QuoteStore {
   getPaidQuotesValue: (dentistId?: string) => number;
   getConversionRate: (dentistId?: string) => number;
   loadUserQuotes: (userId: string) => void;
+  loadingDeleteQuote: boolean;
+  setLoadingDeleteQuote: (value: boolean) => void;
 }
 
 export const useQuote = create<QuoteStore>((set, get) => {
@@ -74,7 +76,9 @@ export const useQuote = create<QuoteStore>((set, get) => {
     draftQuote: null,
     standardTreatments,
     setDraftQuote: (quote) => set({ draftQuote: quote }),
-
+    loadingDeleteQuote: false,
+    setLoadingDeleteQuote: (value: boolean) =>
+      set({ loadingDeleteQuote: value }),
     createQuote: async (quote: Quote) => {
       const { clinic, setClinic } = useAuth.getState();
       const { quotes, setQuotes } = useQuote.getState();
@@ -177,6 +181,9 @@ export const useQuote = create<QuoteStore>((set, get) => {
     },
 
     deleteQuote: async (id) => {
+      const { setLoadingDeleteQuote } = useQuote.getState();
+
+      setLoadingDeleteQuote(true);
       try {
         const res = await api.post("/quotes/delete", { id });
         toast("Orçamento excluído", {
@@ -190,6 +197,8 @@ export const useQuote = create<QuoteStore>((set, get) => {
         toast.error("Erro", {
           description: "Erro ao excluir orçamento",
         });
+      } finally {
+        setLoadingDeleteQuote(false);
       }
     },
     getDentistQuotes: (dentistId) => quoteQueries.getDentistQuotes(dentistId),

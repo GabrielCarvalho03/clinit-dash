@@ -43,7 +43,6 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
 } from "@/components/ui/dialog";
 import { QuotePreviewPDF } from "@/app/(private)/dashboard/quote/components/quote/QuotePreviewPDF";
 import { QuotePdf } from "@/@types/quotes";
@@ -67,11 +66,11 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { getRelationshipJustification } from "@/utils/relationshipJustifications";
 import { prepareQuotePdfData } from "@/utils/quoteDataPreparation";
 import { useRouter } from "next/navigation";
 import { useAnalytics } from "@/hooks/use-analitycs/use-analitycs";
 import { getUserRefresh } from "@/utils/get-user-refresh";
+import { generateProposalPDF } from "./pdf/indes";
 
 const Reports = () => {
   const route = useRouter();
@@ -79,18 +78,18 @@ const Reports = () => {
   const { dentists, handleGetDentists } = useAnalytics();
   const {
     quotes,
+    loadingDeleteQuote,
     editQuote,
     updateQuoteStatus,
     deleteQuote,
     getQuote,
-    updateQuote,
   } = useQuote();
 
   const [dentistFilter, setDentistFilter] = useState("all");
   const [periodFilter, setPeriodFilter] = useState("all");
   const [startDate, setStartDate] = useState<Date | undefined>(undefined);
   const [endDate, setEndDate] = useState<Date | undefined>(undefined);
-
+  const [isPreview, setIsPreview] = useState(true);
   const [selectedQuote, setSelectedQuote] = useState<QuotePdf | null>(null);
   const [viewDialogOpen, setViewDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -159,7 +158,6 @@ const Reports = () => {
 
   const confirmDeleteQuote = async () => {
     if (quoteToDelete) {
-      console.log("quoteToDelete", quoteToDelete);
       await deleteQuote(quoteToDelete);
       setDeleteDialogOpen(false);
       setQuoteToDelete(null);
@@ -191,7 +189,7 @@ const Reports = () => {
     setExporting(true);
 
     try {
-      const element = document.getElementById("quote-view-container");
+      const element = document.getElementById("quote-preview-container");
 
       if (!element) {
         throw new Error("Preview element not found");
@@ -554,6 +552,7 @@ const Reports = () => {
                           >
                             <Edit className="h-4 w-4" />
                           </Button>
+
                           <Button
                             variant="ghost"
                             size="icon"
@@ -562,13 +561,18 @@ const Reports = () => {
                           >
                             <Eye className="h-4 w-4" />
                           </Button>
+
                           <Button
                             variant="ghost"
                             size="icon"
                             onClick={() => handleDeleteQuote(quote.id)}
                             title="Excluir"
                           >
-                            <Trash className="h-4 w-4 text-red-500" />
+                            {loadingDeleteQuote ? (
+                              <Loader2 className="h-4 w-4 animate-spin text-red-500" />
+                            ) : (
+                              <Trash className="h-4 w-4 text-red-500" />
+                            )}
                           </Button>
                         </td>
                       </tr>
@@ -582,7 +586,7 @@ const Reports = () => {
       </Card>
 
       <Dialog open={viewDialogOpen} onOpenChange={setViewDialogOpen}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="min-w-6xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex justify-between items-center">
               <div className="flex-1">
@@ -593,7 +597,9 @@ const Reports = () => {
                   variant="outline"
                   size="sm"
                   disabled={exporting}
-                  onClick={handleExport}
+                  onClick={() => {
+                    generateProposalPDF({ setExporting });
+                  }}
                 >
                   {exporting ? (
                     <Loader2 className="h-4 w-4 animate-spin mr-1" />

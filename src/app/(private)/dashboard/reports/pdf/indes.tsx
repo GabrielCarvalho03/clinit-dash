@@ -34,6 +34,8 @@ export async function generateProposalPDF({ setExporting }: Props) {
   if (!element) return;
   setExporting(true);
   try {
+    await document.fonts.ready;
+
     const clone = element.cloneNode(true) as HTMLElement;
 
     const dentistNamenClone = clone.querySelector(
@@ -136,7 +138,7 @@ export async function generateProposalPDF({ setExporting }: Props) {
     clone.style.left = "-9999px";
     clone.style.top = "-99px";
     clone.style.opacity = "1";
-    clone.style.transform = "scale(2)";
+    // clone.style.transform = "scale(2)";
     clone.style.transformOrigin = "top left";
 
     const allElements = clone.querySelectorAll("*");

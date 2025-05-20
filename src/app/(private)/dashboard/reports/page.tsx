@@ -79,6 +79,7 @@ const Reports = () => {
   const {
     quotes,
     loadingDeleteQuote,
+    loadingUpdateQuote,
     editQuote,
     updateQuoteStatus,
     deleteQuote,
@@ -512,10 +513,21 @@ const Reports = () => {
                                 }
                               `}
                               >
-                                {quote.status === "draft" && "Rascunho"}
-                                {quote.status === "final" && "Finalizado"}
-                                {quote.status === "paid" && "Pago"}
-                                {quote.status === "follow" && "Follow"}
+                                {loadingUpdateQuote && (
+                                  <Loader2 className=" animate-spin" />
+                                )}
+                                {!loadingUpdateQuote &&
+                                  quote.status === "draft" &&
+                                  "Rascunho"}
+                                {!loadingUpdateQuote &&
+                                  quote.status === "final" &&
+                                  "Finalizado"}
+                                {!loadingUpdateQuote &&
+                                  quote.status === "paid" &&
+                                  "Pago"}
+                                {!loadingUpdateQuote &&
+                                  quote.status === "follow" &&
+                                  "Follow"}
                               </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
@@ -598,7 +610,10 @@ const Reports = () => {
                   size="sm"
                   disabled={exporting}
                   onClick={() => {
-                    generateProposalPDF({ setExporting });
+                    generateProposalPDF({
+                      setExporting,
+                      quote: selectedQuote || undefined,
+                    });
                   }}
                 >
                   {exporting ? (

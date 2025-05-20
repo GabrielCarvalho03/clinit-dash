@@ -1,11 +1,13 @@
-import { Quote } from "@/@types/quotes";
+import { Quote, QuotePdf } from "@/@types/quotes";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import { api } from "@/lib/axios/axios";
 import { toast } from "sonner";
+import { format } from "date-fns";
 
 type Props = {
   setExporting: React.Dispatch<React.SetStateAction<boolean>>;
+  quote?: QuotePdf;
 };
 
 // Converte uma imagem externa para base64 via backend
@@ -29,7 +31,7 @@ async function convertImgToBase64(img: HTMLImageElement): Promise<void> {
   }
 }
 
-export async function generateProposalPDF({ setExporting }: Props) {
+export async function generateProposalPDF({ setExporting, quote }: Props) {
   const element = document.getElementById("quote-preview-container");
   if (!element) return;
   setExporting(true);
@@ -185,7 +187,14 @@ export async function generateProposalPDF({ setExporting }: Props) {
     // Adiciona a imagem inteira no PDF (1 página só)
     pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
 
-    pdf.save("proposta-tratamento.pdf");
+    console.log("quote", quote);
+
+    pdf.save(
+      `Proposta-${quote?.patientName}-${format(
+        quote?.date ?? "",
+        "dd/MM/yyyy"
+      )}.pdf`
+    );
 
     const pdfBlobUrl = pdf.output("bloburl");
     window.open(pdfBlobUrl, "_blank");

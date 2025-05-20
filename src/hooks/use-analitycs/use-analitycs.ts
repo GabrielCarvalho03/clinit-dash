@@ -127,6 +127,8 @@ export const useAnalytics = create<AnalyticsStore>((set, get) => ({
   },
 
   getClinicProfileDescription: (dentistId: FilterType, quotes: Quote[]) => {
+    const { getProfileDisplayName, mostCommonProfileData } =
+      useAnalytics.getState();
     const filtered =
       dentistId === "all"
         ? quotes
@@ -147,13 +149,31 @@ export const useAnalytics = create<AnalyticsStore>((set, get) => ({
       b[1] > a[1] ? b : a
     )[0] as PatientProfile;
 
+    const analiticsClinic: string = `Sua clínica atende majoritariamente pacientes com perfil ${getProfileDisplayName(
+      mostCommonProfileData.psychologicalProfile
+    )}, com idade média de ${
+      mostCommonProfileData.avgAge
+    } anos e relacionamento médio de ${
+      mostCommonProfileData.relationshipAvg
+    }. O tratamento mais orçado é ${
+      mostCommonProfileData.mostCommonTreatment
+    }. O valor médio dos orçamentos é de R$ ${Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+    }).format(
+      Number(mostCommonProfileData.avgTicket)
+    )}. O perfil que mais fecha orçamentos é ${getProfileDisplayName(
+      mostCommonProfileData.psychologicalProfile
+    )},o que indica uma oportunidade para redirecionar esforços de captação.`;
+
     switch (mostCommon) {
       case "aesthetic-emotional":
         return "Se importa muito com estética e se conecta emocionalmente";
       case "aesthetic-rational":
         return "Busca estética, mas toma decisões com base racional";
       case "health-emotional":
-        return "Preza pela saúde e valoriza o atendimento emocional";
+        return analiticsClinic;
+      // "Preza pela saúde e valoriza o atendimento emocional";
       case "health-rational":
         return "Prioriza saúde e decisões lógicas";
       default:

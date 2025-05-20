@@ -76,6 +76,7 @@ export interface QuotePdf {
       whatsapp?: string;
     };
   };
+  createdAt?: string;
   dentist: {
     name: string;
     specialty: string;

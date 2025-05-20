@@ -259,7 +259,7 @@ export const QuotePreviewPDF = ({
                     <span
                       style={{
                         position: "absolute",
-                        top: "90%",
+                        top: "50%",
                         left: 0,
                         right: 0,
                         height: "1px",

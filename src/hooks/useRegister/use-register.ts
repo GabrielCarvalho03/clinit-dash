@@ -30,7 +30,7 @@ export const useRegister = create<useRegisterProps>((set) => ({
       toast("Conta criada com sucesso", {
         description: "Você já pode acessar o sistema OdontoAI",
       });
-      router.push("/dashboard");
+      router.push("/onboarding");
     } catch (error) {
       toast.error("Erro ao criar conta", {
         description:

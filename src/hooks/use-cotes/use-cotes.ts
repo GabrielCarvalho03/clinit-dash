@@ -30,6 +30,8 @@ interface QuoteStore {
   loadUserQuotes: (userId: string) => void;
   loadingDeleteQuote: boolean;
   setLoadingDeleteQuote: (value: boolean) => void;
+  loadingUpdateQuote: boolean;
+  setLoadingUpdateQuote: (value: boolean) => void;
 }
 
 export const useQuote = create<QuoteStore>((set, get) => {
@@ -77,6 +79,10 @@ export const useQuote = create<QuoteStore>((set, get) => {
     standardTreatments,
     setDraftQuote: (quote) => set({ draftQuote: quote }),
     loadingDeleteQuote: false,
+
+    loadingUpdateQuote: false,
+    setLoadingUpdateQuote: (value: boolean) =>
+      set({ loadingUpdateQuote: value }),
     setLoadingDeleteQuote: (value: boolean) =>
       set({ loadingDeleteQuote: value }),
     createQuote: async (quote: Quote) => {
@@ -163,20 +169,25 @@ export const useQuote = create<QuoteStore>((set, get) => {
     },
 
     updateQuote: async (quote) => {
-      const { quotes, setQuotes } = useQuote.getState();
+      const { quotes, setQuotes, setLoadingUpdateQuote } = useQuote.getState();
 
+      setLoadingUpdateQuote(true);
       try {
         const res = await api.post("/quotes/update", quote);
         const updatedQuotes = quotes.map((q) =>
           q.id === quote.id ? quote : q
         );
-
         setQuotes(updatedQuotes);
+        toast("Orçamento atualizado", {
+          description: `Orçamento para ${quote.patientName} atualizado com sucesso`,
+        });
       } catch (err) {
         console.log(err);
         toast.error("Erro", {
           description: "Erro ao atualizar orçamento",
         });
+      } finally {
+        setLoadingUpdateQuote(false);
       }
     },
 

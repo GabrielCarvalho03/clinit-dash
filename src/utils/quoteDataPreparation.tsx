@@ -50,9 +50,9 @@ export const prepareQuotePdfData = (
       socialMedia: clinic.socialMedia,
     },
     dentist: {
-      name: dentist.name,
-      specialty: dentist.specialty,
-      photo: dentist.photo?.toString() || undefined,
+      name: dentist?.name,
+      specialty: dentist?.specialty,
+      photo: dentist?.photo?.toString() || undefined,
     },
     patientName: formValues.patientName,
     patientGender: formValues.patientGender,

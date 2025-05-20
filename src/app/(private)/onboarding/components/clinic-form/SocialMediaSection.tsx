@@ -37,7 +37,7 @@ export const SocialMediaSection = ({ form }: SocialMediaSectionProps) => {
           <FormItem>
             <FormLabel>Facebook</FormLabel>
             <FormControl>
-              <Input placeholder="facebook.com/clinica" {...field} />
+              <Input placeholder="clinica" {...field} />
             </FormControl>
             <FormMessage />
           </FormItem>

@@ -90,6 +90,7 @@ export const QuotePreviewPDF = ({
           {clinic.logo && (
             <div className="mr-4 flex-shrink-0">
               <img
+                id="logo-clinic"
                 src={clinic.logo}
                 alt={clinic.name}
                 className="h-16 w-16 object-contain"
@@ -257,6 +258,7 @@ export const QuotePreviewPDF = ({
                   >
                     {formatCurrency(originalTotal)}
                     <span
+                      id="original-total-line"
                       style={{
                         position: "absolute",
                         top: "50%",
@@ -350,7 +352,7 @@ export const QuotePreviewPDF = ({
 
         <div className="flex flex-wrap justify-center gap-4 mb-3">
           {clinic.phoneNumber && (
-            <div className="flex items-center">
+            <div id="phone-icon-container" className="flex items-center">
               <MessageSquareText
                 id="phone-icon"
                 className="h-4 w-4 text-green-600 mr-1"
@@ -362,7 +364,7 @@ export const QuotePreviewPDF = ({
           )}
 
           {clinic.phoneNumber2 && (
-            <div className="flex items-center">
+            <div id="phone-icon-container2" className="flex items-center">
               <MessageSquareText
                 id="phone-icon2"
                 className="h-4 w-4 text-green-600 mr-1"

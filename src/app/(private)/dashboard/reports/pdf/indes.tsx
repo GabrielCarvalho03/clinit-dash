@@ -40,6 +40,11 @@ export async function generateProposalPDF({ setExporting, quote }: Props) {
 
     const clone = element.cloneNode(true) as HTMLElement;
 
+    const logoClinic = clone.querySelector("#logo-clinic") as HTMLElement;
+    if (logoClinic) {
+      logoClinic.style.marginTop = "10px";
+    }
+
     const dentistNamenClone = clone.querySelector(
       "#dentist-name"
     ) as HTMLElement;
@@ -70,12 +75,22 @@ export async function generateProposalPDF({ setExporting, quote }: Props) {
       DentistPhoto.style.borderRadius = "50%";
       DentistPhoto.style.objectFit = "cover";
       DentistPhoto.style.objectPosition = "center right";
+      DentistPhoto.style.marginTop = "14px";
     }
+
+    const originalTotalLine = clone.querySelector(
+      "#original-total-line"
+    ) as HTMLElement;
+
+    if (originalTotalLine) {
+      originalTotalLine.style.marginTop = "10px";
+    }
+
     const giftIcon = clone.querySelector("#gift-icon") as HTMLElement;
 
     if (giftIcon) {
-      (clone.querySelector("#gift-icon") as HTMLElement).style.width = "15px";
-      (clone.querySelector("#gift-icon") as HTMLElement).style.height = "15px";
+      giftIcon.style.width = "15px";
+      giftIcon.style.height = "15px";
     }
     const giftText = clone.querySelector("#gift-text") as HTMLElement;
 
@@ -87,8 +102,24 @@ export async function generateProposalPDF({ setExporting, quote }: Props) {
 
     if (giftTitle) {
       (clone.querySelector("#gift-title") as HTMLElement).style.marginTop =
-        "-9px";
+        "-13px";
     }
+
+    const phoneIconContainer = clone.querySelector(
+      "#phone-icon-container"
+    ) as HTMLElement;
+
+    if (phoneIconContainer) {
+      phoneIconContainer.style.marginTop = "10px";
+    }
+    const phoneIconContainer2 = clone.querySelector(
+      "#phone-icon-container2"
+    ) as HTMLElement;
+
+    if (phoneIconContainer2) {
+      phoneIconContainer2.style.marginTop = "10px";
+    }
+
     const phoneIcon = clone.querySelector("#phone-icon") as HTMLElement;
     if (phoneIcon) {
       phoneIcon.style.marginTop = "0px";

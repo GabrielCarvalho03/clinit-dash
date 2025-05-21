@@ -6,20 +6,25 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { UserIcon } from "lucide-react";
+import { TreatmentData } from "./TreatmentRanking";
 
 interface ClinicProfileDescriptionProps {
   title: string;
   description: string;
+  data: TreatmentData[];
 }
 
 export const ClinicProfileDescription = ({
   title,
   description,
+  data,
 }: ClinicProfileDescriptionProps) => {
   // Verificamos especificamente por mensagens que indicam falta de dados suficientes
   const isEmptyDescription = description.includes(
     "Adicione pelo menos dois orçamentos"
   );
+
+  console.log("dataTestando", data);
 
   return (
     <Card className="mb-6 border-primary/10 bg-primary/5">
@@ -33,8 +38,12 @@ export const ClinicProfileDescription = ({
         </CardDescription>
       </CardHeader>
       <CardContent>
-        {isEmptyDescription ? (
-          <div className="text-center py-4 text-gray-500">{description}</div>
+        {data.length < 2 ? (
+          <div className="text-center py-4 text-gray-500">
+            {
+              "Adicione pelo menos dois orçamentos para gerar um perfil da clínica."
+            }
+          </div>
         ) : (
           <p className="text-gray-700">{description}</p>
         )}

@@ -168,14 +168,14 @@ export const useAnalytics = create<AnalyticsStore>((set, get) => ({
 
     switch (mostCommon) {
       case "aesthetic-emotional":
-        return "Se importa muito com estética e se conecta emocionalmente";
+        return analiticsClinic;
       case "aesthetic-rational":
-        return "Busca estética, mas toma decisões com base racional";
+        return analiticsClinic;
       case "health-emotional":
         return analiticsClinic;
       // "Preza pela saúde e valoriza o atendimento emocional";
       case "health-rational":
-        return "Prioriza saúde e decisões lógicas";
+        return analiticsClinic;
       default:
         return "Perfil não definido";
     }

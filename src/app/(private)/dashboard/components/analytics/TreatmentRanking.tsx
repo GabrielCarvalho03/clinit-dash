@@ -14,7 +14,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-interface TreatmentData {
+export interface TreatmentData {
   name: string;
   quoted: number;
   closed: number;

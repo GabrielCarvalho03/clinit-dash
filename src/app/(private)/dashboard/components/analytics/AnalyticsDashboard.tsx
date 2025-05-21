@@ -147,6 +147,7 @@ export const AnalyticsDashboard = () => {
       <ClinicProfileDescription
         title={profileTitle}
         description={clinicProfileDescription}
+        data={treatmentStats}
       />
 
       <div className="grid grid-cols-1 gap-6">

@@ -10,6 +10,8 @@ import { Phone, Building2 } from "lucide-react";
 import { UseFormReturn } from "react-hook-form";
 import { FileUpload } from "@/components/file-upload/file-upload";
 import { ClinicFormData } from "./schema";
+import { formatCNPJ } from "@/utils/text-formarter/cnpj-formarter";
+import { formatPhone } from "@/utils/text-formarter/phone-formarter";
 
 interface BasicInfoSectionProps {
   form: UseFormReturn<ClinicFormData>;
@@ -65,7 +67,12 @@ export const BasicInfoSection = ({
                     <Input
                       className="rounded-l-none"
                       placeholder="00.000.000/0000-00"
-                      {...field}
+                      value={field.value}
+                      onChange={(e) =>
+                        field.onChange(formatCNPJ(e.target.value))
+                      }
+                      onBlur={field.onBlur}
+                      ref={field.ref}
                     />
                   </div>
                 </FormControl>
@@ -88,7 +95,12 @@ export const BasicInfoSection = ({
                     <Input
                       className="rounded-l-none"
                       placeholder="(00) 00000-0000"
-                      {...field}
+                      value={field.value}
+                      onChange={(e) =>
+                        field.onChange(formatPhone(e.target.value))
+                      }
+                      onBlur={field.onBlur}
+                      ref={field.ref}
                     />
                   </div>
                 </FormControl>
@@ -111,7 +123,12 @@ export const BasicInfoSection = ({
                     <Input
                       className="rounded-l-none"
                       placeholder="(00) 00000-0000"
-                      {...field}
+                      value={field.value}
+                      onChange={(e) =>
+                        field.onChange(formatPhone(e.target.value))
+                      }
+                      onBlur={field.onBlur}
+                      ref={field.ref}
                     />
                   </div>
                 </FormControl>

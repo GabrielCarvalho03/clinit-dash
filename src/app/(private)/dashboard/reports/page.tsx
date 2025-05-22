@@ -95,6 +95,7 @@ const Reports = () => {
   const [viewDialogOpen, setViewDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [quoteToDelete, setQuoteToDelete] = useState<string | null>(null);
+  const [quoteToUpdate, setQuoteToUpdate] = useState<string | null>(null);
   const [exporting, setExporting] = useState(false);
 
   const filteredQuotes = quotes?.filter((quote) => {
@@ -182,56 +183,8 @@ const Reports = () => {
     id: string,
     status: "final" | "paid" | "follow"
   ) => {
+    setQuoteToUpdate(id);
     updateQuoteStatus(id, status);
-  };
-
-  const handleExport = async () => {
-    if (!selectedQuote) return;
-    setExporting(true);
-
-    try {
-      const element = document.getElementById("quote-preview-container");
-
-      if (!element) {
-        throw new Error("Preview element not found");
-      }
-
-      const canvas = await html2canvas(element, {
-        scale: 2,
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: "#FFFFFF",
-      });
-
-      const pdf = new jsPDF("p", "mm", "a4");
-
-      const imgWidth = 210;
-      const pageHeight = 297;
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-      const imgData = canvas.toDataURL("image/png");
-
-      let heightLeft = imgHeight;
-      let position = 0;
-
-      pdf.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight);
-
-      const blob = pdf.output("blob");
-      const url = URL.createObjectURL(blob);
-      window.open(url, "_blank");
-
-      toast.error("PDF exportado com sucesso", {
-        description: "O orçamento foi aberto em uma nova aba.",
-      });
-    } catch (error) {
-      console.error("Export error:", error);
-      toast.error("Erro na exportação.", {
-        description:
-          "Ocorreu um erro ao exportar o orçamento. Tente novamente.",
-      });
-    } finally {
-      setExporting(false);
-    }
   };
 
   useEffect(() => {
@@ -513,21 +466,17 @@ const Reports = () => {
                                 }
                               `}
                               >
-                                {loadingUpdateQuote && (
-                                  <Loader2 className=" animate-spin" />
+                                {loadingUpdateQuote &&
+                                quote.id === quoteToUpdate ? (
+                                  <Loader2 className="animate-spin" />
+                                ) : (
+                                  <>
+                                    {quote.status === "draft" && "Rascunho"}
+                                    {quote.status === "final" && "Finalizado"}
+                                    {quote.status === "paid" && "Pago"}
+                                    {quote.status === "follow" && "Follow"}
+                                  </>
                                 )}
-                                {!loadingUpdateQuote &&
-                                  quote.status === "draft" &&
-                                  "Rascunho"}
-                                {!loadingUpdateQuote &&
-                                  quote.status === "final" &&
-                                  "Finalizado"}
-                                {!loadingUpdateQuote &&
-                                  quote.status === "paid" &&
-                                  "Pago"}
-                                {!loadingUpdateQuote &&
-                                  quote.status === "follow" &&
-                                  "Follow"}
                               </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
@@ -580,7 +529,8 @@ const Reports = () => {
                             onClick={() => handleDeleteQuote(quote.id)}
                             title="Excluir"
                           >
-                            {loadingDeleteQuote ? (
+                            {loadingDeleteQuote &&
+                            quoteToDelete === quote.id ? (
                               <Loader2 className="h-4 w-4 animate-spin text-red-500" />
                             ) : (
                               <Trash className="h-4 w-4 text-red-500" />

@@ -14,11 +14,12 @@ import {
   clinicFormSchema,
   ClinicFormData,
 } from "../../../app/(private)/onboarding/components/clinic-form/schema";
-import { getUserRefresh } from "@/utils/get-user-refresh";
 import { api } from "@/lib/axios/axios";
 import { useAnalytics } from "@/hooks/use-analitycs/use-analitycs";
 import { useClinic } from "@/hooks/use-clinic/use-clinic";
 import { Loader2 } from "lucide-react";
+import { formatCNPJ } from "@/utils/text-formarter/cnpj-formarter";
+import { formatPhone } from "@/utils/text-formarter/phone-formarter";
 
 interface ClinicFormProps {
   onFormSubmit?: () => void;
@@ -51,9 +52,9 @@ export const ClinicForm = ({
     defaultValues: {
       name: clinic?.name || "",
       address: clinic?.address || "",
-      phoneNumber: clinic?.phoneNumber || "",
-      phoneNumber2: clinic?.phoneNumber2 || "",
-      cnpj: clinic?.cnpj || "",
+      phoneNumber: formatPhone(clinic?.phoneNumber || ""),
+      phoneNumber2: formatPhone(clinic?.phoneNumber2 || ""),
+      cnpj: formatCNPJ(clinic?.cnpj || ""),
       socialMedia: {
         instagram: clinic?.socialMedia?.instagram || "",
         facebook: clinic?.socialMedia?.facebook || "",
@@ -116,8 +117,6 @@ export const ClinicForm = ({
       return;
     }
 
-    console.log("dentists", dentists);
-
     if (!clinic) return;
 
     const updatedClinic = {
@@ -130,15 +129,17 @@ export const ClinicForm = ({
       })),
     };
 
-    console.log("updatedClinic", updatedClinic.dentists);
+    const cleanPhone = data.phoneNumber.replace(/\D/g, "");
+    const cleanCNPJ = data.cnpj.replace(/\D/g, "");
+    const cleanPhone2 = data.phoneNumber2?.replace(/\D/g, "");
 
     const obj = {
       clinicId: clinic.id,
       id: clinic.id,
       name: updatedClinic.name,
-      cnpj: updatedClinic.cnpj,
-      phone1: updatedClinic.phoneNumber,
-      phone2: updatedClinic.phoneNumber2,
+      cnpj: cleanCNPJ,
+      phone1: cleanPhone,
+      phone2: cleanPhone2,
       address: updatedClinic.address,
       logo: updatedClinic.logo,
       dentist: updatedClinic.dentists,
@@ -163,8 +164,6 @@ export const ClinicForm = ({
       onFormSubmit();
     }
   };
-
-  console.log("dentists", dentists);
 
   const handleTabChange = (value: string) => {
     if (value === "clinic" || value === "dentists") {

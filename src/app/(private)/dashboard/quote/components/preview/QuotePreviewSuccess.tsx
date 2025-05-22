@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useStepNavigation } from "@/hooks/use-step-navigation/use-step-navigation";
 
 interface QuotePreviewSuccessProps {
   message?: string;
@@ -9,9 +10,11 @@ interface QuotePreviewSuccessProps {
 
 export const QuotePreviewSuccess = ({ message }: QuotePreviewSuccessProps) => {
   const route = useRouter();
+  const { setStep } = useStepNavigation();
 
   const handleGoToReports = () => {
     route.push("/dashboard/reports");
+    setStep(1);
   };
 
   return (

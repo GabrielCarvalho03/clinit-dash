@@ -61,7 +61,7 @@ export const QuoteSteps = ({ isEdit = false }: QuoteStepsProps) => {
     },
   });
 
-  const { step, handlePrevious, handleNext, handleCancel } =
+  const { step, handlePrevious, handleNext, handleCancel, setStep } =
     useStepNavigation();
 
   // Reset quote creation state when component mounts or when editing a different quote
@@ -94,6 +94,8 @@ export const QuoteSteps = ({ isEdit = false }: QuoteStepsProps) => {
           status: "final" as const,
         } as Quote;
         await updateQuote(finalQuote);
+
+        form.reset(data);
       } else {
         finalQuote = {
           ...data,
@@ -103,6 +105,7 @@ export const QuoteSteps = ({ isEdit = false }: QuoteStepsProps) => {
           status: "final" as const,
         } as Quote;
         await createQuote(finalQuote);
+        form.reset(data);
       }
 
       setDraftQuote(null);
@@ -111,6 +114,7 @@ export const QuoteSteps = ({ isEdit = false }: QuoteStepsProps) => {
       if (isEdit) {
         setTimeout(() => {
           router.push("/dashboard/reports");
+          setStep(1);
         }, 2000);
       }
     } catch (error) {

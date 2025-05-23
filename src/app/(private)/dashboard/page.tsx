@@ -74,7 +74,7 @@ const Dashboard = () => {
         </Button>
       </div>
 
-      {needsOnboarding && (
+      {/* {needsOnboarding && (
         <Card className="border-amber-200 bg-amber-50 mb-4">
           <CardHeader className="pb-2">
             <CardTitle className="text-amber-800 flex items-center gap-2">
@@ -108,7 +108,7 @@ const Dashboard = () => {
             </Button>
           </CardFooter>
         </Card>
-      )}
+      )} */}
 
       <Card className="border-none shadow-sm bg-[#F1F0FB]/50">
         <CardContent className="p-0">

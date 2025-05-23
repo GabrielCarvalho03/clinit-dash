@@ -86,11 +86,13 @@ export const QuoteSteps = ({ isEdit = false }: QuoteStepsProps) => {
       }
 
       let finalQuote: Quote;
+      console.log("draftQuote", draftQuote);
 
       if (isEditMode) {
         finalQuote = {
           ...draftQuote!,
           ...data,
+          createdAt: draftQuote?.createdAt || null,
           status: "final" as const,
         } as Quote;
         await updateQuote(finalQuote);

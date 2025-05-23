@@ -78,6 +78,21 @@ export async function generateProposalPDF({ setExporting, quote }: Props) {
       DentistPhoto.style.marginTop = "14px";
     }
 
+    const TreatmentPreview = clone.querySelector(
+      "#treatment-preview"
+    ) as HTMLElement;
+
+    if (TreatmentPreview) {
+      TreatmentPreview.style.paddingBottom = "8px";
+    }
+
+    const treatmentImageLegend = clone.querySelector(
+      "#treatment-image-legend"
+    ) as HTMLElement;
+    if (treatmentImageLegend) {
+      treatmentImageLegend.style.marginTop = "-7px";
+    }
+
     const originalTotalLine = clone.querySelector(
       "#original-total-line"
     ) as HTMLElement;

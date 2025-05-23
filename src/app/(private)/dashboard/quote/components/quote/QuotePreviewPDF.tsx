@@ -80,7 +80,7 @@ export const QuotePreviewPDF = ({
       style={{
         width: "210mm",
         minHeight: "297mm",
-        padding: "15mm 20mm",
+        padding: "5mm 20mm",
         boxSizing: "border-box",
       }}
     >
@@ -126,7 +126,7 @@ export const QuotePreviewPDF = ({
       </div>
 
       {/* Patient and Dentist Info */}
-      <div className="grid grid-cols-2 gap-8 mt-4 mb-4">
+      <div className="grid grid-cols-2 gap-8 mt-2 mb-2">
         <div>
           <h2 className="font-bold text-lg mb-1 text-gray-800">Paciente</h2>
           <p className="font-medium text-gray-800">{patientName}</p>
@@ -149,7 +149,7 @@ export const QuotePreviewPDF = ({
             )}
             <div>
               <p id="dentist-name" className="font-medium text-gray-800">
-                Dr. {dentist.name}
+                {dentist.name}
               </p>
               <p id="dentist-area" className="text-sm text-gray-500">
                 {dentist.specialty}
@@ -175,7 +175,11 @@ export const QuotePreviewPDF = ({
 
         <div className="space-y-4">
           {treatments.map((treatment, index) => (
-            <div key={index} className="border rounded-md p-3">
+            <div
+              id="treatment-preview"
+              key={index}
+              className="border rounded-md px-3 pt-2 pb-1"
+            >
               <div className="flex flex-col md:flex-row">
                 {/* Treatment details */}
                 <div className="flex-grow md:w-2/5">
@@ -185,7 +189,7 @@ export const QuotePreviewPDF = ({
                   <p className="text-sm text-gray-600 mb-2">
                     {treatment.description}
                   </p>
-                  <p className="font-bold text-base mt-auto text-gray-800">
+                  <p className="font-semibold text-sm mt-auto text-gray-400">
                     {formatCurrency(
                       treatment.originalPrice || treatment.discountPrice
                     )}
@@ -211,7 +215,10 @@ export const QuotePreviewPDF = ({
                           </div>
                         ))}
                       </div>
-                      <p className="text-xs text-gray-400 mt-1 text-right w-full">
+                      <p
+                        id="treatment-image-legend"
+                        className="text-[8px] text-gray-400 mt-0 text-right w-full"
+                      >
                         Imagens com finalidade exclusivamente ilustrativa
                       </p>
                     </div>
@@ -227,7 +234,7 @@ export const QuotePreviewPDF = ({
                           }}
                         />
                       </div>
-                      <p className="text-xs text-gray-400 mt-1 text-right w-full">
+                      <p className="text-[8px] text-gray-400 mt-1 text-right w-full">
                         Imagens com finalidade exclusivamente ilustrativa
                       </p>
                     </div>
@@ -240,7 +247,7 @@ export const QuotePreviewPDF = ({
 
         {/* Justification */}
         {justification && (
-          <div className="my-3 text-sm italic text-gray-600 border-l-2 border-gray-400 pl-3">
+          <div className="my-3 text-sm italic font-semibold text-black border-l-2 border-gray-600 pl-3">
             {justification}
           </div>
         )}
@@ -290,7 +297,7 @@ export const QuotePreviewPDF = ({
       </div>
 
       {/* Bottom Section with Payment and Validity */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-2">
         {/* Payment Conditions */}
         <div>
           <h2 className="font-bold text-lg mb-2 text-gray-800">

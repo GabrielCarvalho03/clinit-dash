@@ -1,4 +1,11 @@
-import { Home, User, FileText, BarChart3, LogOut } from "lucide-react";
+import {
+  Home,
+  User,
+  FileText,
+  BarChart3,
+  MessageCircleQuestion,
+  LogOut,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
@@ -14,17 +21,19 @@ export const Sidebar = () => {
     to,
     icon,
     label,
+    handleClick,
   }: {
-    to: string;
+    to?: string;
     icon: React.ReactNode;
     label: string;
+    handleClick?: () => void;
   }) => {
     const isActive = pathname === to;
     return (
       <a
-        onClick={() => router.push(to)}
+        onClick={handleClick ? handleClick : () => router.push(to ?? "/")}
         className={cn(
-          "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors",
+          "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors cursor-default",
           isActive
             ? "bg-primary text-primary-foreground"
             : "text-gray-700 hover:bg-secondary hover:text-primary font-medium"
@@ -106,6 +115,15 @@ export const Sidebar = () => {
           to="/dashboard/reports"
           icon={<BarChart3 size={20} />}
           label="Relatórios"
+        />
+        <NavLink
+          handleClick={() =>
+            window.open(
+              "https://wa.me/5512988893431?text=ol%C3%A1%0Atenho%20uma%20d%C3%BAvida%20sobre%20a%20clinitt"
+            )
+          }
+          icon={<MessageCircleQuestion size={20} />}
+          label="Suporte"
         />
       </nav>
 

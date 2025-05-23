@@ -156,10 +156,14 @@ export const useQuote = create<QuoteStore>((set, get) => {
         const resQuote = await api.post("/quotes/get", {
           clinicId,
         });
+        const AscQuote = resQuote.data.quotes?.sort(
+          (a: Quote, b: Quote) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
 
-        setQuotes(resQuote.data.quotes);
+        setQuotes(AscQuote);
 
-        return resQuote.data.quotes;
+        return AscQuote;
       } catch (err) {
         console.log(err);
         toast.error("Erro", {

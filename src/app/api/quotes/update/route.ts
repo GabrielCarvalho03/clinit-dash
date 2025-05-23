@@ -34,7 +34,6 @@ export async function POST(req: Request) {
             ? new Date(body.validityCustomDate).toISOString()
             : null,
         validityDays: body.validityDays ? Number(body.validityDays) : null,
-        createdAt: new Date().toISOString(),
         status: body.status,
       });
 

@@ -41,13 +41,13 @@ export const QuoteSteps = ({ isEdit = false }: QuoteStepsProps) => {
     resolver: zodResolver(quoteSchema),
     defaultValues: {
       patientName: draftQuote?.patientName || "",
-      patientGender: draftQuote?.patientGender || "male",
-      patientProfile: draftQuote?.patientProfile || "aesthetic-emotional", // padrão para perfil do paciente
+      patientGender: draftQuote?.patientGender || undefined,
+      patientProfile: draftQuote?.patientProfile || undefined, // padrão para perfil do paciente
       patientAge: draftQuote?.patientAge || undefined, // Isso é válido porque é opcional
       patientBirthdate: draftQuote?.patientBirthdate || undefined,
       dentistId: draftQuote?.dentistId || "",
       ageGroup: draftQuote?.ageGroup || "adult", // Definido como "adult" por padrão
-      relationship: draftQuote?.relationship || "new", // Definido como "new" por padrão
+      relationship: draftQuote?.relationship || undefined, // Definido como "new" por padrão
       treatments: draftQuote?.treatments || [],
       observations: draftQuote?.observations || "", // Pode ser vazio ou algum valor padrão
       gift: draftQuote?.gift || "", // Pode ser vazio ou algum valor padrão

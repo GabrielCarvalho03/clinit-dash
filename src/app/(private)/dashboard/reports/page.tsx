@@ -15,6 +15,9 @@ import {
   Loader2,
   Download,
   Trash,
+  ArrowUpDown,
+  ArrowDown,
+  ArrowUp,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth/use-auth";
@@ -72,6 +75,9 @@ import { useAnalytics } from "@/hooks/use-analitycs/use-analitycs";
 import { getUserRefresh } from "@/utils/get-user-refresh";
 import { generateProposalPDF } from "./pdf/indes";
 
+type SortField = "patient" | "dentist" | "date" | "value" | "status";
+type SortOrder = "asc" | "desc";
+
 const Reports = () => {
   const route = useRouter();
   const { clinic, isLoading, setClinic, setIsLoading } = useAuth();
@@ -97,6 +103,10 @@ const Reports = () => {
   const [quoteToDelete, setQuoteToDelete] = useState<string | null>(null);
   const [quoteToUpdate, setQuoteToUpdate] = useState<string | null>(null);
   const [exporting, setExporting] = useState(false);
+
+  // Sorting state
+  const [sortField, setSortField] = useState<SortField>("date");
+  const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
 
   const filteredQuotes = quotes?.filter((quote) => {
     if (dentistFilter !== "all" && quote.dentistId !== dentistFilter) {
@@ -206,6 +216,59 @@ const Reports = () => {
       </div>
     );
   }
+
+  const sortedQuotes = [...filteredQuotes].sort((a, b) => {
+    let compareValue = 0;
+
+    switch (sortField) {
+      case "patient":
+        compareValue = a.patientName.localeCompare(b.patientName);
+        break;
+      case "dentist":
+        const dentistA =
+          dentists.find((d) => d.id === a.dentistId)?.name || "Desconhecido";
+        const dentistB =
+          dentists.find((d) => d.id === b.dentistId)?.name || "Desconhecido";
+        compareValue = dentistA.localeCompare(dentistB);
+        break;
+      case "date":
+        compareValue =
+          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+        break;
+      case "value":
+        const totalA = a.treatments.reduce((sum, t) => sum + t.price, 0);
+        const totalB = b.treatments.reduce((sum, t) => sum + t.price, 0);
+        compareValue = totalA - totalB;
+        break;
+      case "status":
+        compareValue = a.status.localeCompare(b.status);
+        break;
+      default:
+        compareValue = 0;
+    }
+
+    return sortOrder === "asc" ? compareValue : -compareValue;
+  });
+
+  const getSortIcon = (field: SortField) => {
+    if (sortField !== field) {
+      return <ArrowUpDown className="h-4 w-4 ml-1 text-muted-foreground" />;
+    }
+    return sortOrder === "asc" ? (
+      <ArrowUp className="h-4 w-4 ml-1" />
+    ) : (
+      <ArrowDown className="h-4 w-4 ml-1" />
+    );
+  };
+
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    } else {
+      setSortField(field);
+      setSortOrder("asc");
+    }
+  };
 
   return (
     <div className="space-y-8">
@@ -405,16 +468,61 @@ const Reports = () => {
               <table className="w-full">
                 <thead>
                   <tr className="border-b">
-                    <th className="text-left p-3">Paciente</th>
-                    <th className="text-left p-3">Dentista</th>
-                    <th className="text-left p-3">Data</th>
-                    <th className="text-right p-3">Valor</th>
-                    <th className="text-center p-3">Status</th>
+                    <th className="text-left ">
+                      <Button
+                        variant="ghost"
+                        className="h-auto p-0 font-medium hover:bg-transparent"
+                        onClick={() => handleSort("patient")}
+                      >
+                        Paciente
+                        {getSortIcon("patient")}
+                      </Button>
+                    </th>
+                    <th className="text-left ">
+                      <Button
+                        variant="ghost"
+                        className="h-auto p-0 font-medium hover:bg-transparent"
+                        onClick={() => handleSort("dentist")}
+                      >
+                        Dentista
+                        {getSortIcon("dentist")}
+                      </Button>
+                    </th>
+                    <th className="text-left ">
+                      <Button
+                        variant="ghost"
+                        className="h-auto p-0 font-medium hover:bg-transparent"
+                        onClick={() => handleSort("date")}
+                      >
+                        Data
+                        {getSortIcon("date")}
+                      </Button>
+                    </th>
+                    <th className="text-right ">
+                      <Button
+                        variant="ghost"
+                        className="h-auto p-0 font-medium hover:bg-transparent ml-auto"
+                        onClick={() => handleSort("value")}
+                      >
+                        Valor
+                        {getSortIcon("value")}
+                      </Button>
+                    </th>
+                    <th className="text-center ">
+                      <Button
+                        variant="ghost"
+                        className="h-auto p-0 font-medium hover:bg-transparent"
+                        onClick={() => handleSort("status")}
+                      >
+                        Status
+                        {getSortIcon("status")}
+                      </Button>
+                    </th>
                     <th className="text-right p-3">Ações</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredQuotes.map((quote) => {
+                  {sortedQuotes.map((quote) => {
                     const dentist = dentists?.find(
                       (d) => d.id === quote.dentistId
                     );

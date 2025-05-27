@@ -6,6 +6,8 @@ import { Input } from "@/components/ui/input";
 import { useFileUpload } from "@/hooks/use-file-upload/use-file-upload";
 import { Camera, Upload, X, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { QuoteFormData } from "@/hooks/use-quote/schema";
+import { UseFormReturn } from "react-hook-form";
 
 interface FileUploadProps {
   onFileUploaded: (file: File, preview: string) => void;
@@ -13,6 +15,12 @@ interface FileUploadProps {
   label?: string | React.ReactNode;
   compact?: boolean;
   onClear?: () => void;
+  handleFileChangeUpdated?: (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => Promise<void>;
+  isLoadingUploading?: boolean;
+  maxtotalImage?: number;
+  form?: UseFormReturn<QuoteFormData>;
 }
 
 export const FileUpload = ({
@@ -21,6 +29,9 @@ export const FileUpload = ({
   label = "Upload de Arquivo",
   compact = false,
   onClear,
+  isLoadingUploading,
+  maxtotalImage,
+  form,
 }: FileUploadProps) => {
   const { status, preview, error, uploadFile, resetUpload } = useFileUpload();
   const [currentPreview, setCurrentPreview] = useState<string | null>(null);
@@ -37,6 +48,22 @@ export const FileUpload = ({
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    if (maxtotalImage) {
+      const allTretatments = form?.getValues("treatments");
+
+      const allImages = allTretatments
+        ?.map((treatment) => treatment.treatmentImages)
+        .flat();
+
+      if (allImages && allImages.length >= maxtotalImage) {
+        toast.error("Limite de imagens atingido", {
+          description: "você só pode adicionar 4 imagens por orçamento",
+        });
+
+        return;
+      }
+    }
 
     try {
       setIsUploading(true);

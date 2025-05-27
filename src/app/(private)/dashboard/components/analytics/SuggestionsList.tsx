@@ -19,7 +19,8 @@ export const SuggestionsList = ({
   title = "Sugestões de Melhoria",
   isDentistSpecific = false,
 }: SuggestionsListProps) => {
-  const { seggestionsIsLoading } = useAnalytics();
+  const { seggestionsIsLoading, mostCommonProfileData, getProfileDisplayName } =
+    useAnalytics();
 
   console.log("suggestions", seggestionsIsLoading);
 

@@ -111,6 +111,7 @@ export function TreatmentItem({
           render={({ field: imagesField }) => (
             <FormItem>
               <TreatmentImageUpload
+                form={form}
                 value={imagesField.value || []}
                 onChange={imagesField.onChange}
               />

@@ -37,18 +37,21 @@ export const QuotePreviewPDF = ({
     paymentPreviewText,
     downPayment,
     installments,
+    customOriginalPrice,
   } = quoteData;
 
   // Calculate pricing for display
   const totalValue = treatments.reduce((sum, t) => sum + t.discountPrice, 0);
 
-  const originalTotal = treatments.reduce(
-    (sum, t) => sum + (t.originalPrice || t.discountPrice),
-    0
-  );
+  const originalTotal = customOriginalPrice
+    ? customOriginalPrice +
+      treatments.reduce((sum, t) => sum + t.discountPrice, 0)
+    : treatments.reduce(
+        (sum, t) => sum + (t.originalPrice || t.discountPrice),
+        0
+      );
   const discountAmount = originalTotal - totalValue;
   const hasDiscount = originalTotal > totalValue;
-  console.log("treatments", discountAmount);
 
   // Generate personalized introduction text
   const introductionText = getIntroductionText(
@@ -182,7 +185,14 @@ export const QuotePreviewPDF = ({
             >
               <div className="flex flex-col md:flex-row">
                 {/* Treatment details */}
-                <div className="flex-grow md:w-2/5">
+                <div
+                  className={`flex-grow ${
+                    treatment.treatmentImages &&
+                    treatment.treatmentImages.length > 0
+                      ? "md:w-2/5"
+                      : "md:w-[900%] "
+                  }`}
+                >
                   <h3 className="font-bold text-base text-gray-800">
                     {treatment.name}
                   </h3>
@@ -247,7 +257,7 @@ export const QuotePreviewPDF = ({
 
         {/* Justification */}
         {justification && (
-          <div className="my-3 text-sm italic font-semibold text-black border-l-2 border-gray-600 pl-3">
+          <div className="my-3 text-sm italic font-semibold text-black  pl-3">
             {justification}
           </div>
         )}

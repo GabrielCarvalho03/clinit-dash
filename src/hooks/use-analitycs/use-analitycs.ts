@@ -121,6 +121,8 @@ export const useAnalytics = create<AnalyticsStore>((set, get) => ({
         return "Saúde Emocional";
       case "health-rational":
         return "Saúde Racional";
+      case "neutral-general":
+        return "Neutro/Generalista";
       default:
         return "Desconhecido";
     }
@@ -139,6 +141,7 @@ export const useAnalytics = create<AnalyticsStore>((set, get) => ({
       "aesthetic-rational": 0,
       "health-emotional": 0,
       "health-rational": 0,
+      "neutral-general": 0,
     };
 
     filtered.forEach(
@@ -197,6 +200,7 @@ export const useAnalytics = create<AnalyticsStore>((set, get) => ({
         "aesthetic-rational": 0,
         "health-emotional": 0,
         "health-rational": 0,
+        "neutral-general": 0,
       };
       quotes.forEach(
         (q) => q.patientProfile && profileCounts[q.patientProfile]++
@@ -330,13 +334,32 @@ export const useAnalytics = create<AnalyticsStore>((set, get) => ({
   },
 
   generateSuggestionWithIA: async (quotes: Quote[], dentistFilter: string) => {
-    const { setSuggestions, setSeggestionsIsLoading } = useAnalytics.getState();
+    const {
+      setSuggestions,
+      setSeggestionsIsLoading,
+      mostCommonProfileData,
+      getProfileDisplayName,
+    } = useAnalytics.getState();
     setSeggestionsIsLoading(true);
+
+    const analiticsObjet: any = {
+      profile: getProfileDisplayName(
+        mostCommonProfileData.psychologicalProfile
+      ),
+      age: mostCommonProfileData.avgAge,
+      relationship: mostCommonProfileData.relationshipAvg,
+      ticket: mostCommonProfileData.avgTicket,
+      treatment: mostCommonProfileData.mostCommonTreatment,
+    };
+
     const filtered =
       dentistFilter === "all"
         ? quotes
         : quotes.filter((q) => q.dentistId === dentistFilter);
-    const res = await api.post("/suggestions/create", { quotes: filtered });
+    const res = await api.post("/suggestions/create", {
+      quotes: filtered,
+      analiticsObjet,
+    });
     setSuggestions(res?.data);
     setSeggestionsIsLoading(false);
     return res.data;

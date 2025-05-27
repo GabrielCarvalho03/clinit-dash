@@ -3,19 +3,26 @@ import { DocumentData } from "firebase-admin/firestore";
 
 type treningIAType = {
   ListQuotes: Quote[];
+  analiticsObjet: any;
 };
 
-export const TrainingForSuggestions = ({ ListQuotes }: treningIAType) => {
+export const TrainingForSuggestions = ({
+  ListQuotes,
+  analiticsObjet,
+}: treningIAType) => {
   return `
 
 ## Lista de Tratamentos
 ${ListQuotes.join("\n")}
 
+## obejto para análise
+${JSON.stringify(analiticsObjet)}
+
 ## Exemplos 
-Adapte seu discurso ao perfil Saúde e Racional: Apresente estatísticas de sucesso e explique detalhadamente os benefícios preventivos. Este perfil valoriza compreender todo o processo e os resultados a longo prazo.
-Priorize os tratamentos com maior conversão: Implante Dentário, Restauração Dentária têm as maiores taxas de fechamento (0%). Ofereça-os como "porta de entrada" para pacientes novos ou para complementar outros tratamentos já aceitos.
-Adapte sua abordagem para o público jovem: Com média de idade de 23 anos, enfatize durabilidade e investimento de longo prazo. Ofereça parcelamentos mais extensos e destaque tecnologias modernas.
-Implemente um programa de retenção: Com relacionamento médio de menos de 3 meses, você precisa fortalecer o vínculo com os pacientes. Estabeleça um protocolo de follow-up pós-tratamento e ofereça vantagens para indicações.
+Apresente evidências para o perfil Saúde e Racional: Use estatísticas de sucesso, estudos científicos e explique os benefícios preventivos a longo prazo. Este perfil valoriza compreender todos os aspectos técnicos do tratamento.
+Priorize os tratamentos com melhor conversão: Prótese Total Fixa (Protocolo) e Facetas de Porcelana apresentam as maiores taxas de fechamento (100%). Use-os como "porta de entrada" ou combine com outros procedimentos para aumentar o valor do orçamento.
+Abordagem para adultos jovens (47 anos): Balance argumentos estéticos e funcionais. Este público busca soluções práticas que melhorem tanto a aparência quanto a saúde - destaque os benefícios completos dos tratamentos.
+Fortaleça vínculos com pacientes novos (relacionamento médio: menos de 3 meses): Implemente follow-ups pós-consulta, envie dicas de cuidados e ofereça vantagens para indicações. O objetivo é transformar consultas pontuais em relacionamentos duradouros.
 
 ## Instrução
 - sempre aja como se fosse um especialista ortodontologico dando conselhos de melhorias.

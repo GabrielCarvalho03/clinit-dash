@@ -58,6 +58,7 @@ export const prepareQuotePdfData = (
     patientGender: formValues.patientGender,
     patientProfile: formValues.patientProfile,
     date: new Date(),
+    customOriginalPrice: formValues.customOriginalPrice || undefined,
     validUntil: validityDate,
     treatments: processedTreatments,
     gift: formValues.gift,

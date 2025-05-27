@@ -27,7 +27,8 @@ export type PatientProfile =
   | "aesthetic-emotional"
   | "aesthetic-rational"
   | "health-emotional"
-  | "health-rational";
+  | "health-rational"
+  | "neutral-general";
 
 export interface Quote {
   id: string;
@@ -77,6 +78,7 @@ export interface QuotePdf {
     };
   };
   createdAt?: string;
+  customOriginalPrice?: number;
   dentist: {
     name: string;
     specialty: string;

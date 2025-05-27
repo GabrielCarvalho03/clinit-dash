@@ -9,6 +9,7 @@ export const quoteSchema = z.object({
       "aesthetic-rational",
       "health-emotional",
       "health-rational",
+      "neutral-general",
     ])
     .optional(),
   patientAge: z.number().min(0).max(120).optional(),

@@ -5,10 +5,12 @@ import { NextResponse } from "next/server";
 export const POST = async (request: Request) => {
   const body = await request.json();
   const quotes = body.quotes;
+  const analiticsObjet = body.analiticsObjet;
 
   try {
     const trainingForSuggestions = TrainingForSuggestions({
       ListQuotes: quotes,
+      analiticsObjet,
     });
     const SuggestionsIA = await openAiCliient.chat.completions.create({
       model: "gpt-4o-mini",

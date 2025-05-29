@@ -72,7 +72,7 @@ export function FinalizationStep({ form }: any) {
       customAnchorageType === "value" &&
       customAnchorageValue
     ) {
-      originalTotal = discountedTotal + parseFloat(customAnchorageValue);
+      originalTotal = Number(customAnchorageValue);
     }
 
     let installmentValue = 0;

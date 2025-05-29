@@ -1,9 +1,9 @@
-import crypto from "crypto";
 import { db } from "@/lib/firebase/firebase-admin";
 import { NextRequest, NextResponse } from "next/server";
 import { v4 as uuid } from "uuid";
 import { serialize } from "cookie";
 import jwt from "jsonwebtoken";
+import { hashPassword } from "@/utils/passwordhash";
 
 type bodyUser = {
   email: string;
@@ -18,15 +18,12 @@ export async function POST(req: NextRequest) {
   const clinicIdGenerated = uuid();
 
   try {
-    const hashPassword = crypto
-      .createHash("sha256")
-      .update(body.password)
-      .digest("hex");
+    const Passwordhashd = hashPassword(body.password);
 
     const newUser = {
       id: clinicIdGenerated,
       email: body.email,
-      password: hashPassword,
+      password: Passwordhashd,
       ClinicName: body.ClinicName,
     };
 

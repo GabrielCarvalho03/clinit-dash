@@ -78,13 +78,11 @@ export async function generateProposalPDF({ setExporting, quote }: Props) {
       DentistPhoto.style.marginTop = "14px";
     }
 
-    const TreatmentPreview = clone.querySelector(
-      "#treatment-preview"
-    ) as HTMLElement;
+    const TreatmentPreview = clone.querySelectorAll("#treatment-preview");
 
-    if (TreatmentPreview) {
-      TreatmentPreview.style.paddingBottom = "8px";
-    }
+    TreatmentPreview.forEach((TreatmentPreview) => {
+      (TreatmentPreview as HTMLElement).style.paddingBottom = "8px";
+    });
 
     const treatmentImageLegend = clone.querySelector(
       "#treatment-image-legend"
@@ -99,6 +97,14 @@ export async function generateProposalPDF({ setExporting, quote }: Props) {
 
     if (originalTotalLine) {
       originalTotalLine.style.marginTop = "10px";
+    }
+
+    const paymentAndValidity = clone.querySelector(
+      "#paymentAndValidity"
+    ) as HTMLElement;
+
+    if (paymentAndValidity) {
+      paymentAndValidity.style.marginTop = "-30px";
     }
 
     const giftIcon = clone.querySelector("#gift-icon") as HTMLElement;
@@ -118,6 +124,12 @@ export async function generateProposalPDF({ setExporting, quote }: Props) {
     if (giftTitle) {
       (clone.querySelector("#gift-title") as HTMLElement).style.marginTop =
         "-13px";
+    }
+
+    const footer = clone.querySelector("#footer") as HTMLElement;
+
+    if (footer) {
+      footer.style.paddingTop = "-10px";
     }
 
     const phoneIconContainer = clone.querySelector(

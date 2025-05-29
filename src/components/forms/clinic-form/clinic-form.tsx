@@ -143,6 +143,7 @@ export const ClinicForm = ({
       address: updatedClinic.address,
       logo: updatedClinic.logo,
       dentist: updatedClinic.dentists,
+      firstLogin: false,
       socialMedia: {
         facebook: updatedClinic.socialMedia.facebook,
         instagram: updatedClinic.socialMedia.instagram,

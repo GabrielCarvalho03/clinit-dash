@@ -26,5 +26,8 @@ declare namespace NodeJS {
 
     NEXT_PUBLIC_OPEN_AI_KEY: string;
     STRIPE_SECRET_KEY: string;
+    STRIPE_WEBHOOK_SECRET: string;
+    STRIPE_PRICE_CLINITT_DEFAULT: string;
+    RESEND_API_KEY: string;
   }
 }

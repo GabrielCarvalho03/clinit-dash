@@ -19,6 +19,7 @@ type bodyUserUpdate = {
   phone2: string;
   address: string;
   logo: string;
+  firstLogin: boolean;
   dentist: dentist[];
   socialMedia: {
     facebook: string;
@@ -46,6 +47,7 @@ export async function POST(req: NextRequest) {
         phoneNumber: body.phone1,
         phoneNumber2: body.phone2,
         address: body.address,
+        firstLogin: body.firstLogin,
         logo: body.logo ?? "",
         socialMedia: body.socialMedia,
       });

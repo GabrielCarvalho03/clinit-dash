@@ -28,25 +28,25 @@ export const SupportWidget = ({ isCollapsed = false }: SupportWidgetProps) => {
   }
 
   return (
-    <div className="p-1">
-      <Card className="bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20 shadow-sm">
-        <CardContent className="p-3">
-          <div className="flex items-start gap-2">
-            <div className="p-1 rounded-md bg-primary/10">
-              <MessageCircle size={14} className="text-primary" />
+    <div className="p-2">
+      <Card className="bg-red-300 bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20 shadow-sm">
+        <CardContent className=" px-2">
+          <div className="flex items-start gap-3">
+            <div className="mt-0.5 p-1.5 rounded-md bg-primary/10">
+              <MessageCircle size={16} className="text-primary" />
             </div>
             <div className="flex-1">
-              <h4 className="text-xs font-semibold text-foreground mb-1">
-                Ajuda?
+              <h4 className="text-sm font-semibold text-foreground mb-1">
+                Precisa de ajuda?
               </h4>
-              <p className="text-[10px] text-muted-foreground mb-2 leading-snug">
-                Estamos aqui para te ajudar!
+              <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
+                Nossa equipe está aqui para te ajudar!
               </p>
               <button
                 onClick={handleSupportClick}
-                className="w-full text-[10px] bg-primary text-primary-foreground px-2 py-1 rounded-md hover:bg-primary/90 transition-colors font-medium shadow-sm cursor-pointer"
+                className="w-full text-xs bg-primary text-primary-foreground px-3 py-2 rounded-md hover:bg-primary/90 transition-colors font-medium shadow-sm"
               >
-                Falar
+                Fale conosco
               </button>
             </div>
           </div>

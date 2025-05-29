@@ -11,6 +11,8 @@ import {
   Facebook,
 } from "lucide-react";
 import { getIntroductionText } from "@/utils/getIntroductionText";
+import { formatCNPJ } from "@/utils/text-formarter/cnpj-formarter";
+import { formatPhone } from "@/utils/text-formarter/phone-formarter";
 
 interface QuotePreviewPDFProps {
   quoteData: QuotePdf;
@@ -83,7 +85,7 @@ export const QuotePreviewPDF = ({
       style={{
         width: "210mm",
         minHeight: "297mm",
-        padding: "5mm 20mm",
+        padding: "3mm 20mm",
         boxSizing: "border-box",
       }}
     >
@@ -110,7 +112,7 @@ export const QuotePreviewPDF = ({
             <h1 className="text-2xl font-bold text-gray-800">{clinic.name}</h1>
             {clinic.cnpj && (
               <p id="clinic-cnpj" className="text-sm text-gray-500">
-                {clinic.cnpj}
+                {formatCNPJ(clinic.cnpj)}
               </p>
             )}
             <p id="clinic-address" className="text-xs text-gray-500">
@@ -173,7 +175,9 @@ export const QuotePreviewPDF = ({
       {/* Treatments */}
       <div className="mb-6">
         <h2 className="text-xl font-bold text-gray-800 mb-3">
-          Procedimentos Recomendados
+          {treatments.length > 1
+            ? "Procedimentos Recomendados"
+            : "Tratamento Recomendado"}
         </h2>
 
         <div className="space-y-4">
@@ -199,7 +203,10 @@ export const QuotePreviewPDF = ({
                   <p className="text-sm text-gray-600 mb-2">
                     {treatment.description}
                   </p>
-                  <p className="font-semibold text-sm mt-auto text-gray-400">
+                  <p
+                    id="price-treatment"
+                    className="font-semibold text-sm mt-auto text-gray-400"
+                  >
                     {formatCurrency(
                       treatment.originalPrice || treatment.discountPrice
                     )}
@@ -307,7 +314,10 @@ export const QuotePreviewPDF = ({
       </div>
 
       {/* Bottom Section with Payment and Validity */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-2">
+      <div
+        id="paymentAndValidity"
+        className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-2"
+      >
         {/* Payment Conditions */}
         <div>
           <h2 className="font-bold text-lg mb-2 text-gray-800">
@@ -362,7 +372,7 @@ export const QuotePreviewPDF = ({
       </div>
 
       {/* Footer */}
-      <div className="mt-6 pt-4 border-t text-center">
+      <div id="footer" className="mt-6 pt-4 border-t text-center">
         <p className="font-medium text-sm mb-2 text-gray-800">
           Para dúvidas e esclarecimentos, ligue ou chame no Whatsapp:
         </p>
@@ -375,7 +385,7 @@ export const QuotePreviewPDF = ({
                 className="h-4 w-4 text-green-600 mr-1"
               />
               <span id="phone-text" className="text-sm text-gray-800">
-                {clinic.phoneNumber}
+                {formatPhone(clinic.phoneNumber)}
               </span>
             </div>
           )}
@@ -387,7 +397,7 @@ export const QuotePreviewPDF = ({
                 className="h-4 w-4 text-green-600 mr-1"
               />
               <span id="phone-text2" className="text-sm text-gray-800">
-                {clinic.phoneNumber2}
+                {formatPhone(clinic.phoneNumber2)}
               </span>
             </div>
           )}

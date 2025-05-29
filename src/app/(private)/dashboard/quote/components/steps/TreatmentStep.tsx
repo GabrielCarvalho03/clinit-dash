@@ -1,14 +1,14 @@
 import { useFieldArray } from "react-hook-form";
-import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Info } from "lucide-react";
 import { TreatmentList } from "@/app/(private)/dashboard/treatments/components/treatments/TreatmentList";
-import { CustomTreatmentForm } from "@/app/(private)/dashboard/treatments/components/treatments/CustomTreatmentForm";
 import { useTreatmentForm } from "@/hooks/use-treatment-form/use-treatment-form";
 import { Form } from "@/components/ui/form";
 import { AvailableTreatmentsAccordion } from "@/app/(private)/dashboard/quote/components/treatment/AvailableTreatmentsAccordion";
 import { ObservationsField } from "@/app/(private)/dashboard/quote/components/treatment/ObservationsField";
 import { useState } from "react";
 import { UseTreataments } from "@/hooks/use-treataments/use-treataments";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { TreatmentDrawer } from "../TreatmentDrawer/TreatmentDrawer";
 
 export function TreatmentStep({ form }: any) {
   const { procedures } = UseTreataments();
@@ -28,14 +28,70 @@ export function TreatmentStep({ form }: any) {
     handleAddCustomTreatment,
   } = useTreatmentForm();
 
+  const treatments = form.watch("treatments") || [];
+  const treatmentCount = treatments.length;
+  const isAtLimit = treatmentCount >= 3;
+
+  const handleAddTreatment = (treatment: any) => {
+    if (isAtLimit) {
+      return;
+    }
+    handleAddStandardTreatment(treatment, append);
+  };
+
+  const handleAddCustom = () => {
+    if (isAtLimit) {
+      return;
+    }
+    handleAddCustomTreatment(append);
+  };
+
   return (
     <div className="space-y-6">
       <div>
         <h2 className="text-lg font-semibold mb-2">Tratamentos</h2>
         <p className="text-muted-foreground text-sm mb-4">
-          Adicione os tratamentos que compõem este orçamento.
+          Adicione até 3 tratamentos para manter a apresentação clara e
+          estratégica do orçamento.
         </p>
       </div>
+
+      {/* Informação com fundo branco e contraste melhorado */}
+      <div className="bg-white border-2 border-primary/30 rounded-lg p-4 shadow-sm">
+        <div className="flex items-start gap-3">
+          <Info className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+          <div className="text-sm">
+            <div className="font-semibold text-primary mb-1">
+              Estratégia de apresentação otimizada
+            </div>
+            <div className="text-foreground">
+              Limitamos a 3 tratamentos para manter a apresentação clara e
+              focada, facilitando a decisão do paciente. Para orçamentos
+              maiores, recomendamos criar um novo orçamento após finalizar este.
+            </div>
+            <div className="text-primary font-medium text-sm mt-2">
+              <strong>Atual:</strong> {treatmentCount} de 3 tratamentos
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Alerta quando atingir o limite */}
+      {isAtLimit && (
+        <Alert className="border-destructive/30 bg-destructive/10">
+          <Info className="h-4 w-4 text-destructive" />
+          <AlertDescription className="text-destructive">
+            <div className="font-medium mb-1">
+              Limite de tratamentos atingido
+            </div>
+            <div className="text-sm text-foreground/80">
+              Você atingiu o limite de 3 tratamentos. Para adicionar mais
+              procedimentos, sugerimos finalizar este orçamento e criar um novo
+              para facilitar a apresentação ao cliente.
+            </div>
+          </AlertDescription>
+        </Alert>
+      )}
 
       <div className="space-y-4">
         <h3 className="text-base font-medium">Tratamentos do Orçamento</h3>
@@ -49,36 +105,19 @@ export function TreatmentStep({ form }: any) {
         </Form>
       </div>
 
-      {/* Adicionar observações aqui */}
-      <ObservationsField form={form} />
-
-      {/* Treatments Available - grouped in an accordion with search */}
-      <AvailableTreatmentsAccordion
+      <TreatmentDrawer
         treatments={procedures}
-        onAdd={(data) => handleAddStandardTreatment(data, append)}
+        onAdd={handleAddTreatment}
+        disabled={isAtLimit}
+        showCustomForm={showCustomForm}
+        setShowCustomForm={setShowCustomForm}
+        customTreatment={customTreatment}
+        setCustomTreatment={setCustomTreatment}
+        onAddCustom={handleAddCustom}
       />
 
-      {/* Custom Treatment Form Toggle */}
-      {showCustomForm ? (
-        <CustomTreatmentForm
-          customTreatment={customTreatment}
-          setCustomTreatment={setCustomTreatment}
-          onCancel={() => setShowCustomForm(false)}
-          onAdd={() => handleAddCustomTreatment(append)}
-        />
-      ) : (
-        <Button
-          type="button"
-          variant="outline"
-          className="w-full"
-          onClick={() => setShowCustomForm(true)}
-        >
-          <Plus className="mr-2 h-4 w-4" />
-          Adicionar Tratamento Personalizado
-        </Button>
-      )}
+      <ObservationsField form={form} />
 
-      {/* Single hint message */}
       <div className="bg-muted/50 border rounded-md p-4">
         <p className="text-sm text-muted-foreground">
           <strong>Dica:</strong> É necessário adicionar pelo menos um tratamento

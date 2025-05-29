@@ -8,14 +8,14 @@ export const getIntroductionText = (
 ): ReactNode => {
   const greeting = gender === "female" ? "Prezada" : "Prezado";
 
-  const bold = <strong> especialmente para você</strong>;
+  const bold = <strong> </strong>;
 
   if (!profile) {
     return (
       <>
         {greeting} {patientName}, com base na avaliação realizada, elaboramos
-        esta proposta de tratamento personalizada
-        {bold}, para atender às suas necessidades específicas.
+        esta proposta de tratamento personalizada especialmente para você, para
+        atender às suas necessidades específicas.
       </>
     );
   }
@@ -25,40 +25,39 @@ export const getIntroductionText = (
       return (
         <>
           {greeting} {patientName}, com base na avaliação realizada, elaboramos
-          esta proposta de tratamento{bold}, para realçar seu sorriso e aumentar
-          sua confiança.
+          esta proposta de tratamento especialmente para você, para realçar seu
+          sorriso e aumentar sua confiança.
         </>
       );
     case "aesthetic-rational":
       return (
         <>
           {greeting} {patientName}, com base na avaliação realizada, elaboramos
-          esta proposta de tratamento{bold}, com foco na estética e
-          funcionalidade do seu sorriso.
+          esta proposta de tratamento especialmente para você, com foco na
+          estética e funcionalidade do seu sorriso.
         </>
       );
     case "health-emotional":
       return (
         <>
           {greeting} {patientName}, com base na avaliação realizada, elaboramos
-          esta proposta de tratamento{bold}, para atender às suas necessidades
-          de saúde e bem-estar.
+          esta proposta de tratamento especialmente para você, para atender às
+          suas necessidades de saúde e bem-estar.
         </>
       );
     case "health-rational":
       return (
         <>
           {greeting} {patientName}, com base na avaliação realizada, elaboramos
-          esta proposta de tratamento{bold}, para melhorar sua saúde bucal de
-          forma eficaz.
+          esta proposta de tratamento especialmente para você, para melhorar sua
+          saúde bucal de forma eficaz.
         </>
       );
     default:
       return (
         <>
           {greeting} {patientName}, com base na avaliação realizada, elaboramos
-          esta proposta de tratamento{bold}, para realçar seu sorriso e aumentar
-          sua confiança.
+          esta proposta de tratamento especialmente para você.
         </>
       );
   }

@@ -9,6 +9,7 @@ export const quoteSchema = z.object({
       "aesthetic-rational",
       "health-emotional",
       "health-rational",
+      "neutral-general",
     ])
     .optional(),
   patientAge: z.number().min(0).max(120).optional(),
@@ -61,6 +62,7 @@ export const quoteSchema = z.object({
   paymentPreviewText: z.string().optional(),
   validityDays: z.number().optional(),
   validityCustomDate: z.date().optional(),
+ 
 });
 
 export type QuoteFormData = z.infer<typeof quoteSchema>;

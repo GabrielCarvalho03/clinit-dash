@@ -226,6 +226,25 @@ export const PatientStep = ({ form }: PatientStepProps) => {
                           </p>
                         </div>
                       </div>
+                      <div className="flex items-start p-3 border rounded-md col-span-1 md:col-span-2">
+                        <RadioGroupItem
+                          value="neutral-general"
+                          id="profile-ng"
+                          className="mt-1"
+                        />
+                        <div className="ml-3">
+                          <Label htmlFor="profile-ng" className="font-bold">
+                            Neutro/Generalista{" "}
+                            <span className="text-gray-500 font-normal">
+                              (menos recomendado)
+                            </span>
+                          </Label>
+                          <p className="text-xs text-gray-600">
+                            Abordagem equilibrada e geral, sem foco específico
+                            em aspectos emocionais ou racionais.
+                          </p>
+                        </div>
+                      </div>
                     </RadioGroup>
                   </FormControl>
                   <FormMessage />

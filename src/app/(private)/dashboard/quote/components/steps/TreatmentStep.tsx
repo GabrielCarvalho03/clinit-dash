@@ -1,14 +1,15 @@
 import { useFieldArray } from "react-hook-form";
-import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Info } from "lucide-react";
 import { TreatmentList } from "@/app/(private)/dashboard/treatments/components/treatments/TreatmentList";
-import { CustomTreatmentForm } from "@/app/(private)/dashboard/treatments/components/treatments/CustomTreatmentForm";
 import { useTreatmentForm } from "@/hooks/use-treatment-form/use-treatment-form";
 import { Form } from "@/components/ui/form";
 import { AvailableTreatmentsAccordion } from "@/app/(private)/dashboard/quote/components/treatment/AvailableTreatmentsAccordion";
 import { ObservationsField } from "@/app/(private)/dashboard/quote/components/treatment/ObservationsField";
 import { useState } from "react";
 import { UseTreataments } from "@/hooks/use-treataments/use-treataments";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { TreatmentDrawer } from "../TreatmentDrawer/TreatmentDrawer";
+import { IllustrationsUpload } from "../IllustrationsUpload/IllustrationsUpload";
 
 export function TreatmentStep({ form }: any) {
   const { procedures } = UseTreataments();
@@ -28,12 +29,30 @@ export function TreatmentStep({ form }: any) {
     handleAddCustomTreatment,
   } = useTreatmentForm();
 
+  const treatments = form.watch("treatments") || [];
+  const treatmentCount = treatments.length;
+  const isAtLimit = treatmentCount >= 3;
+
+  const handleAddTreatment = (treatment: any) => {
+    if (isAtLimit) {
+      return;
+    }
+    handleAddStandardTreatment(treatment, append);
+  };
+
+  const handleAddCustom = () => {
+    if (isAtLimit) {
+      return;
+    }
+    handleAddCustomTreatment(append);
+  };
+
   return (
     <div className="space-y-6">
       <div>
         <h2 className="text-lg font-semibold mb-2">Tratamentos</h2>
         <p className="text-muted-foreground text-sm mb-4">
-          Adicione os tratamentos que compõem este orçamento.
+          Adicione todos os tratamentos necessários para o orçamento do paciente.
         </p>
       </div>
 
@@ -49,40 +68,24 @@ export function TreatmentStep({ form }: any) {
         </Form>
       </div>
 
-      {/* Adicionar observações aqui */}
-      <ObservationsField form={form} />
-
-      {/* Treatments Available - grouped in an accordion with search */}
-      <AvailableTreatmentsAccordion
+      <TreatmentDrawer
         treatments={procedures}
-        onAdd={(data) => handleAddStandardTreatment(data, append)}
+        onAdd={handleAddTreatment}
+        disabled={false}
+        showCustomForm={showCustomForm}
+        setShowCustomForm={setShowCustomForm}
+        customTreatment={customTreatment}
+        setCustomTreatment={setCustomTreatment}
+        onAddCustom={handleAddCustom}
       />
 
-      {/* Custom Treatment Form Toggle */}
-      {showCustomForm ? (
-        <CustomTreatmentForm
-          customTreatment={customTreatment}
-          setCustomTreatment={setCustomTreatment}
-          onCancel={() => setShowCustomForm(false)}
-          onAdd={() => handleAddCustomTreatment(append)}
-        />
-      ) : (
-        <Button
-          type="button"
-          variant="outline"
-          className="w-full"
-          onClick={() => setShowCustomForm(true)}
-        >
-          <Plus className="mr-2 h-4 w-4" />
-          Adicionar Tratamento Personalizado
-        </Button>
-      )}
+      <IllustrationsUpload form={form} />
 
-      {/* Single hint message */}
+      <ObservationsField form={form} />
+      
       <div className="bg-muted/50 border rounded-md p-4">
         <p className="text-sm text-muted-foreground">
-          <strong>Dica:</strong> É necessário adicionar pelo menos um tratamento
-          e informar o preço para cada um deles.
+          <strong>Dica:</strong> É necessário adicionar pelo menos um tratamento e informar o preço para cada um deles.
         </p>
       </div>
     </div>

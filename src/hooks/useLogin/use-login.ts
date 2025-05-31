@@ -28,6 +28,10 @@ export const useLogin = create<useLoginProps>((set) => ({
         description: "Bem-vindo ao sistema OdontoAI",
       });
 
+      if (res.data.user.firstLogin == true) {
+        router.push("/onboarding");
+        return;
+      }
       router.push("/dashboard");
     } catch (error) {
       toast.error("Erro ao realizar login", {

@@ -41,13 +41,13 @@ export const QuoteSteps = ({ isEdit = false }: QuoteStepsProps) => {
     resolver: zodResolver(quoteSchema),
     defaultValues: {
       patientName: draftQuote?.patientName || "",
-      patientGender: draftQuote?.patientGender || "male",
-      patientProfile: draftQuote?.patientProfile || "aesthetic-emotional", // padrão para perfil do paciente
+      patientGender: draftQuote?.patientGender || undefined,
+      patientProfile: draftQuote?.patientProfile || undefined, // padrão para perfil do paciente
       patientAge: draftQuote?.patientAge || undefined, // Isso é válido porque é opcional
       patientBirthdate: draftQuote?.patientBirthdate || undefined,
       dentistId: draftQuote?.dentistId || "",
       ageGroup: draftQuote?.ageGroup || "adult", // Definido como "adult" por padrão
-      relationship: draftQuote?.relationship || "new", // Definido como "new" por padrão
+      relationship: draftQuote?.relationship || undefined, // Definido como "new" por padrão
       treatments: draftQuote?.treatments || [],
       observations: draftQuote?.observations || "", // Pode ser vazio ou algum valor padrão
       gift: draftQuote?.gift || "", // Pode ser vazio ou algum valor padrão
@@ -61,7 +61,7 @@ export const QuoteSteps = ({ isEdit = false }: QuoteStepsProps) => {
     },
   });
 
-  const { step, handlePrevious, handleNext, handleCancel } =
+  const { step, handlePrevious, handleNext, handleCancel, setStep } =
     useStepNavigation();
 
   // Reset quote creation state when component mounts or when editing a different quote
@@ -91,9 +91,13 @@ export const QuoteSteps = ({ isEdit = false }: QuoteStepsProps) => {
         finalQuote = {
           ...draftQuote!,
           ...data,
+          illustrations: draftQuote?.illustrations || null, 
+          createdAt: draftQuote?.createdAt || null,
           status: "final" as const,
         } as Quote;
         await updateQuote(finalQuote);
+
+        form.reset(data);
       } else {
         finalQuote = {
           ...data,
@@ -103,6 +107,7 @@ export const QuoteSteps = ({ isEdit = false }: QuoteStepsProps) => {
           status: "final" as const,
         } as Quote;
         await createQuote(finalQuote);
+        form.reset(data);
       }
 
       setDraftQuote(null);
@@ -111,6 +116,7 @@ export const QuoteSteps = ({ isEdit = false }: QuoteStepsProps) => {
       if (isEdit) {
         setTimeout(() => {
           router.push("/dashboard/reports");
+          setStep(1);
         }, 2000);
       }
     } catch (error) {

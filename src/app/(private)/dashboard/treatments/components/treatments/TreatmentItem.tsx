@@ -13,7 +13,7 @@ import {
   FormControl,
   FormMessage,
 } from "@/components/ui/form";
-// import { TreatmentImageUpload } from "@/components/treatments/TreatmentImageUpload";
+import { TreatmentImageUpload } from "./TreatmentImageUpload";
 
 interface TreatmentItemProps {
   index: number;
@@ -105,19 +105,6 @@ export function TreatmentItem({
           )}
         />
 
-        <FormField
-          control={form.control}
-          name={`treatments.${index}.treatmentImages`}
-          render={({ field: imagesField }) => (
-            <FormItem>
-              {/* <TreatmentImageUpload
-                value={imagesField.value || []}
-                onChange={imagesField.onChange}
-              /> */}
-              <FormMessage />
-            </FormItem>
-          )}
-        />
 
         <div className="flex justify-end">
           <Button

@@ -2,9 +2,7 @@
 import { create } from "zustand";
 import { Quote, PatientProfile, Relationship } from "@/@types/quotes";
 import { differenceInYears } from "date-fns";
-import { ca } from "date-fns/locale";
 import { toast } from "sonner";
-import { useAuth } from "../use-auth/use-auth";
 import { api } from "@/lib/axios/axios";
 
 type ProfileData = {
@@ -46,13 +44,27 @@ interface AnalyticsStore {
   setDentistFilter: (id: FilterType) => void;
   mostCommonProfileData: ProfileData;
   bestConversionProfileData: ProfileData;
-  suggestions: string[];
-  generateAnalytics: () => void;
+
+  seggestionsIsLoading: boolean;
+  setSeggestionsIsLoading: (seggestionsIsLoading: boolean) => void;
+
+  suggestions: { phrase: string }[];
+  setSuggestions: (suggestions: { phrase: string }[]) => void;
+
+  generateAnalytics: (
+    quotes: Quote[],
+    paidQuotes: Quote[],
+    dentistFilter: FilterType
+  ) => void;
   getProfileDisplayName: (profile?: PatientProfile) => string;
   getClinicProfileDescription: (
     dentistId: FilterType,
     quotes: Quote[]
   ) => string;
+  generateSuggestionWithIA: (
+    quotes: Quote[],
+    dentistFilter: FilterType
+  ) => Promise<string | null>;
 }
 
 export const useAnalytics = create<AnalyticsStore>((set, get) => ({
@@ -91,7 +103,13 @@ export const useAnalytics = create<AnalyticsStore>((set, get) => ({
 
   mostCommonProfileData: {},
   bestConversionProfileData: {},
+
+  seggestionsIsLoading: false,
+  setSeggestionsIsLoading: (seggestionsIsLoading) =>
+    set({ seggestionsIsLoading }),
+
   suggestions: [],
+  setSuggestions: (suggestions) => set({ suggestions }),
 
   getProfileDisplayName: (profile) => {
     switch (profile) {
@@ -103,12 +121,16 @@ export const useAnalytics = create<AnalyticsStore>((set, get) => ({
         return "Saúde Emocional";
       case "health-rational":
         return "Saúde Racional";
+      case "neutral-general":
+        return "Neutro/Generalista";
       default:
         return "Desconhecido";
     }
   },
 
   getClinicProfileDescription: (dentistId: FilterType, quotes: Quote[]) => {
+    const { getProfileDisplayName, mostCommonProfileData } =
+      useAnalytics.getState();
     const filtered =
       dentistId === "all"
         ? quotes
@@ -119,6 +141,7 @@ export const useAnalytics = create<AnalyticsStore>((set, get) => ({
       "aesthetic-rational": 0,
       "health-emotional": 0,
       "health-rational": 0,
+      "neutral-general": 0,
     };
 
     filtered.forEach(
@@ -129,22 +152,39 @@ export const useAnalytics = create<AnalyticsStore>((set, get) => ({
       b[1] > a[1] ? b : a
     )[0] as PatientProfile;
 
+    const analiticsClinic: string = `Sua clínica atende majoritariamente pacientes com perfil ${getProfileDisplayName(
+      mostCommonProfileData.psychologicalProfile
+    )}, com idade média de ${
+      mostCommonProfileData.avgAge
+    } anos e relacionamento médio de ${
+      mostCommonProfileData.relationshipAvg
+    }. O tratamento mais orçado é ${
+      mostCommonProfileData.mostCommonTreatment
+    }. O valor médio dos orçamentos é de R$ ${Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+    }).format(
+      Number(mostCommonProfileData.avgTicket)
+    )}. O perfil que mais fecha orçamentos é ${getProfileDisplayName(
+      mostCommonProfileData.psychologicalProfile
+    )},o que indica uma oportunidade para redirecionar esforços de captação.`;
+
     switch (mostCommon) {
       case "aesthetic-emotional":
-        return "Se importa muito com estética e se conecta emocionalmente";
+        return analiticsClinic;
       case "aesthetic-rational":
-        return "Busca estética, mas toma decisões com base racional";
+        return analiticsClinic;
       case "health-emotional":
-        return "Preza pela saúde e valoriza o atendimento emocional";
+        return analiticsClinic;
+      // "Preza pela saúde e valoriza o atendimento emocional";
       case "health-rational":
-        return "Prioriza saúde e decisões lógicas";
+        return analiticsClinic;
       default:
         return "Perfil não definido";
     }
   },
 
-  generateAnalytics: () => {
-    const { quotes, paidQuotes, dentistFilter } = get();
+  generateAnalytics: (quotes, paidQuotes, dentistFilter) => {
     const filtered =
       dentistFilter === "all"
         ? quotes
@@ -160,6 +200,7 @@ export const useAnalytics = create<AnalyticsStore>((set, get) => ({
         "aesthetic-rational": 0,
         "health-emotional": 0,
         "health-rational": 0,
+        "neutral-general": 0,
       };
       quotes.forEach(
         (q) => q.patientProfile && profileCounts[q.patientProfile]++
@@ -284,9 +325,43 @@ export const useAnalytics = create<AnalyticsStore>((set, get) => ({
       mostCommonProfileData: mostCommon,
       bestConversionProfileData: bestProfile,
       suggestions: [
-        `Exemplo de sugestão com base no perfil ${mostCommon.psychologicalProfile}`,
+        {
+          phrase: `Exemplo de sugestão com base no perfil ${mostCommon.psychologicalProfile}`,
+        },
       ],
       treatmentStats,
     });
+  },
+
+  generateSuggestionWithIA: async (quotes: Quote[], dentistFilter: string) => {
+    const {
+      setSuggestions,
+      setSeggestionsIsLoading,
+      mostCommonProfileData,
+      getProfileDisplayName,
+    } = useAnalytics.getState();
+    setSeggestionsIsLoading(true);
+
+    const analiticsObjet: any = {
+      profile: getProfileDisplayName(
+        mostCommonProfileData.psychologicalProfile
+      ),
+      age: mostCommonProfileData.avgAge,
+      relationship: mostCommonProfileData.relationshipAvg,
+      ticket: mostCommonProfileData.avgTicket,
+      treatment: mostCommonProfileData.mostCommonTreatment,
+    };
+
+    const filtered =
+      dentistFilter === "all"
+        ? quotes
+        : quotes.filter((q) => q.dentistId === dentistFilter);
+    const res = await api.post("/suggestions/create", {
+      quotes: filtered,
+      analiticsObjet,
+    });
+    setSuggestions(res?.data);
+    setSeggestionsIsLoading(false);
+    return res.data;
   },
 }));

@@ -18,7 +18,8 @@ import { PricePreview } from "../finalization/PricePreview";
 import { PaymentConfig } from "../finalization/PaymentConfig";
 import { QuoteValidity } from "../finalization/QuoteValidity";
 import { GiftSection } from "../finalization/GiftSection";
-import { formatCurrency } from "@/utils/formart"; // Added formatCurrency import
+import { formatCurrency } from "@/utils/formart";
+import { Input } from "@/components/ui/input";
 
 export function FinalizationStep({ form }: any) {
   const [validityType, setValidityType] = useState(
@@ -36,6 +37,10 @@ export function FinalizationStep({ form }: any) {
     installmentValue: 0,
     paymentPreviewText: "",
   });
+  const [anchorageType, setAnchorageType] = useState("preset");
+  const [customAnchorage, setCustomAnchorage] = useState("");
+  const [customAnchorageType, setCustomAnchorageType] = useState("percentage");
+  const [customAnchorageValue, setCustomAnchorageValue] = useState("");
 
   const handleValidityTypeChange = (value: string) => {
     setValidityType(value);
@@ -52,7 +57,6 @@ export function FinalizationStep({ form }: any) {
     }
   };
 
-  // Calculate total prices and installment values
   useEffect(() => {
     const treatments = form.getValues("treatments") || [];
     const anchoragePercentage = form.getValues("anchoragePercentage") || 0;
@@ -60,7 +64,17 @@ export function FinalizationStep({ form }: any) {
       (sum: any, t: any) => sum + (t.price || 0),
       0
     );
-    const originalTotal = discountedTotal * (1 + anchoragePercentage / 100);
+
+    let originalTotal = discountedTotal * (1 + anchoragePercentage / 100);
+
+    if (
+      anchorageType === "custom" &&
+      customAnchorageType === "value" &&
+      customAnchorageValue
+    ) {
+      originalTotal = Number(customAnchorageValue);
+    }
+
     let installmentValue = 0;
     let paymentPreviewText = "";
 
@@ -92,10 +106,8 @@ export function FinalizationStep({ form }: any) {
       paymentPreviewText,
     });
 
-    // Set payment preview text to form
     if (discountedTotal > 0) {
       form.setValue("paymentPreviewText", paymentPreviewText);
-      // Also set the payment conditions with the same text
       form.setValue("paymentConditions", paymentPreviewText);
     }
   }, [
@@ -103,14 +115,64 @@ export function FinalizationStep({ form }: any) {
     downPayment,
     form.watch("anchoragePercentage"),
     form.watch("treatments"),
+    form.watch("customOriginalPrice"), // ✅ Adicionado!
   ]);
 
-  // Handle payment conditions manual change
   const handlePaymentConditionsChange = (
     e: React.ChangeEvent<HTMLTextAreaElement>
   ) => {
     form.setValue("paymentConditions", e.target.value);
   };
+
+  const handleCustomAnchorageValueChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const value = e.target.value;
+    setCustomAnchorageValue(value);
+    if (
+      anchorageType === "custom" &&
+      customAnchorageType === "value" &&
+      value
+    ) {
+      form.setValue("customOriginalPrice", parseFloat(value));
+      form.setValue("anchoragePercentage", 0);
+      form.trigger("customOriginalPrice");
+    }
+  };
+
+  const handleCustomAnchorageChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const value = e.target.value;
+    setCustomAnchorage(value);
+    if (
+      anchorageType === "custom" &&
+      customAnchorageType === "percentage" &&
+      value
+    ) {
+      form.setValue("anchoragePercentage", parseFloat(value));
+      form.setValue("customOriginalPrice", undefined);
+      form.trigger("anchoragePercentage");
+    }
+  };
+
+  const handleAnchorageChange = (value: string) => {
+    if (value === "custom") {
+      setAnchorageType("custom");
+      if (customAnchorageType === "percentage" && customAnchorage) {
+        form.setValue("anchoragePercentage", parseFloat(customAnchorage));
+      } else if (customAnchorageType === "value" && customAnchorageValue) {
+        form.setValue("anchoragePercentage", 0);
+        form.setValue("customOriginalPrice", parseFloat(customAnchorageValue));
+      }
+    } else {
+      setAnchorageType("preset");
+      form.setValue("anchoragePercentage", parseInt(value, 10));
+      form.setValue("customOriginalPrice", undefined);
+    }
+    form.trigger("anchoragePercentage");
+  };
+  console.log("originalTotal", previewValues.originalTotal);
 
   return (
     <div className="space-y-6">
@@ -122,9 +184,11 @@ export function FinalizationStep({ form }: any) {
           Defina as condições de pagamento e a validade do orçamento.
         </p>
       </div>
-
-      <PricePreview {...previewValues} installments={installments} />
-
+      <PricePreview
+        {...previewValues}
+        installments={installments}
+        originalTotal={previewValues.originalTotal}
+      />
       <FormField
         control={form.control}
         name="anchoragePercentage"
@@ -132,13 +196,7 @@ export function FinalizationStep({ form }: any) {
         render={({ field }) => (
           <FormItem className="space-y-2">
             <FormLabel>Ancoragem de Preço</FormLabel>
-            <Select
-              onValueChange={(value) => {
-                field.onChange(parseInt(value, 10));
-                form.trigger("anchoragePercentage");
-              }}
-              defaultValue="10"
-            >
+            <Select onValueChange={handleAnchorageChange} defaultValue="10">
               <FormControl>
                 <SelectTrigger>
                   <SelectValue placeholder="Selecione o percentual de ancoragem" />
@@ -151,8 +209,70 @@ export function FinalizationStep({ form }: any) {
                 <SelectItem value="30">30% (Alta)</SelectItem>
                 <SelectItem value="40">40% (Muito alta)</SelectItem>
                 <SelectItem value="50">50% (Máxima)</SelectItem>
+                <SelectItem value="custom">Personalizado</SelectItem>
               </SelectContent>
             </Select>
+
+            {anchorageType === "custom" && (
+              <div className="space-y-3 p-3 border rounded-md bg-gray-50">
+                <div className="flex items-center gap-4">
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="radio"
+                      name="customAnchorageType"
+                      value="percentage"
+                      checked={customAnchorageType === "percentage"}
+                      onChange={(e) => setCustomAnchorageType(e.target.value)}
+                    />
+                    <span className="text-sm">Percentual (%)</span>
+                  </label>
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="radio"
+                      name="customAnchorageType"
+                      value="value"
+                      checked={customAnchorageType === "value"}
+                      onChange={(e) => setCustomAnchorageType(e.target.value)}
+                    />
+                    <span className="text-sm">Valor (R$)</span>
+                  </label>
+                </div>
+
+                {customAnchorageType === "percentage" ? (
+                  <div className="flex items-center gap-2">
+                    <Input
+                      type="number"
+                      placeholder="Digite o percentual"
+                      min="0"
+                      max="100"
+                      value={customAnchorage}
+                      onChange={handleCustomAnchorageChange}
+                      className="w-32"
+                    />
+                    <span className="text-sm text-muted-foreground">%</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-muted-foreground">R$</span>
+                    <Input
+                      type="number"
+                      placeholder="Digite o valor original"
+                      min="0"
+                      value={customAnchorageValue}
+                      onChange={handleCustomAnchorageValueChange}
+                      className="w-40"
+                    />
+                  </div>
+                )}
+
+                <p className="text-xs text-muted-foreground">
+                  {customAnchorageType === "percentage"
+                    ? "Percentual de acréscimo sobre o preço dos tratamentos."
+                    : "Valor que aparecerá como preço original (será mostrado riscado)."}
+                </p>
+              </div>
+            )}
+
             <p className="text-xs text-muted-foreground">
               A ancoragem de preço mostrará um valor inicial maior para aumentar
               a percepção de desconto.
@@ -161,7 +281,6 @@ export function FinalizationStep({ form }: any) {
           </FormItem>
         )}
       />
-
       <PaymentConfig
         form={form}
         downPayment={downPayment}
@@ -169,13 +288,11 @@ export function FinalizationStep({ form }: any) {
         installments={installments}
         setInstallments={setInstallments}
       />
-
       <FormField
         control={form.control}
         name="paymentPreviewText"
         render={({ field }) => <input type="hidden" {...field} />}
       />
-
       <FormField
         control={form.control}
         name="paymentConditions"
@@ -197,13 +314,11 @@ export function FinalizationStep({ form }: any) {
           </FormItem>
         )}
       />
-
       <QuoteValidity
         form={form}
         validityType={validityType}
         handleValidityTypeChange={handleValidityTypeChange}
       />
-
       <GiftSection form={form} />
     </div>
   );

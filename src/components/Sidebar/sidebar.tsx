@@ -1,9 +1,17 @@
-import { Home, User, FileText, BarChart3, LogOut } from "lucide-react";
+import {
+  Home,
+  User,
+  FileText,
+  BarChart3,
+  MessageCircleQuestion,
+  LogOut,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useAuth } from "@/hooks/use-auth/use-auth";
 import { usePathname, useRouter } from "next/navigation";
+import { SupportWidget } from "./supportWidget";
 
 export const Sidebar = () => {
   const router = useRouter();
@@ -14,17 +22,19 @@ export const Sidebar = () => {
     to,
     icon,
     label,
+    handleClick,
   }: {
-    to: string;
+    to?: string;
     icon: React.ReactNode;
     label: string;
+    handleClick?: () => void;
   }) => {
     const isActive = pathname === to;
     return (
       <a
-        onClick={() => router.push(to)}
+        onClick={handleClick ? handleClick : () => router.push(to ?? "/")}
         className={cn(
-          "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors",
+          "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors cursor-default",
           isActive
             ? "bg-primary text-primary-foreground"
             : "text-gray-700 hover:bg-secondary hover:text-primary font-medium"
@@ -45,7 +55,7 @@ export const Sidebar = () => {
   return (
     <div
       className={cn(
-        "flex h-full flex-col border-r bg-white p-4 shadow-sm transition-all duration-300",
+        "flex flex-col min-h-screen border-r bg-white p-4 shadow-sm transition-all duration-300",
         isCollapsed ? "w-16" : "w-64"
       )}
     >
@@ -85,7 +95,7 @@ export const Sidebar = () => {
         </div>
       )}
 
-      <nav className="flex flex-1 flex-col gap-2 mt-4">
+      <nav className="flex flex-1 flex-col  gap-2 ">
         <NavLink to="/dashboard" icon={<Home size={20} />} label="Dashboard" />
         <NavLink
           to="/dashboard/profile"
@@ -109,18 +119,22 @@ export const Sidebar = () => {
         />
       </nav>
 
-      <div className="mt-auto pt-4 border-t">
-        <Button
-          variant="ghost"
-          className={cn(
-            "flex w-full items-center justify-start gap-3 rounded-md px-3 py-2 text-sm text-red-500 hover:bg-red-50 hover:text-red-600 cursor-pointer",
-            isCollapsed && "justify-center"
-          )}
-          onClick={() => logout(router)}
-        >
-          <LogOut size={20} />
-          {!isCollapsed && <span>Sair</span>}
-        </Button>
+      <div className="space-y-2 mt-2 ">
+        <SupportWidget isCollapsed={isCollapsed} />
+
+        <div className="mt-auto pt-2 border-t">
+          <Button
+            variant="ghost"
+            className={cn(
+              "flex w-full items-center justify-start gap-3 rounded-md px-3 py-2 text-sm text-red-500 hover:bg-red-50 hover:text-red-600 cursor-pointer",
+              isCollapsed && "justify-center"
+            )}
+            onClick={() => logout(router)}
+          >
+            <LogOut size={20} />
+            {!isCollapsed && <span>Sair</span>}
+          </Button>
+        </div>
       </div>
     </div>
   );

@@ -103,6 +103,7 @@ export const PreviewStep = ({
   }
 
   const quotePdfData = prepareQuotePdfData(formValues, clinic, dentist);
+  console.log("formValues", formValues);
 
   return (
     <>

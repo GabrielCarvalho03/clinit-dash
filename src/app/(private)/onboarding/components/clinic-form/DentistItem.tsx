@@ -136,7 +136,9 @@ export const DentistItem = ({
                     />
                   </div>
                   <div>
-                    <label className="text-sm font-medium">Especialidade</label>
+                    <label className="text-sm font-medium">
+                      Especialidade/CRO
+                    </label>
                     <Input
                       value={specialty}
                       onChange={(e) => setSpecialty(e.target.value)}

@@ -28,6 +28,10 @@ interface QuoteStore {
   getPaidQuotesValue: (dentistId?: string) => number;
   getConversionRate: (dentistId?: string) => number;
   loadUserQuotes: (userId: string) => void;
+  loadingDeleteQuote: boolean;
+  setLoadingDeleteQuote: (value: boolean) => void;
+  loadingUpdateQuote: boolean;
+  setLoadingUpdateQuote: (value: boolean) => void;
 }
 
 export const useQuote = create<QuoteStore>((set, get) => {
@@ -74,7 +78,13 @@ export const useQuote = create<QuoteStore>((set, get) => {
     draftQuote: null,
     standardTreatments,
     setDraftQuote: (quote) => set({ draftQuote: quote }),
+    loadingDeleteQuote: false,
 
+    loadingUpdateQuote: false,
+    setLoadingUpdateQuote: (value: boolean) =>
+      set({ loadingUpdateQuote: value }),
+    setLoadingDeleteQuote: (value: boolean) =>
+      set({ loadingDeleteQuote: value }),
     createQuote: async (quote: Quote) => {
       const { clinic, setClinic } = useAuth.getState();
       const { quotes, setQuotes } = useQuote.getState();
@@ -146,10 +156,14 @@ export const useQuote = create<QuoteStore>((set, get) => {
         const resQuote = await api.post("/quotes/get", {
           clinicId,
         });
+        const AscQuote = resQuote.data.quotes?.sort(
+          (a: Quote, b: Quote) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
 
-        setQuotes(resQuote.data.quotes);
+        setQuotes(AscQuote);
 
-        return resQuote.data.quotes;
+        return AscQuote;
       } catch (err) {
         console.log(err);
         toast.error("Erro", {
@@ -159,24 +173,32 @@ export const useQuote = create<QuoteStore>((set, get) => {
     },
 
     updateQuote: async (quote) => {
-      const { quotes, setQuotes } = useQuote.getState();
+      const { quotes, setQuotes, setLoadingUpdateQuote } = useQuote.getState();
 
+      setLoadingUpdateQuote(true);
       try {
         const res = await api.post("/quotes/update", quote);
         const updatedQuotes = quotes.map((q) =>
           q.id === quote.id ? quote : q
         );
-
         setQuotes(updatedQuotes);
+        toast("Orçamento atualizado", {
+          description: `Orçamento para ${quote.patientName} atualizado com sucesso`,
+        });
       } catch (err) {
         console.log(err);
         toast.error("Erro", {
           description: "Erro ao atualizar orçamento",
         });
+      } finally {
+        setLoadingUpdateQuote(false);
       }
     },
 
     deleteQuote: async (id) => {
+      const { setLoadingDeleteQuote } = useQuote.getState();
+
+      setLoadingDeleteQuote(true);
       try {
         const res = await api.post("/quotes/delete", { id });
         toast("Orçamento excluído", {
@@ -190,6 +212,8 @@ export const useQuote = create<QuoteStore>((set, get) => {
         toast.error("Erro", {
           description: "Erro ao excluir orçamento",
         });
+      } finally {
+        setLoadingDeleteQuote(false);
       }
     },
     getDentistQuotes: (dentistId) => quoteQueries.getDentistQuotes(dentistId),

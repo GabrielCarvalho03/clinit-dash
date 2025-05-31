@@ -14,7 +14,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-interface TreatmentData {
+export interface TreatmentData {
   name: string;
   quoted: number;
   closed: number;
@@ -32,6 +32,7 @@ export const TreatmentRanking = ({
 }: TreatmentRankingProps) => {
   // Show only top 3 treatments as requested
   const displayData = data.slice(0, 3);
+  console.log("dentistFilter", data);
 
   return (
     <Card>

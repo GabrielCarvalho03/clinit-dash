@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { useRegisterProps } from "./types";
 import { toast } from "sonner";
 import { api } from "@/lib/axios/axios";
+import { treatmentDefaultList } from "../use-treataments/treatments-default-list";
 
 export const useRegister = create<useRegisterProps>((set) => ({
   loadingRegister: false,
@@ -10,16 +11,26 @@ export const useRegister = create<useRegisterProps>((set) => ({
     const { setLoadingRegister } = useRegister.getState();
     try {
       setLoadingRegister(true);
-      await api.post("/user/create", {
+      const resUser = await api.post("/user/create", {
         email: data.email,
         password: data.password,
         ClinicName: data.name,
       });
 
+      treatmentDefaultList.map(async (treatment) => {
+        await api.post("/treatments/create", {
+          clinicId: resUser.data.clinicId,
+          name: treatment.name,
+          description: treatment.description,
+          image: treatment.image,
+          price: treatment.price,
+        });
+      });
+
       toast("Conta criada com sucesso", {
         description: "Você já pode acessar o sistema OdontoAI",
       });
-      router.push("/dashboard");
+      router.push("/onboarding");
     } catch (error) {
       toast.error("Erro ao criar conta", {
         description:

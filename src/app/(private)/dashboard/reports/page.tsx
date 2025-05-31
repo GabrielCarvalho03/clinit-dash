@@ -621,6 +621,7 @@ const Reports = () => {
                           >
                             <Edit className="h-4 w-4" />
                           </Button>
+
                           <Button
                             variant="ghost"
                             size="icon"
@@ -629,6 +630,7 @@ const Reports = () => {
                           >
                             <Eye className="h-4 w-4" />
                           </Button>
+
                           <Button
                             variant="ghost"
                             size="icon"

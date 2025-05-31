@@ -86,6 +86,7 @@ export const QuoteSteps = ({ isEdit = false }: QuoteStepsProps) => {
       }
 
       let finalQuote: Quote;
+      console.log("draftQuote", draftQuote);
 
       if (isEditMode) {
         finalQuote = {

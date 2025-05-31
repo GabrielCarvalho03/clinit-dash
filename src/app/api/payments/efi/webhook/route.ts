@@ -8,7 +8,6 @@ import { v4 as uuid } from "uuid";
 export async function POST(req: NextRequest) {
   const body = await req.text();
   const sig = req.headers.get("stripe-signature");
-  const Passwordhashd = hashPassword("12345678");
 
   try {
     if (!sig) throw new Error("Assinatura do Stripe não encontrada!");
@@ -34,7 +33,6 @@ export async function POST(req: NextRequest) {
 
         const userId = userData.docs[0].id;
         await db.collection("users").doc(userId).update({
-          password: Passwordhashd,
           active: true,
           firstLogin: true,
         });
@@ -43,81 +41,88 @@ export async function POST(req: NextRequest) {
         const userData = await db.collection("users").add({
           id: customId,
           email: session.customer_details?.email,
-          password: Passwordhashd,
           active: true,
           firstLogin: true,
         });
       }
       const html = `
-  <!DOCTYPE html>
-  <html lang="pt-BR">
-  <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Bem-vindo(a) à Clinitt</title>
-  <style>
-    body {
-      background-color: #f0f4f8;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      margin: 0; padding: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      color: #333;
-    }
-    .container {
-      background: white;
-      border-radius: 12px;
-      padding: 40px 30px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-      max-width: 400px;
-      width: 90%;
-      text-align: center;
-    }
-    h1 {
-      color: #2b6cb0;
-      margin-bottom: 24px;
-    }
-    p {
-      font-size: 16px;
-      line-height: 1.5;
-      margin-bottom: 24px;
-    }
-    .credentials {
-      background: #bee3f8;
-      padding: 20px;
-      border-radius: 10px;
-      font-size: 18px;
-      font-weight: 600;
-      color: #2c5282;
-      margin-bottom: 32px;
-    }
-    .credentials p {
-      margin: 12px 0;
-    }
-    .footer {
-      font-size: 14px;
-      color: #718096;
-    }
-  </style>
-  </head>
-  <body>
-    <div class="container">
-      <h1>Bem-vindo(a) à Clinitt!</h1>
-      <p>Seus dados de acesso para começar:</p>
-      <div class="credentials">
-        <p><strong>E-mail:</strong> ${session.customer_details?.email}</p>
-        <p><strong>Senha:</strong> ${"12345678"}</p>
-      </div>
-      <p>Não se preocupe! Na primeira vez que acessar, você poderá trocar sua senha para garantir sua segurança.</p>
-      <div class="footer">
-        <p>Equipe Clinitt</p>
-      </div>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Bem-vindo à Clinitt.ai</title>
+<style>
+  body {
+    background-color: #f0f4f8;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0; padding: 0;
+  }
+  .container {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 40px 30px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    max-width: 500px;
+    margin: 40px auto;
+    text-align: center;
+    color: #333333;
+  }
+  h1 {
+    color: #006d77;
+    margin-bottom: 24px;
+  }
+  p {
+    font-size: 16px;
+    line-height: 1.5;
+    margin-bottom: 20px;
+  }
+  .button {
+    display: inline-block;
+    padding: 14px 28px;
+    background-color: #006d77;
+    color: #ffffff !important;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+    margin: 20px auto;
+  }
+  .footer {
+    font-size: 14px;
+    color: #718096;
+    margin-top: 30px;
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <h1>Olá, Dentista!</h1>
+    <p>Seja bem-vindo à <strong>Clinitt.ai</strong>, o sistema especialista em orçamentos odontológicos estratégicos.</p>
+    <p>Sua conta já está ativa.</p>
+    <p>Para acessar a plataforma pela primeira vez, clique no botão abaixo e defina sua senha:</p>
+
+    <a href="${process.env.NEXT_PUBLIC_URL}/reset-password/${customId}" class="button">Definir Senha e Acessar</a>
+
+    <p>Com a <strong>Clinitt.ai</strong>, você cria orçamentos personalizados em segundos, aumenta sua taxa de conversão e apresenta sua clínica de forma profissional.</p>
+
+    <p>⚠️ <strong>Atenção:</strong><br>
+    Em até 72 horas úteis, nosso time entrará em contato pelo número cadastrado para agendar seu onboarding.</p>
+
+    <p>Nesse encontro, você vai conhecer todos os recursos da plataforma e aprender como potencializar seus resultados desde o início.</p>
+
+    <p>Qualquer dúvida, estamos por aqui.</p>
+
+    <div class="footer">
+      <p>Equipe Clinitt.ai</p>
+      <p><a href="https://www.clinitt.ai" style="color: #006d77; text-decoration: none;">www.clinitt.ai</a></p>
     </div>
-  </body>
-  </html>
-  `;
+  </div>
+</body>
+</html>
+`;
+
+
+      
       const sendMail = await api.post("/send-email", {
         email: session.customer_details?.email,
         subject: "Seja bem-vindo à Clinitt.ai – Ative sua conta",

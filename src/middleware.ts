@@ -1,6 +1,5 @@
 import { MiddlewareConfig, NextRequest, NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
-import { useAuth } from "./hooks/use-auth/use-auth";
 
 const publicRoutes = [
   {
@@ -11,6 +10,9 @@ const publicRoutes = [
     path: "/register",
     whenAuthenticated: "redirect",
   },
+  {path: "/reset-password",
+    whenAuthenticated: "redirect",
+  }
 ] as const;
 
 const REDIRECT_WHEN_UNAUTHORIZED = "/login";
@@ -18,7 +20,7 @@ const REDIRECT_WHEN_UNAUTHORIZED = "/login";
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  const publicRoute = publicRoutes.find((route) => route.path === pathname);
+  const publicRoute = publicRoutes.find((route) => pathname.startsWith(route.path));
 
   console.log("publicRoute", publicRoute);
   const authToken = req.cookies.get("tokenClinitt");

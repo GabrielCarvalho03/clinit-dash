@@ -20,6 +20,7 @@ import { useClinic } from "@/hooks/use-clinic/use-clinic";
 import { Loader2 } from "lucide-react";
 import { formatCNPJ } from "@/utils/text-formarter/cnpj-formarter";
 import { formatPhone } from "@/utils/text-formarter/phone-formarter";
+import { treatmentDefaultList } from "@/hooks/use-treataments/treatments-default-list";
 
 interface ClinicFormProps {
   onFormSubmit?: () => void;
@@ -151,7 +152,19 @@ export const ClinicForm = ({
       },
     };
     setSaveIsLoading(true);
+    if(clinic.firstLogin){
+      treatmentDefaultList.map(async (treatment) => {
+        await api.post("/treatments/create", {
+          clinicId: clinic.id,
+          name: treatment.name,
+          description: treatment.description,
+          image: treatment.image,
+          price: treatment.price,
+        });
+      });
+     }
     const save = await api.post("/user/update", obj);
+     
     setSaveIsLoading(false);
     console.log("save", save);
 

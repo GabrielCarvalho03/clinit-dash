@@ -92,7 +92,7 @@ export const QuotePreviewPDF = ({
 
   return (
     <div
-      id={"quote-preview-container"}
+      id="quote-preview-container"
       className="font-sans bg-white mx-auto relative"
       style={{
         width: "210mm",

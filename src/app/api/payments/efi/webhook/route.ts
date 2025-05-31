@@ -120,7 +120,7 @@ export async function POST(req: NextRequest) {
   `;
       const sendMail = await api.post("/send-email", {
         email: session.customer_details?.email,
-        subject: "Bem-vindo",
+        subject: "Seja bem-vindo à Clinitt.ai – Ative sua conta",
         html: html,
       });
     }

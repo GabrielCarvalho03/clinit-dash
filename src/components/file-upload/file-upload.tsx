@@ -21,6 +21,7 @@ interface FileUploadProps {
   isLoadingUploading?: boolean;
   maxtotalImage?: number;
   form?: UseFormReturn<QuoteFormData>;
+  indicative?:boolean
 }
 
 export const FileUpload = ({
@@ -32,6 +33,7 @@ export const FileUpload = ({
   isLoadingUploading,
   maxtotalImage,
   form,
+  indicative
 }: FileUploadProps) => {
   const { status, preview, error, uploadFile, resetUpload } = useFileUpload();
   const [currentPreview, setCurrentPreview] = useState<string | null>(null);
@@ -136,9 +138,9 @@ export const FileUpload = ({
             size={compact ? 32 : 48}
             className="mb-4 text-muted-foreground"
           />
-          <p className="mb-2 text-sm font-medium">
+       {indicative &&    <p className="mb-2 text-sm font-medium">
             Arraste uma imagem ou clique para fazer upload
-          </p>
+          </p>}
           <p className="mb-4 text-xs text-muted-foreground">
             Formatos suportados: PNG, JPG, GIF. Máximo 5MB.
           </p>

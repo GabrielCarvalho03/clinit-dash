@@ -92,6 +92,7 @@ export const QuoteSteps = ({ isEdit = false }: QuoteStepsProps) => {
         finalQuote = {
           ...draftQuote!,
           ...data,
+          illustrations: draftQuote?.illustrations || null, 
           createdAt: draftQuote?.createdAt || null,
           status: "final" as const,
         } as Quote;

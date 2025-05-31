@@ -39,6 +39,10 @@ export interface Quote {
   patientGender?: PatientGender;
   patientProfile?: PatientProfile;
   patientAge?: number;
+  illustrations: {
+    url:string , 
+    type:string
+  }[]
   patientBirthdate?: Date;
   ageGroup: "child" | "teen" | "youngAdult" | "adult" | "middleAge" | "senior";
   relationship:
@@ -77,6 +81,10 @@ export interface QuotePdf {
       whatsapp?: string;
     };
   };
+  illustrations: {
+    url:string , 
+    type:string
+  }[]
   createdAt?: string;
   customOriginalPrice?: number;
   dentist: {

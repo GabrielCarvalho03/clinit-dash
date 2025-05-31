@@ -9,6 +9,7 @@ import { useState } from "react";
 import { UseTreataments } from "@/hooks/use-treataments/use-treataments";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { TreatmentDrawer } from "../TreatmentDrawer/TreatmentDrawer";
+import { IllustrationsUpload } from "../IllustrationsUpload/IllustrationsUpload";
 
 export function TreatmentStep({ form }: any) {
   const { procedures } = UseTreataments();
@@ -51,8 +52,7 @@ export function TreatmentStep({ form }: any) {
       <div>
         <h2 className="text-lg font-semibold mb-2">Tratamentos</h2>
         <p className="text-muted-foreground text-sm mb-4">
-          Adicione até 3 tratamentos para manter a apresentação clara e
-          estratégica do orçamento.
+          Adicione todos os tratamentos necessários para o orçamento do paciente.
         </p>
       </div>
 
@@ -108,7 +108,7 @@ export function TreatmentStep({ form }: any) {
       <TreatmentDrawer
         treatments={procedures}
         onAdd={handleAddTreatment}
-        disabled={isAtLimit}
+        disabled={false}
         showCustomForm={showCustomForm}
         setShowCustomForm={setShowCustomForm}
         customTreatment={customTreatment}
@@ -116,12 +116,13 @@ export function TreatmentStep({ form }: any) {
         onAddCustom={handleAddCustom}
       />
 
-      <ObservationsField form={form} />
+      <IllustrationsUpload form={form} />
 
+      <ObservationsField form={form} />
+      
       <div className="bg-muted/50 border rounded-md p-4">
         <p className="text-sm text-muted-foreground">
-          <strong>Dica:</strong> É necessário adicionar pelo menos um tratamento
-          e informar o preço para cada um deles.
+          <strong>Dica:</strong> É necessário adicionar pelo menos um tratamento e informar o preço para cada um deles.
         </p>
       </div>
     </div>

@@ -49,6 +49,7 @@ export const prepareQuotePdfData = (
       cnpj: clinic.cnpj,
       socialMedia: clinic.socialMedia,
     },
+    illustrations: formValues.illustrations,
     dentist: {
       name: dentist?.name,
       specialty: dentist?.specialty,

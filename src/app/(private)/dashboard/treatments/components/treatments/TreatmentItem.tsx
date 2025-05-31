@@ -105,20 +105,6 @@ export function TreatmentItem({
           )}
         />
 
-        <FormField
-          control={form.control}
-          name={`treatments.${index}.treatmentImages`}
-          render={({ field: imagesField }) => (
-            <FormItem>
-              <TreatmentImageUpload
-                form={form}
-                value={imagesField.value || []}
-                onChange={imagesField.onChange}
-              />
-              <FormMessage />
-            </FormItem>
-          )}
-        />
 
         <div className="flex justify-end">
           <Button

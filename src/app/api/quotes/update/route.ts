@@ -20,6 +20,7 @@ export async function POST(req: Request) {
         gift: body.gift,
         installments: body.installments,
         observations: body.observations,
+        illustrations:body.illustrations,
         patientAge: body.patientAge,
         patientBirthdate: body.patientBirthdate,
         patientGender: body.patientGender,

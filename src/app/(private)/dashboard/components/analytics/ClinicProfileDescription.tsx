@@ -19,13 +19,6 @@ export const ClinicProfileDescription = ({
   description,
   data,
 }: ClinicProfileDescriptionProps) => {
-  // Verificamos especificamente por mensagens que indicam falta de dados suficientes
-  const isEmptyDescription = description.includes(
-    "Adicione pelo menos dois orçamentos"
-  );
-
-  console.log("dataTestando", data);
-
   return (
     <Card className="mb-6 border-primary/10 bg-primary/5">
       <CardHeader className="pb-2">
@@ -40,9 +33,7 @@ export const ClinicProfileDescription = ({
       <CardContent>
         {data.length < 2 ? (
           <div className="text-center py-4 text-gray-500">
-            {
-              "Adicione pelo menos dois orçamentos para gerar um perfil da clínica."
-            }
+            {"Adicione pelo menos dois orçamentos para gerar um perfil."}
           </div>
         ) : (
           <p className="text-gray-700">{description}</p>

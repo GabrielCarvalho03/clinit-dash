@@ -51,13 +51,17 @@ export const QuoteSteps = ({ isEdit = false }: QuoteStepsProps) => {
       treatments: draftQuote?.treatments || [],
       observations: draftQuote?.observations || "", // Pode ser vazio ou algum valor padrão
       gift: draftQuote?.gift || "", // Pode ser vazio ou algum valor padrão
-      anchoragePercentage: draftQuote?.anchoragePercentage || 10,
+      anchoragePercentage: draftQuote?.customOriginalPrice
+        ? "custom"
+        : undefined,
       downPayment: draftQuote?.downPayment || 0,
       installments: draftQuote?.installments || 1,
       paymentConditions: draftQuote?.paymentConditions || "",
       paymentPreviewText: draftQuote?.paymentPreviewText || "",
       validityDays: draftQuote?.validityDays || undefined,
       validityCustomDate: draftQuote?.validityCustomDate || undefined, // Já é opcional no schema
+      illustrationImages: draftQuote?.illustrations || [],
+      customOriginalPrice: draftQuote?.customOriginalPrice || undefined,
     },
   });
 
@@ -86,13 +90,15 @@ export const QuoteSteps = ({ isEdit = false }: QuoteStepsProps) => {
       }
 
       let finalQuote: Quote;
-      console.log("draftQuote", draftQuote);
+
+      console.log("chegou aqui", draftQuote);
 
       if (isEditMode) {
         finalQuote = {
           ...draftQuote!,
           ...data,
-          illustrations: draftQuote?.illustrations || null, 
+          illustrations: draftQuote?.illustrations || null,
+          customOriginalPrice: draftQuote?.customOriginalPrice || null,
           createdAt: draftQuote?.createdAt || null,
           status: "final" as const,
         } as Quote;

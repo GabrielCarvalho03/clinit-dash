@@ -10,7 +10,7 @@ export interface Clinic {
   name: string;
   address?: string;
   description?: string;
-  firstLogin?:boolean;
+  firstLogin?: boolean;
   logo?: string | null;
   phoneNumber?: string;
   phoneNumber2?: string;

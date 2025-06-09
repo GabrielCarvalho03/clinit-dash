@@ -68,9 +68,6 @@ export const LoginForm = () => {
           >
             Esqueci minha senha
           </a>
-          <a href="/register" className="text-sm text-primary hover:underline">
-            Criar conta
-          </a>
         </div>
         <Button type="submit" className="w-full" disabled={loadingLogin}>
           {loadingLogin ? (

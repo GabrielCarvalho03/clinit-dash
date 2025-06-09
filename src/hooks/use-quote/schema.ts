@@ -53,7 +53,7 @@ export const quoteSchema = z.object({
     .min(1, "Pelo menos um tratamento é obrigatório"),
   observations: z.string().optional(),
   gift: z.string().optional(),
-  anchoragePercentage: z.number().default(10), // Remover .optional()
+  anchoragePercentage: z.number().or(z.string()).default(10), // Remover .optional()
   downPayment: z.number().default(0), // Remover .optional()
   installments: z.number().default(1), // Remover .optional()
   paymentConditions: z
@@ -62,7 +62,15 @@ export const quoteSchema = z.object({
   paymentPreviewText: z.string().optional(),
   validityDays: z.number().optional(),
   validityCustomDate: z.date().optional(),
- 
+  illustrationImages: z
+    .array(
+      z.object({
+        url: z.string(),
+        type: z.string(),
+      })
+    )
+    .optional(),
+  customOriginalPrice: z.number().optional(),
 });
 
 export type QuoteFormData = z.infer<typeof quoteSchema>;

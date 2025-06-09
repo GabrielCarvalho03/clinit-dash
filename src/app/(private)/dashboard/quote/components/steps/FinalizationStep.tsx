@@ -22,6 +22,7 @@ import { formatCurrency } from "@/utils/formart";
 import { Input } from "@/components/ui/input";
 
 export function FinalizationStep({ form }: any) {
+  // --- ESTADOS REINTEGRADOS (solicitados por você) ---
   const [validityType, setValidityType] = useState(
     form.getValues("validityCustomDate") ? "custom" : "days"
   );
@@ -31,56 +32,48 @@ export function FinalizationStep({ form }: any) {
   const [downPayment, setDownPayment] = useState(
     form.getValues("downPayment") || 0
   );
+
+  // Estado de controle para a Ancoragem (a correção principal)
+  const [anchorageMode, setAnchorageMode] = useState<"preset" | "custom">(
+    form.getValues("customOriginalPrice") ? "custom" : "preset"
+  );
+
+  // Estado para os valores da pré-visualização
   const [previewValues, setPreviewValues] = useState({
     originalTotal: 0,
     discountedTotal: 0,
-    installmentValue: 0,
     paymentPreviewText: "",
   });
-  const [anchorageType, setAnchorageType] = useState("preset");
-  const [customAnchorage, setCustomAnchorage] = useState("");
-  const [customAnchorageType, setCustomAnchorageType] = useState("percentage");
-  const [customAnchorageValue, setCustomAnchorageValue] = useState("");
 
-  const handleValidityTypeChange = (value: string) => {
-    setValidityType(value);
-    if (value === "days") {
-      form.setValue("validityCustomDate", undefined);
-      form.setValue("validityDays", 7);
-    } else if (value === "custom") {
-      form.setValue("validityDays", undefined);
-      if (!form.getValues("validityCustomDate")) {
-        const defaultDate = new Date();
-        defaultDate.setDate(defaultDate.getDate() + 7);
-        form.setValue("validityCustomDate", defaultDate);
-      }
-    }
-  };
+  // --- LÓGICA E CÁLCULOS ---
 
+  // useEffect principal para recalcular os totais.
   useEffect(() => {
     const treatments = form.getValues("treatments") || [];
-    const anchoragePercentage = form.getValues("anchoragePercentage") || 0;
     const discountedTotal = treatments.reduce(
-      (sum: any, t: any) => sum + (t.price || 0),
+      (sum: number, t: any) => sum + (t.price || 0),
       0
     );
 
-    let originalTotal = discountedTotal * (1 + anchoragePercentage / 100);
+    const customOriginalPrice = form.getValues("customOriginalPrice");
+    const anchoragePercentage = form.getValues("anchoragePercentage");
 
-    if (
-      anchorageType === "custom" &&
-      customAnchorageType === "value" &&
-      customAnchorageValue
-    ) {
-      originalTotal = Number(customAnchorageValue);
+    let originalTotal = 0;
+
+    // Lógica de cálculo da ancoragem (corrigida)
+    if (anchorageMode === "custom" && customOriginalPrice > 0) {
+      originalTotal = customOriginalPrice;
+    } else {
+      originalTotal = discountedTotal * (1 + (anchoragePercentage || 0) / 100);
     }
 
-    let installmentValue = 0;
+    // Lógica de pré-visualização de pagamento
     let paymentPreviewText = "";
-
-    if (installments > 0) {
+    if (discountedTotal <= 0) {
+      paymentPreviewText = formatCurrency(0);
+    } else if (installments > 0) {
       const remainingAfterDownPayment = discountedTotal - downPayment;
-      installmentValue =
+      const installmentValue =
         remainingAfterDownPayment > 0
           ? remainingAfterDownPayment / installments
           : 0;
@@ -102,77 +95,52 @@ export function FinalizationStep({ form }: any) {
     setPreviewValues({
       originalTotal,
       discountedTotal,
-      installmentValue,
       paymentPreviewText,
     });
 
+    // Sincroniza o resultado com o formulário
     if (discountedTotal > 0) {
       form.setValue("paymentPreviewText", paymentPreviewText);
       form.setValue("paymentConditions", paymentPreviewText);
     }
   }, [
-    installments,
-    downPayment,
-    form.watch("anchoragePercentage"),
+    anchorageMode,
+    downPayment, // Re-adicionado
+    installments, // Re-adicionado
     form.watch("treatments"),
-    form.watch("customOriginalPrice"), // ✅ Adicionado!
+    form.watch("anchoragePercentage"),
+    form.watch("customOriginalPrice"),
   ]);
 
-  const handlePaymentConditionsChange = (
-    e: React.ChangeEvent<HTMLTextAreaElement>
-  ) => {
-    form.setValue("paymentConditions", e.target.value);
-  };
+  // --- MANIPULADORES DE EVENTOS ---
 
-  const handleCustomAnchorageValueChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const value = e.target.value;
-    setCustomAnchorageValue(value);
-    if (
-      anchorageType === "custom" &&
-      customAnchorageType === "value" &&
-      value
-    ) {
-      form.setValue("customOriginalPrice", parseFloat(value));
-      form.setValue("anchoragePercentage", 0);
-      form.trigger("customOriginalPrice");
+  // Handler da Validade (reintegrado como no original)
+  const handleValidityTypeChange = (value: string) => {
+    setValidityType(value);
+    if (value === "days") {
+      form.setValue("validityCustomDate", undefined);
+      form.setValue("validityDays", 7);
+    } else if (value === "custom") {
+      form.setValue("validityDays", undefined);
+      if (!form.getValues("validityCustomDate")) {
+        const defaultDate = new Date();
+        defaultDate.setDate(defaultDate.getDate() + 7);
+        form.setValue("validityCustomDate", defaultDate);
+      }
     }
   };
 
-  const handleCustomAnchorageChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const value = e.target.value;
-    setCustomAnchorage(value);
-    if (
-      anchorageType === "custom" &&
-      customAnchorageType === "percentage" &&
-      value
-    ) {
-      form.setValue("anchoragePercentage", parseFloat(value));
-      form.setValue("customOriginalPrice", undefined);
-      form.trigger("anchoragePercentage");
-    }
-  };
-
+  // Handler da Ancoragem (corrigido)
   const handleAnchorageChange = (value: string) => {
     if (value === "custom") {
-      setAnchorageType("custom");
-      if (customAnchorageType === "percentage" && customAnchorage) {
-        form.setValue("anchoragePercentage", parseFloat(customAnchorage));
-      } else if (customAnchorageType === "value" && customAnchorageValue) {
-        form.setValue("anchoragePercentage", 0);
-        form.setValue("customOriginalPrice", parseFloat(customAnchorageValue));
-      }
+      setAnchorageMode("custom");
+      form.setValue("anchoragePercentage", 0);
     } else {
-      setAnchorageType("preset");
+      setAnchorageMode("preset");
       form.setValue("anchoragePercentage", parseInt(value, 10));
       form.setValue("customOriginalPrice", undefined);
     }
-    form.trigger("anchoragePercentage");
   };
-  console.log("originalTotal", previewValues.originalTotal);
 
   return (
     <div className="space-y-6">
@@ -184,19 +152,28 @@ export function FinalizationStep({ form }: any) {
           Defina as condições de pagamento e a validade do orçamento.
         </p>
       </div>
+
       <PricePreview
-        {...previewValues}
-        installments={installments}
         originalTotal={previewValues.originalTotal}
+        discountedTotal={previewValues.discountedTotal}
+        paymentPreviewText={previewValues.paymentPreviewText}
+        installments={installments}
       />
+
       <FormField
         control={form.control}
         name="anchoragePercentage"
-        defaultValue={10}
         render={({ field }) => (
           <FormItem className="space-y-2">
             <FormLabel>Ancoragem de Preço</FormLabel>
-            <Select onValueChange={handleAnchorageChange} defaultValue="10">
+            <Select
+              onValueChange={handleAnchorageChange}
+              value={
+                anchorageMode === "custom"
+                  ? "custom"
+                  : String(field.value || "0")
+              }
+            >
               <FormControl>
                 <SelectTrigger>
                   <SelectValue placeholder="Selecione o percentual de ancoragem" />
@@ -207,80 +184,53 @@ export function FinalizationStep({ form }: any) {
                 <SelectItem value="10">10% (Leve)</SelectItem>
                 <SelectItem value="20">20% (Moderada)</SelectItem>
                 <SelectItem value="30">30% (Alta)</SelectItem>
-                <SelectItem value="40">40% (Muito alta)</SelectItem>
                 <SelectItem value="50">50% (Máxima)</SelectItem>
                 <SelectItem value="custom">Personalizado</SelectItem>
               </SelectContent>
             </Select>
 
-            {anchorageType === "custom" && (
+            {anchorageMode === "custom" && (
               <div className="space-y-3 p-3 border rounded-md bg-gray-50">
-                <div className="flex items-center gap-4">
-                  <label className="flex items-center gap-2">
-                    <input
-                      type="radio"
-                      name="customAnchorageType"
-                      value="percentage"
-                      checked={customAnchorageType === "percentage"}
-                      onChange={(e) => setCustomAnchorageType(e.target.value)}
-                    />
-                    <span className="text-sm">Percentual (%)</span>
-                  </label>
-                  <label className="flex items-center gap-2">
-                    <input
-                      type="radio"
-                      name="customAnchorageType"
-                      value="value"
-                      checked={customAnchorageType === "value"}
-                      onChange={(e) => setCustomAnchorageType(e.target.value)}
-                    />
-                    <span className="text-sm">Valor (R$)</span>
-                  </label>
-                </div>
-
-                {customAnchorageType === "percentage" ? (
-                  <div className="flex items-center gap-2">
-                    <Input
-                      type="number"
-                      placeholder="Digite o percentual"
-                      min="0"
-                      max="100"
-                      value={customAnchorage}
-                      onChange={handleCustomAnchorageChange}
-                      className="w-32"
-                    />
-                    <span className="text-sm text-muted-foreground">%</span>
-                  </div>
-                ) : (
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm text-muted-foreground">R$</span>
-                    <Input
-                      type="number"
-                      placeholder="Digite o valor original"
-                      min="0"
-                      value={customAnchorageValue}
-                      onChange={handleCustomAnchorageValueChange}
-                      className="w-40"
-                    />
-                  </div>
-                )}
-
-                <p className="text-xs text-muted-foreground">
-                  {customAnchorageType === "percentage"
-                    ? "Percentual de acréscimo sobre o preço dos tratamentos."
-                    : "Valor que aparecerá como preço original (será mostrado riscado)."}
+                <p className="text-sm font-medium">
+                  Defina o valor original (de)
                 </p>
+                <FormField
+                  control={form.control}
+                  name="customOriginalPrice"
+                  render={({ field: customField }) => (
+                    <FormItem>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm text-muted-foreground">
+                          R$
+                        </span>
+                        <Input
+                          type="number"
+                          placeholder="Digite o valor"
+                          min="0"
+                          {...customField}
+                          onChange={(e) =>
+                            customField.onChange(
+                              parseFloat(e.target.value) || 0
+                            )
+                          }
+                        />
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </div>
             )}
 
             <p className="text-xs text-muted-foreground">
-              A ancoragem de preço mostrará um valor inicial maior para aumentar
-              a percepção de desconto.
+              A ancoragem de preço mostrará um valor "de" maior para aumentar a
+              percepção de desconto.
             </p>
             <FormMessage />
           </FormItem>
         )}
       />
+
       <PaymentConfig
         form={form}
         downPayment={downPayment}
@@ -288,37 +238,34 @@ export function FinalizationStep({ form }: any) {
         installments={installments}
         setInstallments={setInstallments}
       />
-      <FormField
-        control={form.control}
-        name="paymentPreviewText"
-        render={({ field }) => <input type="hidden" {...field} />}
-      />
+
       <FormField
         control={form.control}
         name="paymentConditions"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Condições de Pagamento</FormLabel>
+            <FormLabel>Descrição das Condições de Pagamento</FormLabel>
             <FormControl>
               <Textarea
                 placeholder="Ex: 10x de R$ 200 ou à vista com 10% de desconto"
-                onChange={handlePaymentConditionsChange}
+                {...field}
                 value={field.value || ""}
               />
             </FormControl>
             <p className="text-xs text-muted-foreground">
-              Este texto aparecerá na seção de condições de pagamento do
-              orçamento.
+              Este texto é preenchido automaticamente, mas você pode editá-lo.
             </p>
             <FormMessage />
           </FormItem>
         )}
       />
+
       <QuoteValidity
         form={form}
         validityType={validityType}
         handleValidityTypeChange={handleValidityTypeChange}
       />
+
       <GiftSection form={form} />
     </div>
   );

@@ -89,7 +89,6 @@ export const useQuote = create<QuoteStore>((set, get) => {
       const { clinic, setClinic } = useAuth.getState();
       const { quotes, setQuotes } = useQuote.getState();
       const getClinic = await getUserRefresh(setClinic);
-      console.log("getClinic", getClinic);
 
       if (!clinic) {
         toast.error("Erro", {
@@ -125,6 +124,8 @@ export const useQuote = create<QuoteStore>((set, get) => {
         validityDays: quote.validityDays,
         createdAt: new Date(),
         clinicId: clinic?.id,
+        illustrations: quote.illustrations,
+        customOriginalPrice: quote.customOriginalPrice,
         id: "",
       };
 

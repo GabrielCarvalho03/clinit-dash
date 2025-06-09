@@ -16,15 +16,6 @@ const Login = () => {
           </div>
 
           <LoginForm />
-
-          <div className="mt-6 text-center text-sm text-muted-foreground">
-            <p>
-              Não possui uma conta?{" "}
-              <a href="/register" className="text-[#006D77] hover:underline">
-                Criar conta
-              </a>
-            </p>
-          </div>
         </div>
       </div>
     </div>

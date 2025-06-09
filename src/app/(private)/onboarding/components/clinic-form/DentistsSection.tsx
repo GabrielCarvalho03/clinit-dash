@@ -39,10 +39,11 @@ export const DentistsSection = ({
         </div>
       ) : (
         <div className="space-y-4">
-          {dentists?.map((dentist) => (
+          {dentists?.map((dentist, index) => (
             <DentistItem
               key={dentist.id}
               dentist={dentist}
+              index={index}
               onUpdate={handleUpdateDentist}
               onRemove={handleRemoveDentist}
             />

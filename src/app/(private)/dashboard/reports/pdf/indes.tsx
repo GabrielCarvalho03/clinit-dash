@@ -44,29 +44,30 @@ export async function generateProposalPDF({ setExporting, quote }: Props) {
     if (logoClinic) {
       logoClinic.style.marginTop = "15px";
     }
-    const ClinicCnpj = clone.querySelector("#clinicCnpj") as HTMLElement
+    const ClinicCnpj = clone.querySelector("#clinicCnpj") as HTMLElement;
 
     if (ClinicCnpj) {
       // ClinicCnpj.style.marginTop = "-10px";
     }
 
-    const ClinicAddress = clone.querySelector("#clinitAddress") as HTMLElement
+    const ClinicAddress = clone.querySelector("#clinitAddress") as HTMLElement;
     if (ClinicAddress) {
       // ClinicAddress.style.marginTop = "-18px";
     }
 
-    const PatientName = clone.querySelector('#patientName') as HTMLElement
+    const PatientName = clone.querySelector("#patientName") as HTMLElement;
 
-    if(PatientName){
-      PatientName.style.marginTop = "-10px"
+    if (PatientName) {
+      PatientName.style.marginTop = "-2px";
+      PatientName.style.fontSize = "14px";
     }
 
     const dentistNamenClone = clone.querySelector(
       "#dentist-name"
     ) as HTMLElement;
     if (dentistNamenClone) {
-      dentistNamenClone.style.fontSize = "14px"
-      dentistNamenClone.style.marginTop = "-12px";
+      dentistNamenClone.style.fontSize = "14px";
+      dentistNamenClone.style.marginTop = "-8px";
     }
 
     const dentistSpecialty = clone.querySelector(
@@ -75,8 +76,6 @@ export async function generateProposalPDF({ setExporting, quote }: Props) {
     if (dentistSpecialty) {
       dentistSpecialty.style.marginTop = "-2px";
     }
-
-   
 
     const DentistPhoto = clone.querySelector(
       "#dentist-photo"
@@ -91,25 +90,35 @@ export async function generateProposalPDF({ setExporting, quote }: Props) {
       DentistPhoto.style.marginTop = "5px";
     }
 
-    const procedimentosContainer = clone.querySelector("#procedimentosContainer") as HTMLElement
+    const procedimentosContainer = clone.querySelector(
+      "#procedimentosContainer"
+    ) as HTMLElement;
 
-    if(procedimentosContainer){
-      procedimentosContainer.style.marginTop = "8px"
+    if (procedimentosContainer) {
+      procedimentosContainer.style.marginTop = "8px";
     }
 
-    const descriptionTreatment = clone.querySelectorAll("#descriptionTreatment") 
-    descriptionTreatment.forEach((descriptionTreatment)=>{
-      (descriptionTreatment as HTMLElement ).style.paddingBottom = "4px"
-    })
+    const treatmentName = clone.querySelectorAll("#treatmentName");
+    treatmentName.forEach((treatmentName, index) => {
+      (treatmentName as HTMLElement).style.marginTop =
+        index === 0 ? "-10px" : "-6px";
+    });
 
+    const descriptionTreatment = clone.querySelectorAll(
+      "#descriptionTreatment"
+    );
+    descriptionTreatment.forEach((descriptionTreatment) => {
+      (descriptionTreatment as HTMLElement).style.paddingBottom = "4px";
+    });
 
-    const ilustrationsContainer = clone.querySelector("#ilustrationsContainer") as HTMLElement
+    const ilustrationsContainer = clone.querySelector(
+      "#ilustrationsContainer"
+    ) as HTMLElement;
 
-    if(ilustrationsContainer){
-      ilustrationsContainer.style.marginTop = "8px"
+    if (ilustrationsContainer) {
+      ilustrationsContainer.style.marginTop = "8px";
     }
 
- 
     const treatmentImageLegend = clone.querySelector(
       "#treatment-image-legend"
     ) as HTMLElement;
@@ -123,10 +132,8 @@ export async function generateProposalPDF({ setExporting, quote }: Props) {
     ) as HTMLElement;
 
     if (originalTotalLine) {
-      originalTotalLine.style.marginTop = "7px";
+      originalTotalLine.style.marginTop = "9px";
     }
-
-   
 
     const giftIcon = clone.querySelector("#gift-icon") as HTMLElement;
 
@@ -137,41 +144,38 @@ export async function generateProposalPDF({ setExporting, quote }: Props) {
     const giftText = clone.querySelector("#gift-text") as HTMLElement;
 
     if (giftText) {
-      (clone.querySelector("#gift-text") as HTMLElement).style.marginTop ="-12px";
+      (clone.querySelector("#gift-text") as HTMLElement).style.marginTop =
+        "-12px";
     }
-    const giftDescription = clone.querySelector("#gift-description") as HTMLElement;
+    const giftDescription = clone.querySelector(
+      "#gift-description"
+    ) as HTMLElement;
 
     if (giftDescription) {
-        giftDescription.style.marginTop ="-5px";
-        giftDescription.style.paddingBottom ="5px";
+      giftDescription.style.marginTop = "-5px";
+      giftDescription.style.paddingBottom = "5px";
     }
 
-    const observationWapper = clone.querySelector("#observationWapper") as HTMLElement;
+    const observationWapper = clone.querySelector(
+      "#observationWapper"
+    ) as HTMLElement;
 
     if (observationWapper) {
-        observationWapper.style.marginTop ="-5px";
+      observationWapper.style.marginTop = "-5px";
     }
 
+    const numberWapper = clone.querySelector("#numberWapper") as HTMLElement;
 
-    
-    
+    if (numberWapper) {
+      numberWapper.style.marginTop = "10px";
+    }
 
+    const giftWapper = clone.querySelector("#giftWapper") as HTMLElement;
 
-const numberWapper = clone.querySelector("#numberWapper") as HTMLElement
-
-if (numberWapper) {
-  numberWapper.style.marginTop = "10px"
-
-}
-
-const giftWapper = clone.querySelector("#giftWapper") as HTMLElement
-
-if (giftWapper) {
-  giftWapper.style.marginTop = "15px"
-  giftWapper.style.paddingBottom = "10px"
-}
-
-
+    if (giftWapper) {
+      giftWapper.style.marginTop = "15px";
+      giftWapper.style.paddingBottom = "10px";
+    }
 
     const phoneIconContainer = clone.querySelector(
       "#phone-icon-container"
@@ -180,24 +184,18 @@ if (giftWapper) {
     if (phoneIconContainer) {
       phoneIconContainer.style.marginTop = "10px";
     }
-   
 
- 
-   
+    const phoneText = clone.querySelectorAll("#phone-text");
 
-    const phoneText = clone.querySelectorAll("#phone-text")
+    phoneText.forEach((phoneText) => {
+      (phoneText as HTMLElement).style.marginTop = "-13px";
+    });
 
-    phoneText.forEach((phoneText)=>{
-      (phoneText  as HTMLElement).style.marginTop ="-13px";
-    })
+    const IconText = clone.querySelectorAll("#icon-text");
 
-    const IconText = clone.querySelectorAll("#icon-text")
-
-    IconText.forEach((IconText)=>{
-      (IconText  as HTMLElement).style.marginTop ="-13px";
-    })
-
-
+    IconText.forEach((IconText) => {
+      (IconText as HTMLElement).style.marginTop = "-13px";
+    });
 
     const globeLink = clone.querySelector("#globe-link") as HTMLElement;
 

@@ -1,11 +1,18 @@
+"use client";
 
-import { useState } from "react";
+import { use, useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Images, Plus } from "lucide-react";
 
 import { UseFormReturn } from "react-hook-form";
-import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
+import {
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+} from "@/components/ui/form";
 import { FileUpload } from "@/components/file-upload/file-upload";
 
 interface IllustrationsUploadProps {
@@ -14,20 +21,31 @@ interface IllustrationsUploadProps {
 
 export function IllustrationsUpload({ form }: IllustrationsUploadProps) {
   const [showUploadArea, setShowUploadArea] = useState(false);
-  const illustrations = form.watch("illustrations") || [];
+  const illustrations = form.watch("illustrationImages") || [];
   const maxImages = 4;
+
+  useEffect(() => {
+    if (illustrations.length > 0) {
+      setShowUploadArea(true);
+    }
+  }, [illustrations]);
 
   const handleAddIllustration = (file: File, preview: string) => {
     const currentIllustrations = form.getValues("illustrations") || [];
     if (currentIllustrations.length < maxImages) {
-      const newIllustrations = [...currentIllustrations, { url: preview, type: 'illustration' }];
+      const newIllustrations = [
+        ...currentIllustrations,
+        { url: preview, type: "illustration" },
+      ];
       form.setValue("illustrations", newIllustrations);
     }
   };
 
   const handleRemoveIllustration = (index: number) => {
     const currentIllustrations = form.getValues("illustrations") || [];
-    const newIllustrations = currentIllustrations.filter((_:any, i :any) => i !== index);
+    const newIllustrations = currentIllustrations.filter(
+      (_: any, i: any) => i !== index
+    );
     form.setValue("illustrations", newIllustrations);
   };
 
@@ -59,7 +77,7 @@ export function IllustrationsUpload({ form }: IllustrationsUploadProps) {
             <p className="text-sm text-muted-foreground">
               Adicione até 4 imagens ilustrativas que aparecerão no orçamento.
             </p>
-            
+
             <FormField
               control={form.control}
               name="illustrations"
@@ -69,12 +87,15 @@ export function IllustrationsUpload({ form }: IllustrationsUploadProps) {
                     {Array.from({ length: maxImages }).map((_, index) => {
                       const illustration = illustrations[index];
                       return (
-                        <div key={index} className="aspect-square border-2 border-dashed border-gray-300 rounded-lg p-2 hover:border-gray-400 transition-colors">
+                        <div
+                          key={index}
+                          className="aspect-square border-2 border-dashed border-gray-300 rounded-lg p-2 hover:border-gray-400 transition-colors"
+                        >
                           {illustration ? (
                             <div className="relative w-full h-full">
-                              <img 
-                                src={illustration.url} 
-                                alt={`Ilustração ${index + 1}`} 
+                              <img
+                                src={illustration.url}
+                                alt={`Ilustração ${index + 1}`}
                                 className="w-full h-full object-cover rounded-md"
                               />
                               <Button
@@ -90,9 +111,10 @@ export function IllustrationsUpload({ form }: IllustrationsUploadProps) {
                           ) : (
                             <div className="w-full h-full">
                               <FileUpload
-                                onFileUploaded={(file, preview) => handleAddIllustration(file, preview)}
+                                onFileUploaded={(file, preview) =>
+                                  handleAddIllustration(file, preview)
+                                }
                                 compact={true}
-                               
                               />
                             </div>
                           )}

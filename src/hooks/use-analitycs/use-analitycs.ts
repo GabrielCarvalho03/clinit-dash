@@ -129,8 +129,9 @@ export const useAnalytics = create<AnalyticsStore>((set, get) => ({
   },
 
   getClinicProfileDescription: (dentistId: FilterType, quotes: Quote[]) => {
-    const { getProfileDisplayName, mostCommonProfileData } =
+    const { getProfileDisplayName, mostCommonProfileData, dentists } =
       useAnalytics.getState();
+
     const filtered =
       dentistId === "all"
         ? quotes
@@ -152,7 +153,17 @@ export const useAnalytics = create<AnalyticsStore>((set, get) => ({
       b[1] > a[1] ? b : a
     )[0] as PatientProfile;
 
-    const analiticsClinic: string = `Sua clínica atende majoritariamente pacientes com perfil ${getProfileDisplayName(
+    // Pega o nome do dentista, se for um específico
+    const dentistName =
+      dentistId !== "all"
+        ? dentists.find((d) => d.id === dentistId)?.name ?? "Este dentista"
+        : null;
+
+    const intro = dentistName
+      ? `O dentista ${dentistName} atende majoritariamente pacientes com perfil`
+      : `Sua clínica atende majoritariamente pacientes com perfil`;
+
+    const analiticsClinic: string = `${intro} ${getProfileDisplayName(
       mostCommonProfileData.psychologicalProfile
     )}, com idade média de ${
       mostCommonProfileData.avgAge
@@ -160,30 +171,25 @@ export const useAnalytics = create<AnalyticsStore>((set, get) => ({
       mostCommonProfileData.relationshipAvg
     }. O tratamento mais orçado é ${
       mostCommonProfileData.mostCommonTreatment
-    }. O valor médio dos orçamentos é de R$ ${Intl.NumberFormat("pt-BR", {
+    }. O valor médio dos orçamentos é de ${Intl.NumberFormat("pt-BR", {
       style: "currency",
       currency: "BRL",
     }).format(
       Number(mostCommonProfileData.avgTicket)
     )}. O perfil que mais fecha orçamentos é ${getProfileDisplayName(
       mostCommonProfileData.psychologicalProfile
-    )},o que indica uma oportunidade para redirecionar esforços de captação.`;
+    )}, o que indica uma oportunidade para redirecionar esforços de captação.`;
 
     switch (mostCommon) {
       case "aesthetic-emotional":
-        return analiticsClinic;
       case "aesthetic-rational":
-        return analiticsClinic;
       case "health-emotional":
-        return analiticsClinic;
-      // "Preza pela saúde e valoriza o atendimento emocional";
       case "health-rational":
         return analiticsClinic;
       default:
         return "Perfil não definido";
     }
   },
-
   generateAnalytics: (quotes, paidQuotes, dentistFilter) => {
     const filtered =
       dentistFilter === "all"

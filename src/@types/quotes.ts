@@ -40,9 +40,10 @@ export interface Quote {
   patientProfile?: PatientProfile;
   patientAge?: number;
   illustrations: {
-    url:string , 
-    type:string
-  }[]
+    url: string;
+    type: string;
+  }[];
+
   patientBirthdate?: Date;
   ageGroup: "child" | "teen" | "youngAdult" | "adult" | "middleAge" | "senior";
   relationship:
@@ -62,6 +63,7 @@ export interface Quote {
   validityDays?: number;
   validityCustomDate?: Date;
   attachment?: string;
+  customOriginalPrice?: number;
 }
 
 // PDF export interface
@@ -82,9 +84,9 @@ export interface QuotePdf {
     };
   };
   illustrations: {
-    url:string , 
-    type:string
-  }[]
+    url: string;
+    type: string;
+  }[];
   createdAt?: string;
   customOriginalPrice?: number;
   dentist: {

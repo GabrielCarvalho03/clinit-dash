@@ -71,13 +71,13 @@ export const ClinicForm = ({
 
   const handleAddDentist = () => {
     const newDentist: Dentist = {
-      id: `new-dentist-${Date.now()}`,
+      id: ``,
       name: "",
       photo: "",
       specialty: "",
     };
 
-    let aux = [...dentists, newDentist];
+    let aux = [newDentist, ...dentists];
 
     setDentists(aux);
   };
@@ -152,7 +152,7 @@ export const ClinicForm = ({
       },
     };
     setSaveIsLoading(true);
-    if(clinic.firstLogin){
+    if (clinic.firstLogin) {
       treatmentDefaultList.map(async (treatment) => {
         await api.post("/treatments/create", {
           clinicId: clinic.id,
@@ -162,9 +162,9 @@ export const ClinicForm = ({
           price: treatment.price,
         });
       });
-     }
+    }
     const save = await api.post("/user/update", obj);
-     
+
     setSaveIsLoading(false);
     console.log("save", save);
 

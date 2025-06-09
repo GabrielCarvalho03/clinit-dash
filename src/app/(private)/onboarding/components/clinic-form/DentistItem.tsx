@@ -17,17 +17,20 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { useAnalytics } from "@/hooks/use-analitycs/use-analitycs";
 
 interface DentistItemProps {
   dentist: Dentist;
   onUpdate: (dentist: Dentist) => void;
   onRemove: (id: string) => void;
+  index: number;
 }
 
 export const DentistItem = ({
   dentist,
   onUpdate,
   onRemove,
+  index,
 }: DentistItemProps) => {
   const [isEditing, setIsEditing] = useState(dentist.name === "");
   const [name, setName] = useState(dentist.name);
@@ -35,6 +38,7 @@ export const DentistItem = ({
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const { dentists, setDentists } = useAnalytics();
 
   // Ensure photo state is updated when dentist prop changes
   useEffect(() => {
@@ -89,6 +93,11 @@ export const DentistItem = ({
   const handleDelete = () => {
     onRemove(dentist.id);
     setDeleteDialogOpen(false);
+  };
+  const handleDeleteList = () => {
+    const ewDentists = dentists.filter((d, i) => i !== index);
+
+    setDentists(ewDentists);
   };
 
   return (
@@ -156,7 +165,7 @@ export const DentistItem = ({
                         setSpecialty(dentist.specialty || "");
                         setIsEditing(false);
                       } else {
-                        onRemove(dentist.id);
+                        handleDeleteList();
                       }
                     }}
                     type="button"

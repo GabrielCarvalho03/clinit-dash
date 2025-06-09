@@ -7,6 +7,8 @@ import {
 } from "@/components/ui/card";
 import { formatCurrency } from "@/utils/formart";
 import { PatientProfile } from "@/@types/quotes";
+import { useQuote } from "@/hooks/use-cotes/use-cotes";
+import { useAnalytics } from "@/hooks/use-analitycs/use-analitycs";
 
 type ProfileType = "common" | "conversion";
 
@@ -33,6 +35,7 @@ export const ProfileAnalyticsCard = ({
   mostCommonTreatment,
   getProfileDisplayName,
 }: ProfileAnalyticsCardProps) => {
+  const { treatmentStats } = useAnalytics();
   // Define background color based on card type
   const getBgColor = () => {
     if (type === "common") {
@@ -78,9 +81,9 @@ export const ProfileAnalyticsCard = ({
         </CardDescription>
       </CardHeader>
       <CardContent>
-        {!hasData ? (
+        {treatmentStats.length === 0 ? (
           <div className="text-center py-4 text-gray-500">
-            Dados insuficientes para análise
+            Sem orçamentos registrados
           </div>
         ) : (
           <div className="space-y-4">

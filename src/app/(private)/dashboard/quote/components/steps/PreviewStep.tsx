@@ -60,8 +60,6 @@ export const PreviewStep = ({
   };
 
   const handleConfirmSave = async () => {
-    // Só envia o formulário se ainda não foi salvo
-    console.log("formValues", formValues);
     if (!quoteSaved) {
       await onSubmit(formValues);
       setSuccessMessage(

@@ -204,7 +204,10 @@ export const QuotePreviewPDF = ({
                   className="flex justify-between items-start border-b border-gray-100 last:border-b-0 pb-1 last:pb-0"
                 >
                   <div className="flex-grow pr-3 -mt-[2.5px]">
-                    <h3 className="font-semibold text-xs text-gray-800">
+                    <h3
+                      id="treatmentName"
+                      className="font-semibold text-xs text-gray-800"
+                    >
                       {treatment.name}
                     </h3>
                     <p

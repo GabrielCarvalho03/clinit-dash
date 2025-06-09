@@ -44,7 +44,7 @@ export const SupportWidget = ({ isCollapsed = false }: SupportWidgetProps) => {
               </p>
               <button
                 onClick={handleSupportClick}
-                className="w-full text-xs bg-primary text-primary-foreground px-3 py-2 rounded-md hover:bg-primary/90 transition-colors font-medium shadow-sm"
+                className="w-10/12 text-xs bg-primary text-primary-foreground px-3 py-2 rounded-md hover:bg-primary/90 transition-colors font-medium shadow-sm"
               >
                 Fale conosco
               </button>

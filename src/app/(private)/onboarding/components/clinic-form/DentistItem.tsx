@@ -91,7 +91,11 @@ export const DentistItem = ({
   };
 
   const handleDelete = () => {
-    onRemove(dentist.id);
+    if (dentist.id) {
+      onRemove(dentist.id);
+    } else {
+      handleDeleteList();
+    }
     setDeleteDialogOpen(false);
   };
   const handleDeleteList = () => {

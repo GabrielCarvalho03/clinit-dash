@@ -21,7 +21,7 @@ interface IllustrationsUploadProps {
 
 export function IllustrationsUpload({ form }: IllustrationsUploadProps) {
   const [showUploadArea, setShowUploadArea] = useState(false);
-  const illustrations = form.watch("illustrationImages") || [];
+  const illustrations = form.watch("illustrations") || [];
   const maxImages = 4;
 
   useEffect(() => {

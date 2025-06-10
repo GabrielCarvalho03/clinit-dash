@@ -33,7 +33,7 @@ export const ClinicProfileDescription = ({
       <CardContent>
         {data.length < 2 ? (
           <div className="text-center py-4 text-gray-500">
-            {"Adicione pelo menos dois orçamentos para gerar um perfil."}
+            {"Adicione pelo menos um orçamentos para gerar um perfil."}
           </div>
         ) : (
           <p className="text-gray-700">{description}</p>

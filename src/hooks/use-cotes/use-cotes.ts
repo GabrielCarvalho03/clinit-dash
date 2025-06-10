@@ -86,22 +86,9 @@ export const useQuote = create<QuoteStore>((set, get) => {
     setLoadingDeleteQuote: (value: boolean) =>
       set({ loadingDeleteQuote: value }),
     createQuote: async (quote: Quote) => {
-      const { clinic, setClinic } = useAuth.getState();
+      const { clinic } = useAuth.getState();
       const { quotes, setQuotes } = useQuote.getState();
-      const getClinic = await getUserRefresh(setClinic);
 
-      if (!clinic) {
-        toast.error("Erro", {
-          description: ` Vocé precisa estar logado para criar orçamentos`,
-        });
-        return;
-      }
-      // Verificação para evitar duplicação
-      const existingQuote = quotes?.find((q) => q.id === quote.id);
-      if (existingQuote) {
-        console.log("Orçamento já existe, não será duplicado:", quote.id);
-        return quote;
-      }
       let newQuote = {
         ...quote,
         ageGroup: quote.ageGroup,
@@ -177,8 +164,14 @@ export const useQuote = create<QuoteStore>((set, get) => {
       const { quotes, setQuotes, setLoadingUpdateQuote } = useQuote.getState();
 
       setLoadingUpdateQuote(true);
+
+      const adaper = {
+        ...quote,
+        illustrations: quote.illustrations,
+      };
+
       try {
-        const res = await api.post("/quotes/update", quote);
+        const res = await api.post("/quotes/update", adaper);
         const updatedQuotes = quotes.map((q) =>
           q.id === quote.id ? quote : q
         );

@@ -62,7 +62,7 @@ export const quoteSchema = z.object({
   paymentPreviewText: z.string().optional(),
   validityDays: z.number().optional(),
   validityCustomDate: z.date().optional(),
-  illustrationImages: z
+  illustrations: z
     .array(
       z.object({
         url: z.string(),

@@ -28,8 +28,7 @@ export const QuoteSteps = ({ isEdit = false }: QuoteStepsProps) => {
   const [hasCreatedQuote, setHasCreatedQuote] = useState(false);
   const { createQuote, updateQuote, draftQuote, setDraftQuote, quotes } =
     useQuote();
-  const { dentists } = useAnalytics();
-  const { clinic, user } = useAuth();
+  const { user } = useAuth();
   const router = useRouter();
   console.log("isEdit", draftQuote);
   const isEditMode =
@@ -60,7 +59,7 @@ export const QuoteSteps = ({ isEdit = false }: QuoteStepsProps) => {
       paymentPreviewText: draftQuote?.paymentPreviewText || "",
       validityDays: draftQuote?.validityDays || undefined,
       validityCustomDate: draftQuote?.validityCustomDate || undefined, // Já é opcional no schema
-      illustrationImages: draftQuote?.illustrations || [],
+      illustrations: draftQuote?.illustrations || [],
       customOriginalPrice: draftQuote?.customOriginalPrice || undefined,
     },
   });
@@ -108,6 +107,8 @@ export const QuoteSteps = ({ isEdit = false }: QuoteStepsProps) => {
       } else {
         finalQuote = {
           ...data,
+          illustrations: data?.illustrations || null,
+          customOriginalPrice: data?.customOriginalPrice || null,
           id: crypto.randomUUID(),
           dentistId: data.dentistId || user?.id || "",
           createdAt: new Date(),

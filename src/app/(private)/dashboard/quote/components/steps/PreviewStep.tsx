@@ -48,6 +48,7 @@ export const PreviewStep = ({
 
   const formValues = form.getValues();
   const dentist = dentists?.find((d) => d.id === formValues.dentistId);
+  console.log("dentist:", dentist);
 
   const missingImages = [];
   if (!clinic?.logo) missingImages.push("logo da clínica");

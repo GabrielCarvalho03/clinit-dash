@@ -37,7 +37,7 @@ export const ClinicForm = ({
   initialActiveTab = "clinic",
   showSingleView = false,
 }: ClinicFormProps) => {
-  const { clinic, setClinic, setIsLoading, isLoading } = useAuth();
+  const { clinic, setClinic } = useAuth();
   const { dentists, setDentists } = useAnalytics();
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(
@@ -71,7 +71,7 @@ export const ClinicForm = ({
 
   const handleAddDentist = () => {
     const newDentist: Dentist = {
-      id: ``,
+      id: crypto.randomUUID(),
       name: "",
       photo: "",
       specialty: "",

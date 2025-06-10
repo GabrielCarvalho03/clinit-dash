@@ -35,7 +35,7 @@ export const SupportWidget = ({ isCollapsed = false }: SupportWidgetProps) => {
             <div className="mt-0.5 p-1.5 rounded-md bg-primary/10">
               <MessageCircle size={16} className="text-primary" />
             </div>
-            <div className="flex-1">
+            <div className="w-10/12">
               <h4 className="text-sm font-semibold text-foreground mb-1">
                 Precisa de ajuda?
               </h4>

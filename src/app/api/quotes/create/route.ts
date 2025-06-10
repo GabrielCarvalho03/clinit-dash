@@ -11,7 +11,7 @@ export async function POST(req: Request) {
       clinicId: body.clinicId,
       id: uuid(),
       ageGroup: body.ageGroup,
-      anchoragePercentage: body.anchoragePercentage,
+      anchoragePercentage: body.anchoragePercentage ?? null,
       dentistId: body.dentistId,
       downPayment: body.downPayment,
       gift: body.gift,

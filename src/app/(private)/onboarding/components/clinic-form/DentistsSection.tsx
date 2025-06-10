@@ -17,11 +17,18 @@ export const DentistsSection = ({
 }: DentistsSectionProps) => {
   const { dentists } = useAnalytics();
 
+  const hasNewDentistEditing = dentists.some((d) => d.name === "");
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-semibold">Dentistas Cadastrados</h3>
-        <Button type="button" onClick={handleAddDentist} size="sm">
+        <Button
+          type="button"
+          onClick={handleAddDentist}
+          size="sm"
+          disabled={hasNewDentistEditing} // desabilita aqui
+        >
           <Plus className="mr-2 h-4 w-4" />
           Adicionar Dentista
         </Button>
@@ -32,7 +39,11 @@ export const DentistsSection = ({
           <p className="text-muted-foreground mb-4">
             Nenhum dentista cadastrado
           </p>
-          <Button type="button" onClick={handleAddDentist}>
+          <Button
+            type="button"
+            onClick={handleAddDentist}
+            disabled={hasNewDentistEditing} // e aqui também
+          >
             <Plus className="mr-2 h-4 w-4" />
             Adicionar Dentista
           </Button>

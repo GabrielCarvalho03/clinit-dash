@@ -14,13 +14,13 @@ export async function POST(req: Request) {
       .doc(docId)
       .update({
         ageGroup: body.ageGroup,
-        anchoragePercentage: body.anchoragePercentage,
+        anchoragePercentage: body.anchoragePercentage ?? null,
         dentistId: body.dentistId,
         downPayment: body.downPayment,
         gift: body.gift,
         installments: body.installments,
         observations: body.observations,
-        illustrations:body.illustrations,
+        illustrations: body.illustrations,
         patientAge: body.patientAge,
         patientBirthdate: body.patientBirthdate,
         patientGender: body.patientGender,

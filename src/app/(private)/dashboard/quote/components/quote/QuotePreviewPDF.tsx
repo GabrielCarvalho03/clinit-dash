@@ -230,7 +230,7 @@ export const QuotePreviewPDF = ({
 
         {/* Illustrations Section - Positioned before justification */}
         {hasImages && (
-          <div className="mb-0">
+          <div id="ilustrationsMain" className="mb-0">
             <h2 className="text-sm font-bold text-gray-800 ">Ilustrações</h2>
             <div
               id="ilustrationsContainer"

@@ -111,6 +111,13 @@ export async function generateProposalPDF({ setExporting, quote }: Props) {
       (descriptionTreatment as HTMLElement).style.paddingBottom = "4px";
     });
 
+    const ilustrationsMain = clone.querySelector(
+      "#ilustrationsMain"
+    ) as HTMLElement;
+    if (ilustrationsMain) {
+      ilustrationsMain.style.marginTop = "-5px";
+    }
+
     const ilustrationsContainer = clone.querySelector(
       "#ilustrationsContainer"
     ) as HTMLElement;

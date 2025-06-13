@@ -49,6 +49,7 @@ export const prepareQuotePdfData = (
       cnpj: clinic.cnpj,
       socialMedia: clinic.socialMedia,
     },
+    anchoragePercentage: formValues.anchoragePercentage,
     illustrations: formValues.illustrations,
     dentist: {
       name: dentist?.name,

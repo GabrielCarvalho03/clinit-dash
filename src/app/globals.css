@@ -3,11 +3,11 @@
 
 :root {
   --color-red-50: #fef2f2;
-  --color-red-300:#ffa2a2;
+  --color-red-300: #ffa2a2;
   --color-red-500: #fb2c36;
   --color-red-600: #e7000b;
   --color-amber-50: #fffbeb;
-  --color-amber-100:#fef3c6;
+  --color-amber-100: #fef3c6;
   --color-amber-200: #fee685;
   --color-amber-600: #e17100;
   --color-amber-700: #bb4d00;
@@ -36,9 +36,9 @@
   --color-gray-600: #4a5565;
   --color-gray-700: #364153;
   --color-gray-800: #1e2939;
-  --color-purple-100:#f3e8ff;
-  --color-purple-200:#e9d4ff;
-  --color-purple-800:#6e11b0;
+  --color-purple-100: #f3e8ff;
+  --color-purple-200: #e9d4ff;
+  --color-purple-800: #6e11b0;
 }
 
 @custom-variant dark (&:is(.dark *));
@@ -96,5 +96,6 @@
 
   body {
     @apply bg-background text-foreground;
+    overflow-y: hidden;
   }
 }

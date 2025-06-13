@@ -119,6 +119,7 @@ export interface QuotePdf {
   paymentPreviewText: string;
   downPayment?: number;
   installments?: number;
+  anchoragePercentage: number | undefined;
 }
 
 export type AgeGroup = Quote["ageGroup"];

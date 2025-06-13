@@ -112,6 +112,7 @@ export function FinalizationStep({ form }: any) {
     form.watch("customOriginalPrice"),
   ]);
 
+  console.log("anchoragePercentage", form.getValues("anchoragePercentage"));
   // --- MANIPULADORES DE EVENTOS ---
 
   // Handler da Validade (reintegrado como no original)
@@ -171,6 +172,8 @@ export function FinalizationStep({ form }: any) {
               value={
                 anchorageMode === "custom"
                   ? "custom"
+                  : form.getValues("anchoragePercentage")
+                  ? String(form.getValues("anchoragePercentage")) // Certifique-se que é String
                   : String(field.value || "0")
               }
             >

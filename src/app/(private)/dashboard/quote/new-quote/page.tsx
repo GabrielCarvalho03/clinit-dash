@@ -33,7 +33,7 @@ const NewQuote = () => {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 ">
       <div>
         <h1 className="text-2xl font-bold tracking-tight">Novo Orçamento</h1>
         <p className="text-muted-foreground">

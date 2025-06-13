@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Clinitt Dash",
+  title: "Clinitt.ai | Dashboard ",
   description: "Orçamentos Odontológicos Estratégicos",
 };
 

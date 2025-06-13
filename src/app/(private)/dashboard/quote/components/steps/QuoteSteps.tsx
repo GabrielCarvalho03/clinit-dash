@@ -52,6 +52,8 @@ export const QuoteSteps = ({ isEdit = false }: QuoteStepsProps) => {
       gift: draftQuote?.gift || "", // Pode ser vazio ou algum valor padrão
       anchoragePercentage: draftQuote?.customOriginalPrice
         ? "custom"
+        : draftQuote?.anchoragePercentage
+        ? draftQuote?.anchoragePercentage
         : undefined,
       downPayment: draftQuote?.downPayment || 0,
       installments: draftQuote?.installments || 1,
@@ -159,7 +161,7 @@ export const QuoteSteps = ({ isEdit = false }: QuoteStepsProps) => {
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto">
+    <div className="w-full max-w-4xl mx-auto ">
       <StepsProgress
         currentStep={step}
         onStepClick={(step: number) =>

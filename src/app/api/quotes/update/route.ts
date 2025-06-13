@@ -22,6 +22,7 @@ export async function POST(req: Request) {
         observations: body.observations,
         illustrations: body.illustrations,
         patientAge: body.patientAge,
+        customOriginalPrice: body.customOriginalPrice,
         patientBirthdate: body.patientBirthdate,
         patientGender: body.patientGender,
         patientName: body.patientName,

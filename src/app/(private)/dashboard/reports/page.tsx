@@ -73,7 +73,7 @@ import { prepareQuotePdfData } from "@/utils/quoteDataPreparation";
 import { useRouter } from "next/navigation";
 import { useAnalytics } from "@/hooks/use-analitycs/use-analitycs";
 import { getUserRefresh } from "@/utils/get-user-refresh";
-import { MyPDFDocument } from "./pdf/rerender";
+import { MyPDFDocument } from "./components/pdf/rerender";
 import { pdf } from "@react-pdf/renderer";
 import { api } from "@/lib/axios/axios";
 import { CardInfoReports } from "./components/card-info-reports/card-info-reports";

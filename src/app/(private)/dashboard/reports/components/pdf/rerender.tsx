@@ -12,11 +12,11 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { QuotePdf } from "@/@types/quotes";
 import path from "path";
-import WhatsapIcon from "../../../../../../public/png/whatsapp_logo.png";
-import globe from "../../../../../../public/png/globe.png";
-import instagram from "../../../../../../public/png/instagram.png";
-import facebook from "../../../../../../public/png/facebook.png";
-import giftIcon from "../../../../../../public/png/gift.png";
+import WhatsapIcon from "../../../../../../../public/png/whatsapp_logo.png";
+import globe from "../../../../../../../public/png/globe.png";
+import instagram from "../../../../../../../public/png/instagram.png";
+import facebook from "../../../../../../../public/png/facebook.png";
+import giftIcon from "../../../../../../../public/png/gift.png";
 
 // --- 1. REGISTRO DE FONTES ---
 // É CRÍTICO que você registre as fontes que seu Tailwind CSS usa
@@ -142,7 +142,7 @@ const styles = StyleSheet.create({
     width: "48%", // Divide em duas colunas
   },
   infoTitle: {
-    fontSize: 10, // text-sm
+    fontSize: 9, // text-sm
     fontFamily: "Roboto",
     fontWeight: "bold", // font-bold
     marginBottom: 4, // mb-1 (aproximado)
@@ -178,7 +178,7 @@ const styles = StyleSheet.create({
 
   // Proposta de Tratamento
   sectionHeading: {
-    fontSize: 12, // text-sm
+    fontSize: 9, // text-sm
     fontFamily: "Roboto", // font-bold
     fontWeight: "bold",
     color: textGray800,
@@ -187,7 +187,7 @@ const styles = StyleSheet.create({
   },
 
   sectionProposta: {
-    fontSize: 12, // text-sm
+    fontSize: 9, // text-sm
     fontFamily: "Roboto", // font-bold
     fontWeight: "bold",
     color: textGray800,
@@ -195,7 +195,7 @@ const styles = StyleSheet.create({
     marginTop: 5, // Espaçamento entre seções
   },
   TextProcedimentos: {
-    fontSize: 12, // text-sm
+    fontSize: 9, // text-sm
     fontFamily: "Roboto", // font-bold
     fontWeight: "bold",
     color: textGray800,
@@ -204,7 +204,7 @@ const styles = StyleSheet.create({
   },
 
   sectionIlustrações: {
-    fontSize: 12, // text-sm
+    fontSize: 9, // text-sm
     fontFamily: "Roboto", // font-bold
     fontWeight: "bold",
     color: textGray800,
@@ -291,7 +291,7 @@ const styles = StyleSheet.create({
   illustrationImage: {
     maxHeight: 140, // h-44 (aprox. 176px), ajustar para 140px como no PDF de exemplo
     maxWidth: 150, // max-w-[150px]
-    objectFit: "contain",
+    objectFit: "cover",
     borderRadius: 2, // rounded-sm
     borderWidth: 1,
     borderColor: "#E5E7EB", // border-gray-200
@@ -305,7 +305,7 @@ const styles = StyleSheet.create({
 
   // Justification
   justificationText: {
-    marginTop: 10, // my-2
+    marginTop: 9, // my-2
     marginBottom: 0, // my-2
     fontSize: 10, // text-sm
     fontFamily: "Roboto", // font-semibold
@@ -422,7 +422,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     fontFamily: "Roboto",
     fontWeight: "bold", // font-bold
-    fontSize: 10, // text-xs
+    fontSize: 9, // text-xs
     color: green700, // text-green-700
     marginBottom: 4, // mb-1
   },
@@ -444,7 +444,7 @@ const styles = StyleSheet.create({
   // Contact Section
   contactSection: {
     marginTop: 8, // mt-3
-    paddingTop: 8, // pt-2
+    paddingTop: 4, // pt-2
     borderTopWidth: 1,
     borderTopColor: "#E5E7EB", // border-gray-200
     flexDirection: "column",
@@ -459,8 +459,9 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   phoneNumbersContainer: {
+    marginTop: "-1px",
     flexDirection: "row",
-    flexWrap: "wrap",
+    flexWrap: "nowrap",
     justifyContent: "center",
     gap: 12, // gap-3 (aprox. 12px)
     marginBottom: 4, // mb-2
@@ -481,8 +482,8 @@ const styles = StyleSheet.create({
   },
   socialMediaContainer: {
     flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "center",
+    flexWrap: "nowrap",
+    justifyContent: "flex-start",
     gap: 12, // gap-3
   },
   socialMediaLink: {
@@ -501,48 +502,6 @@ const styles = StyleSheet.create({
     opacity: 0.5, // Ajusta a opacidade
   },
 });
-
-// --- 4. COMPONENTE DO DOCUMENTO PDF ---
-// Interface para os dados do quote (similar à sua)
-// export interface QuotePdfData {
-//   clinic: {
-//     logo?: string;
-//     name: string;
-//     cnpj?: string;
-//     address: string;
-//     phoneNumber?: string;
-//     phoneNumber2?: string;
-//     socialMedia?: {
-//       whatsapp?: string;
-//       website?: string;
-//       instagram?: string;
-//       facebook?: string;
-//     };
-//   };
-//   dentist: {
-//     photo?: string;
-//     name: string;
-//     specialty: string;
-//   };
-//   patientName: string;
-//   patientGender?: string;
-//   patientProfile?: string;
-//   date: string;
-//   validUntil: string;
-//   treatments: Array<{
-//     name: string;
-//     description: string;
-//     originalPrice: number;
-//     discountPrice: number;
-//   }>;
-//   gift?: string;
-//   observations?: string;
-//   justification?: string;
-//   paymentConditions?: string;
-//   paymentPreviewText: string;
-//   customOriginalPrice?: number;
-//   illustrations?: Array<{ url: string; type: string }>;
-// }
 
 interface MyPDFDocumentProps {
   quoteData: QuotePdf;
@@ -694,7 +653,9 @@ export const MyPDFDocument = ({ quoteData }: MyPDFDocumentProps) => {
         {/* Pricing Section */}
         <View
           style={
-            anchoragePercentage ? styles.pricingSection : styles.pricingSolo
+            anchoragePercentage || customOriginalPrice
+              ? styles.pricingSection
+              : styles.pricingSolo
           }
         >
           {hasDiscount && (
@@ -852,71 +813,3 @@ export const MyPDFDocument = ({ quoteData }: MyPDFDocumentProps) => {
     </Document>
   );
 };
-
-// Como usar (exemplo no seu App.tsx ou arquivo de teste):
-// import { PDFViewer, pdf } from '@react-pdf/renderer';
-// import { saveAs } from 'file-saver';
-// import { MyPDFDocument } from './MyPDFDocument'; // Onde você salvou o código acima
-
-// // Seus dados de teste ou reais (similar à sua interface QuotePdf)
-// const mockQuoteData = {
-//   clinic: {
-//     logo: 'https://via.placeholder.com/150/0000FF/FFFFFF?text=Clinitt', // URL real do seu logo
-//     name: 'clinit Gabriel',
-//     cnpj: '34534535345353',
-//     address: 'Rua Barra da Forquilha',
-//     phoneNumber: '35345353535',
-//     phoneNumber2: '35353534535',
-//     socialMedia: {
-//       whatsapp: '@clinitt.whatsapp',
-//       website: 'clinitt.ai',
-//       instagram: '@clinitt.ai',
-//       facebook: 'clinitt.facebook'
-//     }
-//   },
-//   dentist: {
-//     photo: 'https://via.placeholder.com/50/FF0000/FFFFFF?text=Dentist', // URL real da foto do dentista
-//     name: 'André',
-//     specialty: 'Ortodontia',
-//   },
-//   patientName: 'Gabriel',
-//   patientGender: 'masculino',
-//   patientProfile: 'paciente',
-//   date: '2025-06-12T00:00:00.000Z',
-//   validUntil: '2025-06-15T00:00:00.000Z',
-//   treatments: [
-//     { name: "Clareamento Dental", description: "Procedimento estético que remove manchas e clareia o tom dos dentes, devolvendo o brilho natural do sorriso.", originalPrice: 800, discountPrice: 800 },
-//     { name: "Facetas de Porcelana", description: "Lâminas finas de porcelana fixadas na frente dos dentes para melhorar a estética do sorriso.", originalPrice: 1500, discountPrice: 1500 },
-//     { name: "Aparelho Ortodontico", description: "Correção do posicionamento dos dentes e da mordida, melhorando a estética e função.", originalPrice: 4000, discountPrice: 4000 },
-//   ],
-//   gift: 'kit festa',
-//   observations: '', // ou 'Observações adicionais aqui.'
-//   justification: 'Como forma de boas-vindas à nossa clínica, estamos oferecendo uma condição especial para sua primeira experiência conosco.',
-//   paymentConditions: 'R$ 6.300,00', // Ou um texto mais detalhado
-//   paymentPreviewText: 'R$ 6.300,00',
-//   customOriginalPrice: 7560.00, // Se houver um preço original diferente da soma dos tratamentos
-//   illustrations: [
-//     { url: 'https://via.placeholder.com/150/00FF00/000000?text=Ilustracao1', type: 'treatment' }, // URL real da imagem 1
-//     { url: 'https://via.placeholder.com/150/0000FF/000000?text=Ilustracao2', type: 'treatment' }, // URL real da imagem 2
-//   ],
-// };
-
-// // Componente React para renderizar o PDF
-// function MyApp() {
-//   const handleDownload = async () => {
-//     const doc = <MyPDFDocument quoteData={mockQuoteData} />;
-//     const blob = await pdf(doc).toBlob();
-//     saveAs(blob, 'proposta.pdf');
-//   };
-
-//   return (
-//     <div>
-//       <button onClick={handleDownload}>Baixar PDF</button>
-//       <PDFViewer style={{ width: '100%', height: '80vh' }}>
-//         <MyPDFDocument quoteData={mockQuoteData} />
-//       </PDFViewer>
-//     </div>
-//   );
-// }
-
-// export default MyApp;

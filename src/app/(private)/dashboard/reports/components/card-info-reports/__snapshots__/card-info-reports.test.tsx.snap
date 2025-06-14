@@ -1,0 +1,32 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`CardInfoReports should render CardInfoReports correctly 1`] = `
+<DocumentFragment>
+  <div
+    class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm flex-1"
+    data-slot="card"
+  >
+    <div
+      class="@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 pb-2"
+      data-slot="card-header"
+    >
+      <div
+        class="text-sm font-medium"
+        data-slot="card-title"
+      >
+        Test
+      </div>
+    </div>
+    <div
+      class="px-6"
+      data-slot="card-content"
+    >
+      <p
+        class="text-2xl font-bold"
+      >
+        Test
+      </p>
+    </div>
+  </div>
+</DocumentFragment>
+`;

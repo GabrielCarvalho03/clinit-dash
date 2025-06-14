@@ -76,6 +76,7 @@ import { getUserRefresh } from "@/utils/get-user-refresh";
 import { MyPDFDocument } from "./pdf/rerender";
 import { pdf } from "@react-pdf/renderer";
 import { api } from "@/lib/axios/axios";
+import { CardInfoReports } from "./components/card-info-reports/card-info-reports";
 
 type SortField = "patient" | "dentist" | "date" | "value" | "status";
 type SortOrder = "asc" | "desc";
@@ -160,10 +161,6 @@ const Reports = () => {
   const conversionRate =
     totalQuotes > 0 ? (paidQuotesCount / totalQuotes) * 100 : 0;
 
-  // {
-  //   setExporting: React.Dispatch<React.SetStateAction<boolean>>;
-  //   quote?: QuotePdf;
-  // }
   async function getBase64FromUrl(url: string): Promise<string> {
     // Se a URL já for Base64 ou Blob, retorna ela mesma
     if (url.startsWith("data:") || url.startsWith("blob:")) {
@@ -403,54 +400,25 @@ const Reports = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <Card className="flex-1">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">
-              Total de Orçamentos
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">{totalQuotes}</p>
-          </CardContent>
-        </Card>
+        <CardInfoReports
+          title="Total de Orçamentos"
+          text={totalQuotes.toString()}
+        />
 
-        <Card className="flex-1">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">
-              Valor Total Orçado
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">{formatCurrency(totalValue)}</p>
-          </CardContent>
-        </Card>
+        <CardInfoReports
+          title="Valor Total Orçado"
+          text={formatCurrency(totalValue)}
+        />
 
-        <Card className="flex-1">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">
-              Valor Total Vendido
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">
-              {formatCurrency(paidQuotesValue)}
-            </p>
-            <p className="text-xs text-muted-foreground">
-              {paidQuotesCount} orçamentos pagos
-            </p>
-          </CardContent>
-        </Card>
+        <CardInfoReports
+          title="Valor Total Vendido"
+          text={formatCurrency(paidQuotesValue)}
+        />
 
-        <Card className="flex-1">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">
-              Taxa de Conversão
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">{conversionRate.toFixed(1)}%</p>
-          </CardContent>
-        </Card>
+        <CardInfoReports
+          title="Taxa de Conversão"
+          text={conversionRate.toFixed(1) + "%"}
+        />
       </div>
 
       <Card>

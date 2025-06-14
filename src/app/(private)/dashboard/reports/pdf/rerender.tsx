@@ -277,7 +277,7 @@ const styles = StyleSheet.create({
   },
   illustrationsRow: {
     flexDirection: "row",
-    flexWrap: "wrap", // Permite quebra de linha se muitas imagens
+    flexWrap: "nowrap", // Permite quebra de linha se muitas imagens
     justifyContent: "center",
     gap: 12, // gap-3 (equivalente em pixels)
     marginBottom: 0, // Espaço entre as imagens e a legenda

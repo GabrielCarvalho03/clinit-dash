@@ -17,6 +17,9 @@ import globe from "../../../../../../../public/png/globe.png";
 import instagram from "../../../../../../../public/png/instagram.png";
 import facebook from "../../../../../../../public/png/facebook.png";
 import giftIcon from "../../../../../../../public/png/gift.png";
+import { formatPhone } from "@/utils/text-formarter/phone-formarter";
+import { formatCurrency } from "@/utils/formart";
+import { formatCNPJ } from "@/utils/text-formarter/cnpj-formarter";
 
 // --- 1. REGISTRO DE FONTES ---
 // É CRÍTICO que você registre as fontes que seu Tailwind CSS usa
@@ -65,12 +68,7 @@ const green600 = "#059669"; // text-green-600
 // Funções de formatação (para usar no ambiente do Node.js/Navegador onde o React-PDF roda)
 // Se essas funções vêm de um arquivo utilitário externo, você precisaria importá-las
 // ou recriar uma versão simples aqui.
-const formatCurrency = (value: number) =>
-  `R$ ${value.toFixed(2).replace(".", ",")}`;
-const formatCNPJ = (cnpj: string) =>
-  cnpj.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, "$1.$2.$3/$4-$5");
-const formatPhone = (phone: string) =>
-  phone.replace(/^(\d{2})(\d{5})(\d{4})$/, "($1) $2-$3");
+
 const getIntroductionText = (name: string, gender: string, profile: string) =>
   `Prezado(a) ${name}, com base na avaliação realizada, elaboramos esta proposta de tratamento especialmente para você, para atender às suas necessidades de saúde e bem-estar.`;
 
@@ -158,9 +156,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   dentistPhoto: {
-    width: 24, // w-6
-    height: 24, // h-6
-    borderRadius: 12, // rounded-full
+    width: 20, // w-6
+    height: 20, // h-6
+    borderRadius: 10, // rounded-full
     objectFit: "cover",
     marginRight: 8, // mr-2
     marginTop: "-2px",
@@ -619,9 +617,9 @@ export const MyPDFDocument = ({ quoteData }: MyPDFDocumentProps) => {
                   {treatment.description}
                 </Text>
               </View>
-              <Text style={styles.procedurePrice}>
+              {/* <Text style={styles.procedurePrice}>
                 {formatCurrency(treatment.discountPrice)}
-              </Text>
+              </Text> */}
             </View>
           ))}
         </View>

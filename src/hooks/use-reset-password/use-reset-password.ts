@@ -75,55 +75,47 @@ const html = `
     
     <div class="footer">
       <p>Equipe Clinitt.ai</p>
-      <p><a href="https://www.clinitt.ai" style="color: #006d77; text-decoration: none;">www.clinitt.ai</a></p>
+      <p><a href="www.clinitt.com.br" style="color: #006d77; text-decoration: none;">www.clinitt.ai</a></p>
     </div>
   </div>
 </body>
 </html>
 `;
 
+export const useResetPassword = create<ResetPasswordProps>((set) => ({
+  isLoading: false,
+  setIsLoading: (value) => set({ isLoading: value }),
 
+  handleUploadPassword: async (data, route, id) => {
+    const { setIsLoading } = useResetPassword.getState();
 
+    try {
+      setIsLoading(true);
+      const res = await api.post("/user/update-password", {
+        ...data,
+        clinicId: id,
+      });
+      toast("Senha configurada com sucesso!", {
+        description:
+          "Sua nova senha foi configurada. Você já pode fazer login.",
+      });
 
+      const sendMail = await api.post("/send-email", {
+        email: data.email,
+        subject: "Acesso liberado – o próximo passo com a Clinitt.ai",
+        html: html,
+      });
 
-export const useResetPassword = create<ResetPasswordProps>((set)=>({
-    isLoading :false, 
-    setIsLoading :(value) => set({isLoading:value}) , 
-
-    handleUploadPassword: async (data, route , id) => {
-        const {setIsLoading} = useResetPassword.getState(   )
-    
-        try {
-            setIsLoading(true);
-             const res = await api.post('/user/update-password',{
-                ...data, 
-                clinicId:id, 
-             })
-            toast(
-              'Senha configurada com sucesso!',
-              {
-            description: "Sua nova senha foi configurada. Você já pode fazer login.",
-          });
-
-          const sendMail = await api.post("/send-email", {
-            email: data.email,
-            subject: "Acesso liberado – o próximo passo com a Clinitt.ai",
-            html: html,
-          });
-            
-            // Redirecionar para login após sucesso
-            setTimeout(() => {
-              route.push("/login");
-            }, 2000);
-          } catch (error) {
-            toast.error('Erro ao configurar senha!',{
-              description: "Verifique seu e-mail e tente novamente",
-            });
-          } finally {
-            setIsLoading(false);
-          }
-
-        
+      // Redirecionar para login após sucesso
+      setTimeout(() => {
+        route.push("/login");
+      }, 2000);
+    } catch (error) {
+      toast.error("Erro ao configurar senha!", {
+        description: "Verifique seu e-mail e tente novamente",
+      });
+    } finally {
+      setIsLoading(false);
     }
-
-}))
+  },
+}));

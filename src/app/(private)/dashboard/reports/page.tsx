@@ -13,7 +13,6 @@ import {
   Edit,
   Eye,
   Loader2,
-  Download,
   Trash,
   ArrowUpDown,
   ArrowDown,
@@ -21,37 +20,19 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth/use-auth";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { useQuote } from "@/hooks/use-cotes/use-cotes";
-import { format, addDays, parseISO, subMonths, subYears } from "date-fns";
-import { de, ptBR } from "date-fns/locale";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
 import { formatCurrency } from "@/utils/formart";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { QuotePreviewPDF } from "@/app/(private)/dashboard/quote/components/quote/QuotePreviewPDF";
-import { QuotePdf } from "@/@types/quotes";
-import { toast } from "sonner";
-import { jsPDF } from "jspdf";
-import html2canvas from "html2canvas";
+
 import {
   Popover,
   PopoverContent,
@@ -59,87 +40,54 @@ import {
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { prepareQuotePdfData } from "@/utils/quoteDataPreparation";
 import { useRouter } from "next/navigation";
 import { useAnalytics } from "@/hooks/use-analitycs/use-analitycs";
 import { getUserRefresh } from "@/utils/get-user-refresh";
-import { MyPDFDocument } from "./components/pdf/rerender";
-import { pdf } from "@react-pdf/renderer";
-import { api } from "@/lib/axios/axios";
 import { CardInfoReports } from "./components/card-info-reports/card-info-reports";
-
-type SortField = "patient" | "dentist" | "date" | "value" | "status";
-type SortOrder = "asc" | "desc";
+import { Filter } from "./components/filter/filter";
+import { ConfirmeDeleteAlert } from "@/components/alerts/confirme-delete/confirm-delete";
+import { PdfPreview } from "./components/pdf-preview/pdf-preview";
+import { useReport } from "./hooks/use-reports";
+import { SortField } from "./hooks/types";
 
 const Reports = () => {
   const route = useRouter();
-  const { clinic, isLoading, setClinic, setIsLoading } = useAuth();
+  const { isLoading, setClinic, setIsLoading } = useAuth();
   const { dentists, handleGetDentists } = useAnalytics();
+  const { loadingDeleteQuote, loadingUpdateQuote, getQuote } = useQuote();
   const {
-    quotes,
-    loadingDeleteQuote,
-    loadingUpdateQuote,
-    editQuote,
-    updateQuoteStatus,
-    deleteQuote,
-    getQuote,
-  } = useQuote();
+    dentistFilter,
+    periodFilter,
+    startDate,
+    endDate,
+    selectedQuote,
+    viewDialogOpen,
+    deleteDialogOpen,
+    quoteToDelete,
+    quoteToUpdate,
+    exporting,
+    sortField,
+    sortOrder,
+    setSortField,
+    setSortOrder,
+    setDentistFilter,
+    setPeriodFilter,
+    setStartDate,
+    setEndDate,
+    setViewDialogOpen,
+    setDeleteDialogOpen,
+    handleEditQuote,
+    handleDeleteQuote,
+    handleStatusChange,
+    confirmDeleteQuote,
+    handleViewQuote,
+    getFilteredQuotes,
+    generateProposalPDF,
+    getSortedQuotes,
+  } = useReport();
 
-  const [dentistFilter, setDentistFilter] = useState("all");
-  const [periodFilter, setPeriodFilter] = useState("all");
-  const [startDate, setStartDate] = useState<Date | undefined>(undefined);
-  const [endDate, setEndDate] = useState<Date | undefined>(undefined);
-  const [isPreview, setIsPreview] = useState(true);
-  const [selectedQuote, setSelectedQuote] = useState<QuotePdf | null>(null);
-  const [viewDialogOpen, setViewDialogOpen] = useState(false);
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [quoteToDelete, setQuoteToDelete] = useState<string | null>(null);
-  const [quoteToUpdate, setQuoteToUpdate] = useState<string | null>(null);
-  const [exporting, setExporting] = useState(false);
-
-  // Sorting state
-  const [sortField, setSortField] = useState<SortField>("date");
-  const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
-
-  const filteredQuotes = quotes?.filter((quote) => {
-    if (dentistFilter !== "all" && quote.dentistId !== dentistFilter) {
-      return false;
-    }
-
-    if (periodFilter !== "all") {
-      const quoteDate = new Date(quote.createdAt);
-      const now = new Date();
-
-      if (periodFilter === "month") {
-        const oneMonthAgo = subMonths(now, 1);
-        if (quoteDate < oneMonthAgo) return false;
-      } else if (periodFilter === "quarter") {
-        const threeMonthsAgo = subMonths(now, 3);
-        if (quoteDate < threeMonthsAgo) return false;
-      } else if (periodFilter === "year") {
-        const oneYearAgo = subYears(now, 1);
-        if (quoteDate < oneYearAgo) return false;
-      } else if (periodFilter === "custom") {
-        if (startDate && quoteDate < startDate) return false;
-        if (endDate) {
-          const nextDay = addDays(endDate, 1);
-          if (quoteDate >= nextDay) return false;
-        }
-      }
-    }
-
-    return true;
-  });
+  const filteredQuotes = getFilteredQuotes();
+  const sortedQuotes = getSortedQuotes();
 
   const totalQuotes = filteredQuotes.length;
   const totalValue = filteredQuotes.reduce(
@@ -147,7 +95,6 @@ const Reports = () => {
       sum + q.treatments.reduce((t, treatment) => t + treatment.price, 0),
     0
   );
-
   const paidQuotesCount = filteredQuotes.filter(
     (q) => q.status === "paid"
   ).length;
@@ -160,162 +107,6 @@ const Reports = () => {
     );
   const conversionRate =
     totalQuotes > 0 ? (paidQuotesCount / totalQuotes) * 100 : 0;
-
-  async function getBase64FromUrl(url: string): Promise<string> {
-    // Se a URL já for Base64 ou Blob, retorna ela mesma
-    if (url.startsWith("data:") || url.startsWith("blob:")) {
-      return url;
-    }
-
-    try {
-      const response = await api.post("/files/get", { url });
-      // Assume que a resposta.data.base64 já inclui o prefixo 'data:image/jpeg;base64,' ou similar
-      return response.data.base64;
-    } catch (err) {
-      console.warn("Erro ao converter imagem para base64:", url, err);
-      // Retorna uma string vazia ou um placeholder em caso de erro,
-      // ou você pode re-throw o erro se quiser que a geração do PDF falhe.
-      return ""; // Ou uma URL de imagem de placeholder genérica
-    }
-  }
-
-  async function generateProposalPDF({
-    setExporting,
-    quote,
-  }: {
-    setExporting: React.Dispatch<React.SetStateAction<boolean>>;
-    quote?: QuotePdf;
-  }) {
-    const quoteDataForPdf = JSON.parse(JSON.stringify(quote)) as QuotePdf;
-    if (!quote) {
-      console.error("Nenhum dado de cotação fornecido.");
-      return;
-    }
-
-    setExporting(true);
-
-    // Logo da clínica
-    if (
-      quoteDataForPdf.clinic.logo &&
-      quoteDataForPdf.clinic.logo.trim() !== ""
-    ) {
-      quoteDataForPdf.clinic.logo = await getBase64FromUrl(
-        quoteDataForPdf.clinic.logo
-      );
-    }
-
-    // Foto do dentista
-    if (
-      quoteDataForPdf.dentist.photo &&
-      quoteDataForPdf.dentist.photo.trim() !== ""
-    ) {
-      quoteDataForPdf.dentist.photo = await getBase64FromUrl(
-        quoteDataForPdf.dentist.photo
-      );
-    }
-
-    // Ilustrações (mapeie cada imagem para sua versão Base64)
-    if (
-      quoteDataForPdf.illustrations &&
-      quoteDataForPdf.illustrations.length > 0
-    ) {
-      const convertedIllustrations = await Promise.all(
-        quoteDataForPdf.illustrations.map(async (img) => {
-          if (img.url && img.url.trim() !== "") {
-            const base64Url = await getBase64FromUrl(img.url);
-            return { ...img, url: base64Url };
-          }
-          return img; // Retorna a imagem original se não tiver URL
-        })
-      );
-      // Filtra ilustrações que falharam na conversão ou não tinham URL
-      quoteDataForPdf.illustrations = convertedIllustrations.filter(
-        (img) => img.url && img.url.trim() !== ""
-      );
-    }
-
-    // Ativa o estado de exportando
-
-    try {
-      // 1. Crie a instância do seu documento PDF com os dados
-      const doc = <MyPDFDocument quoteData={quoteDataForPdf} />;
-
-      // 2. Gere o blob do PDF usando o método 'pdf' do react-pdf/renderer
-      const blob = await pdf(doc).toBlob();
-
-      // 3. Defina o nome do arquivo
-      const fileName = `Proposta-${quote.patientName}-${format(
-        new Date(quote.date),
-        "dd-MM-yyyy"
-      )}.pdf`;
-
-      // 4. Crie um URL para o Blob
-      const url = URL.createObjectURL(blob);
-
-      // ABORDAGEM A: Abrir em uma nova aba (mais comum para visualização)
-      window.open(url, "_blank");
-
-      // ABORDAGEM B: Forçar o download usando um link dinâmico (Substitui saveAs)
-      // Se você não quer usar file-saver, esta é a alternativa nativa do navegador
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = fileName; // Define o nome do arquivo para download
-      document.body.appendChild(a); // Adiciona o link ao DOM (temporariamente)
-      a.click(); // Simula um clique no link para iniciar o download
-      document.body.removeChild(a); // Remove o link do DOM
-
-      // Lembre-se de revogar o URL para liberar memória
-      URL.revokeObjectURL(url);
-
-      console.log("PDF gerado e aberto/baixado sem file-saver.");
-    } catch (error) {
-      console.error("Erro ao gerar PDF:", error);
-      // toast.error("Erro ao gerar PDF", {
-      //   description: "Ocorreu um erro ao gerar o PDF.",
-      // });
-    } finally {
-      setExporting(false); // Desativa o estado de exportando
-    }
-  }
-
-  const handleEditQuote = (id: string) => {
-    editQuote(id);
-    route.push("/dashboard/quote/edit-quote");
-  };
-
-  const handleDeleteQuote = (id: string) => {
-    setQuoteToDelete(id);
-    setDeleteDialogOpen(true);
-  };
-
-  const confirmDeleteQuote = async () => {
-    if (quoteToDelete) {
-      await deleteQuote(quoteToDelete);
-      setDeleteDialogOpen(false);
-      setQuoteToDelete(null);
-    }
-  };
-
-  const handleViewQuote = (id: string) => {
-    const quote = quotes.find((q) => q.id === id);
-    if (!quote || !clinic) return;
-
-    const dentist = dentists?.find((d) => d.id === quote.dentistId);
-    if (!dentist) return;
-
-    const quotePdfData = prepareQuotePdfData(quote, clinic, dentist);
-
-    setSelectedQuote(quotePdfData);
-    setViewDialogOpen(true);
-  };
-
-  const handleStatusChange = (
-    id: string,
-    status: "final" | "paid" | "follow"
-  ) => {
-    setQuoteToUpdate(id);
-    updateQuoteStatus(id, status);
-  };
 
   useEffect(() => {
     loadScreen();
@@ -336,39 +127,6 @@ const Reports = () => {
       </div>
     );
   }
-
-  const sortedQuotes = [...filteredQuotes].sort((a, b) => {
-    let compareValue = 0;
-
-    switch (sortField) {
-      case "patient":
-        compareValue = a.patientName.localeCompare(b.patientName);
-        break;
-      case "dentist":
-        const dentistA =
-          dentists.find((d) => d.id === a.dentistId)?.name || "Desconhecido";
-        const dentistB =
-          dentists.find((d) => d.id === b.dentistId)?.name || "Desconhecido";
-        compareValue = dentistA.localeCompare(dentistB);
-        break;
-      case "date":
-        compareValue =
-          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
-        break;
-      case "value":
-        const totalA = a.treatments.reduce((sum, t) => sum + t.price, 0);
-        const totalB = b.treatments.reduce((sum, t) => sum + t.price, 0);
-        compareValue = totalA - totalB;
-        break;
-      case "status":
-        compareValue = a.status.localeCompare(b.status);
-        break;
-      default:
-        compareValue = 0;
-    }
-
-    return sortOrder === "asc" ? compareValue : -compareValue;
-  });
 
   const getSortIcon = (field: SortField) => {
     if (sortField !== field) {
@@ -433,41 +191,53 @@ const Reports = () => {
 
             <div className="flex items-center gap-4">
               <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="dentist">Dentista</Label>
-                  <Select
-                    value={dentistFilter}
-                    onValueChange={setDentistFilter}
-                  >
-                    <SelectTrigger id="dentist">
-                      <SelectValue placeholder="Selecione um dentista" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">Todos</SelectItem>
-                      {dentists?.map((dentist) => (
-                        <SelectItem key={dentist.id} value={dentist.id}>
-                          {dentist.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+                <Filter
+                  value={dentistFilter}
+                  onValueChange={setDentistFilter}
+                  label="Dentista"
+                  htmlfor="dentist"
+                  placeholder="Selecione um dentista"
+                  options={[
+                    {
+                      label: "Todos",
+                      value: "all",
+                    },
+                    ...dentists.map((dentist) => ({
+                      label: dentist.name,
+                      value: dentist.id,
+                    })),
+                  ]}
+                />
 
-                <div>
-                  <Label htmlFor="period">Período</Label>
-                  <Select value={periodFilter} onValueChange={setPeriodFilter}>
-                    <SelectTrigger id="period">
-                      <SelectValue placeholder="Selecione um período" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">Todo período</SelectItem>
-                      <SelectItem value="month">Último mês</SelectItem>
-                      <SelectItem value="quarter">Último trimestre</SelectItem>
-                      <SelectItem value="year">Último ano</SelectItem>
-                      <SelectItem value="custom">Personalizado</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+                <Filter
+                  value={periodFilter}
+                  onValueChange={setPeriodFilter}
+                  htmlfor="period"
+                  label="Período"
+                  placeholder="Selecione um período"
+                  options={[
+                    {
+                      label: "Todo período",
+                      value: "all",
+                    },
+                    {
+                      label: "Último mês",
+                      value: "month",
+                    },
+                    {
+                      label: "Último trimestre",
+                      value: "quarter",
+                    },
+                    {
+                      label: "Último ano",
+                      value: "year",
+                    },
+                    {
+                      label: "Personalizado",
+                      value: "custom",
+                    },
+                  ]}
+                />
               </div>
 
               {periodFilter === "custom" && (
@@ -707,7 +477,7 @@ const Reports = () => {
                           <Button
                             variant="ghost"
                             size="icon"
-                            onClick={() => handleEditQuote(quote.id)}
+                            onClick={() => handleEditQuote(quote.id, route)}
                             title="Editar"
                           >
                             <Edit className="h-4 w-4" />
@@ -746,69 +516,25 @@ const Reports = () => {
         </CardContent>
       </Card>
 
-      <Dialog open={viewDialogOpen} onOpenChange={setViewDialogOpen}>
-        <DialogContent className="min-w-6xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="flex justify-between items-center">
-              <div className="flex-1">
-                Orçamento: {selectedQuote?.patientName}
-              </div>
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={exporting}
-                  onClick={() => {
-                    generateProposalPDF({
-                      setExporting,
-                      quote: selectedQuote || undefined,
-                    });
-                  }}
-                >
-                  {exporting ? (
-                    <Loader2 className="h-4 w-4 animate-spin mr-1" />
-                  ) : (
-                    <Download className="h-4 w-4 mr-1" />
-                  )}
-                  Baixar orçamento
-                </Button>
-              </div>
-            </DialogTitle>
-            <DialogDescription>
-              Visualize o orçamento completo
-            </DialogDescription>
-          </DialogHeader>
-          <div className="mt-4">
-            {selectedQuote && (
-              <QuotePreviewPDF
-                quoteData={selectedQuote}
-                id="quote-view-container"
-              />
-            )}
-          </div>
-        </DialogContent>
-      </Dialog>
+      <PdfPreview
+        open={viewDialogOpen}
+        onOpenChange={setViewDialogOpen}
+        orçamentName={selectedQuote?.patientName ?? ""}
+        disableButtonDownload={exporting}
+        isLoading={exporting}
+        onDownload={() => {
+          generateProposalPDF(selectedQuote ?? undefined);
+        }}
+        selectedQuote={selectedQuote}
+      />
 
-      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
-            <AlertDialogDescription>
-              Tem certeza que deseja excluir este orçamento? Esta ação não pode
-              ser desfeita.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={confirmDeleteQuote}
-              className="bg-red-500 hover:bg-red-600"
-            >
-              Excluir
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <ConfirmeDeleteAlert
+        deleteDialogOpen={deleteDialogOpen}
+        confirmDelete={confirmDeleteQuote}
+        setDeleteDialogOpen={setDeleteDialogOpen}
+        description="Tem certeza que deseja excluir este orçamento? Esta ação não pode
+              ser desfeita."
+      />
     </div>
   );
 };

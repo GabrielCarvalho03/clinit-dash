@@ -73,22 +73,6 @@ export const QuotePreviewPDF = ({
     patientProfile
   );
 
-  // Helper function to display image type in Portuguese
-  const getImageTypeText = (type: string) => {
-    switch (type) {
-      case "before-after":
-        return "Antes e Depois";
-      case "xray":
-        return "Raio-X";
-      case "treatment":
-        return "Imagem do Tratamento";
-      case "other":
-        return "Imagem Adicional";
-      default:
-        return "Imagem";
-    }
-  };
-
   return (
     <div
       id="quote-preview-container"
@@ -217,11 +201,11 @@ export const QuotePreviewPDF = ({
                       {treatment.description}
                     </p>
                   </div>
-                  <div className="text-right flex-shrink-0">
+                  {/* <div className="text-right flex-shrink-0">
                     <p className="font-medium text-xs text-gray-400">
                       {formatCurrency(treatment.discountPrice)}
                     </p>
-                  </div>
+                  </div> */}
                 </div>
               ))}
             </div>

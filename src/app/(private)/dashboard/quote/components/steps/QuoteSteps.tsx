@@ -54,7 +54,7 @@ export const QuoteSteps = ({ isEdit = false }: QuoteStepsProps) => {
         ? "custom"
         : draftQuote?.anchoragePercentage
         ? draftQuote?.anchoragePercentage
-        : undefined,
+        : 10,
       downPayment: draftQuote?.downPayment || 0,
       installments: draftQuote?.installments || 1,
       paymentConditions: draftQuote?.paymentConditions || "",

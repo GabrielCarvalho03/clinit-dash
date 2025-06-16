@@ -6,20 +6,19 @@ export async function POST(req: Request) {
 
   try {
     const data = nodemailer.createTransport({
-      service: "gmail",
-      host: "smtp.gmail.com",
-      port: 587,
-      secure: false,
+      host: "smtp.hostinger.com",
+      port: 465,
+      secure: true,
       auth: {
-        user: "clinitt@gmail.com",
-        pass: "nvsy xbem fewa gkvu",
+        user: "contato@clinitt.com.br",
+        pass: "111%CRESCEmuito",
       },
     });
 
     const MailOptions = {
       from: {
-        name: "Clinitt AI",
-        address: "clinitt@gmail.com",
+        name: "Clinitt",
+        address: "contato@clinitt.com.br",
       },
       to: email,
       subject: subject,

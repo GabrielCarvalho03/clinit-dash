@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
 import { ClinicForm } from "../../../components/forms/clinic-form/clinic-form";
 import { useAuth } from "@/hooks/use-auth/use-auth";
 import { Check } from "lucide-react";
@@ -40,7 +39,7 @@ const Onboarding = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-muted/30">
+    <body className="min-h-screen flex flex-col bg-muted/30 !overflow-y-auto">
       <div className="container max-w-screen-lg mx-auto flex-1 p-6">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-primary">
@@ -84,7 +83,7 @@ const Onboarding = () => {
           )}
         </div>
       </div>
-    </div>
+    </body>
   );
 };
 

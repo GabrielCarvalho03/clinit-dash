@@ -69,7 +69,7 @@ export function AvailableTreatmentsAccordion({
                       name: treatment.name,
                       description: treatment.description,
                       price: treatment.price,
-                      image: treatment.image,
+                      image: treatment.photo,
                     }}
                     onSelect={() => onAdd(treatment)}
                     onRemove={() => {}}

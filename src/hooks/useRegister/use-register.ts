@@ -22,7 +22,7 @@ export const useRegister = create<useRegisterProps>((set) => ({
           clinicId: resUser.data.clinicId,
           name: treatment.name,
           description: treatment.description,
-          image: treatment.image,
+          photo: treatment.image,
           price: treatment.price,
         });
       });

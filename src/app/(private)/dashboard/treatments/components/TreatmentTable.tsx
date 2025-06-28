@@ -17,7 +17,6 @@ interface TreatmentTableProps {
   treatments: StandardTreatment[];
   onEdit: (treatment: StandardTreatment) => void;
   onDelete: (id: string, name: string) => void;
-  incompleteItems?: string[];
   isLoading?: boolean;
 }
 
@@ -26,7 +25,6 @@ export function TreatmentTable({
   onEdit,
   onDelete,
   isLoading = false,
-  incompleteItems = [],
 }: TreatmentTableProps) {
   if (treatments.length === 0) {
     return (

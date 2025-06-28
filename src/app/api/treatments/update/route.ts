@@ -4,6 +4,8 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(req: NextRequest) {
   const body = await req.json();
 
+  console.log(body);
+
   try {
     const resTreatments = await db
       .collection("treatments")
@@ -17,7 +19,7 @@ export async function POST(req: NextRequest) {
         name: body.name,
         description: body.description,
         price: body.price,
-        photo: body.image ?? "",
+        photo: body.photo ?? "",
       });
 
     return NextResponse.json("atualizado com sucesso", { status: 200 });

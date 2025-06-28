@@ -48,13 +48,17 @@ export function EditOrAddTreatmentDrawer({
     buttonLoading,
     setNewProcedure,
     handleTemplateChange,
-    handleFileUploaded,
     handleCancelProcedure,
     handleSubmit,
+    setImageIlustration,
   } = UseTreataments();
   const handleAddIllustration = (file: File, preview: string) => {
-    const currentIllustrations = [];
-    const newIllustrations = [{ url: preview, type: "illustration" }];
+    const newIllustration = { url: preview, type: "illustration" };
+
+    setImageIlustration({
+      url: newIllustration.url,
+      type: newIllustration.type,
+    });
   };
 
   return (
@@ -148,6 +152,13 @@ export function EditOrAddTreatmentDrawer({
               <FileUpload
                 label=""
                 onFileUploaded={handleAddIllustration}
+                initialPreview={newProcedure.photo}
+                onClear={() =>
+                  setImageIlustration({
+                    url: "",
+                    type: "",
+                  })
+                }
                 compact={true}
               />
             </div>

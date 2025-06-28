@@ -80,7 +80,7 @@ export const useTreatmentForm = create<TreatmentFormState>()(
           name: treatment.name,
           description: treatment.description,
           price: Number(treatment.price || 0),
-          image: treatment.image || "",
+          image: treatment.photo || "",
           treatmentImages: [],
         });
 

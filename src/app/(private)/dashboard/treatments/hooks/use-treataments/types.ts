@@ -6,6 +6,8 @@ export interface TreatamentsStore {
 
   procedures: StandardTreatment[];
   setProcedures: (procedures: StandardTreatment[]) => void;
+  incompleteTreatments: StandardTreatment[];
+  setIncompleteTreatments: (procedures: StandardTreatment[]) => void;
 
   newProcedure: StandardTreatment;
   setNewProcedure: (newProcedure: StandardTreatment) => void;
@@ -25,7 +27,7 @@ export interface TreatamentsStore {
   handleSaveProcedure: (
     objtosave: StandardTreatment,
     clinicId: string
-  ) => Promise<void>;
+  ) => Promise<StandardTreatment | undefined>;
   handleGetProcedure: (id?: string) => Promise<void>;
   handleDeleteProcedure: (id: string, name: string) => void;
   handleEditProcedure: (id: any) => void;

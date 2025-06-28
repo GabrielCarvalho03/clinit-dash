@@ -1,13 +1,9 @@
 import { useFieldArray } from "react-hook-form";
-import { Info } from "lucide-react";
 import { TreatmentList } from "@/app/(private)/dashboard/treatments/components/treatments/TreatmentList";
-import { useTreatmentForm } from "@/hooks/use-treatment-form/use-treatment-form";
+import { useTreatmentForm } from "../../../treatments/hooks/use-treatment-form/use-treatment-form";
 import { Form } from "@/components/ui/form";
-import { AvailableTreatmentsAccordion } from "@/app/(private)/dashboard/quote/components/treatment/AvailableTreatmentsAccordion";
 import { ObservationsField } from "@/app/(private)/dashboard/quote/components/treatment/ObservationsField";
-import { useState } from "react";
-import { UseTreataments } from "@/hooks/use-treataments/use-treataments";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { UseTreataments } from "../../../treatments/hooks/use-treataments/use-treataments";
 import { TreatmentDrawer } from "../TreatmentDrawer/TreatmentDrawer";
 import { IllustrationsUpload } from "../IllustrationsUpload/IllustrationsUpload";
 

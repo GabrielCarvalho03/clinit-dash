@@ -4,7 +4,6 @@ import { LoginSchemaData } from "./schema";
 import { toast } from "sonner";
 import { api } from "@/lib/axios/axios";
 import { useAuth } from "../use-auth/use-auth";
-import { treatmentDefaultList } from "../use-treataments/treatments-default-list";
 
 export const useLogin = create<useLoginProps>((set) => ({
   loadingLogin: false,
@@ -30,7 +29,6 @@ export const useLogin = create<useLoginProps>((set) => ({
       });
 
       if (res.data.user.firstLogin == true) {
- 
         router.push("/onboarding");
         return;
       }

@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { useRegisterProps } from "./types";
 import { toast } from "sonner";
 import { api } from "@/lib/axios/axios";
-import { treatmentDefaultList } from "../use-treataments/treatments-default-list";
+import { treatmentDefaultList } from "@/app/(private)/dashboard/treatments/hooks/use-treataments/treatments-default-list";
 
 export const useRegister = create<useRegisterProps>((set) => ({
   loadingRegister: false,

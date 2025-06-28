@@ -5,7 +5,7 @@ import { useAuth } from "@/hooks/use-auth/use-auth";
 import { getUserRefresh } from "@/utils/get-user-refresh";
 import { QuoteSteps } from "../components/steps/QuoteSteps";
 import { useAnalytics } from "@/hooks/use-analitycs/use-analitycs";
-import { UseTreataments } from "@/hooks/use-treataments/use-treataments";
+import { UseTreataments } from "../../treatments/hooks/use-treataments/use-treataments";
 
 const NewQuote = () => {
   const { clinic, isLoading, setClinic, setIsLoading } = useAuth();

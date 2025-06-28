@@ -17,7 +17,6 @@ import { StepsProgress } from "./StepsProgress";
 import { useStepNavigation } from "@/hooks/use-step-navigation/use-step-navigation";
 import { QuoteFormData, quoteSchema } from "@/hooks/use-quote/schema";
 import { useRouter } from "next/navigation";
-import { useAnalytics } from "@/hooks/use-analitycs/use-analitycs";
 
 interface QuoteStepsProps {
   isEdit?: boolean;

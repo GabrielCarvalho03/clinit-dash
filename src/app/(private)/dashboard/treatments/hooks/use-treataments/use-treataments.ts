@@ -1,10 +1,10 @@
 import { create } from "zustand";
 import { TreatamentsStore } from "./types";
-import { useQuote } from "../use-cotes/use-cotes";
+import { useQuote } from "@/hooks/use-cotes/use-cotes";
 import { toast } from "sonner";
 import { DESCRIPTION_TEMPLATES } from "./description_telmplates";
 import { api } from "@/lib/axios/axios";
-import { useAuth } from "../use-auth/use-auth";
+import { useAuth } from "@/hooks/use-auth/use-auth";
 
 export const UseTreataments = create<TreatamentsStore>((set) => ({
   buttonLoading: false,
@@ -18,6 +18,10 @@ export const UseTreataments = create<TreatamentsStore>((set) => ({
 
   procedures: [],
   setProcedures: (procedures) => set({ procedures }),
+
+  incompleteTreatments: [],
+  setIncompleteTreatments: (incompleteTreatments) =>
+    set({ incompleteTreatments }),
 
   newProcedure: {
     id: "",
@@ -67,7 +71,8 @@ export const UseTreataments = create<TreatamentsStore>((set) => ({
       toast("Tratamento adicionado", {
         description: `${newProcedure.name} foi adicionado com sucesso.`,
       });
-      console.log("procedures", objtosave);
+
+      return newObjtoProcedures;
     } catch (error) {
       console.error("Error saving tratamentos:", error);
       toast.error("Erro ao salvar tratamentos", {

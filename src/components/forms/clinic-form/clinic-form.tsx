@@ -20,7 +20,7 @@ import { useClinic } from "@/hooks/use-clinic/use-clinic";
 import { Loader2 } from "lucide-react";
 import { formatCNPJ } from "@/utils/text-formarter/cnpj-formarter";
 import { formatPhone } from "@/utils/text-formarter/phone-formarter";
-import { treatmentDefaultList } from "@/hooks/use-treataments/treatments-default-list";
+import { treatmentDefaultList } from "@/app/(private)/dashboard/treatments/hooks/use-treataments/treatments-default-list";
 
 interface ClinicFormProps {
   onFormSubmit?: () => void;

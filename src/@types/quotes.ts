@@ -18,7 +18,7 @@ export interface StandardTreatment {
   id: string;
   name: string;
   description: string;
-  image?: string;
+  photo?: string;
   price: number;
 }
 

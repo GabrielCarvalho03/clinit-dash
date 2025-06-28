@@ -13,6 +13,7 @@ import { EditOrAddTreatmentDrawer } from "./components/drawers/EditOrAddTreatmen
 import { StandardTreatment } from "@/@types/quotes";
 import { useQuote } from "@/hooks/use-cotes/use-cotes";
 import { UseImportation } from "./hooks/use-importation/use-importation";
+import { IncompleteTreatmentsAlert } from "./components/IncompleteTreatmentsAlert/IncompleteTreatmentsAlert";
 
 export default function Treataments() {
   const {
@@ -71,6 +72,10 @@ export default function Treataments() {
     setButtonImportationIsLoading(false);
   };
 
+  const incompleteTreatmentsList = procedures.filter(
+    (treatment) => !treatment.price || !treatment.description
+  );
+
   const filteredProcedures = procedures
     .filter(
       (p) =>
@@ -85,7 +90,6 @@ export default function Treataments() {
       }
     });
 
-  const incompleteItemNames = incompleteTreatments.map((t) => t.name);
   if (isLoading) {
     return (
       <div className="w-full h-screen flex items-center justify-center">
@@ -95,13 +99,18 @@ export default function Treataments() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 ">
       <div>
         <h1 className="text-2xl font-bold tracking-tight">Tratamentos</h1>
         <p className="text-muted-foreground">
           Gerencie os tratamentos padrão e seus preços para uso nos orçamentos.
         </p>
       </div>
+
+      <IncompleteTreatmentsAlert
+        incompleteTreatments={incompleteTreatmentsList}
+        onEdit={handleEditProcedure}
+      />
 
       <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
         <div className="flex gap-2 items-center w-full sm:w-auto">
@@ -158,7 +167,6 @@ export default function Treataments() {
         onEdit={handleEditProcedure}
         onDelete={handleDeleteProcedure}
         isLoading={buttonLoading}
-        incompleteItems={incompleteItemNames}
       />
 
       <ImportTreatmentsDialog

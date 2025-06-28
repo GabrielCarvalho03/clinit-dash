@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { TreatamentsStore } from "./types";
+import { ImageTreatment, TreatamentsStore } from "./types";
 import { useQuote } from "@/hooks/use-cotes/use-cotes";
 import { toast } from "sonner";
 import { DESCRIPTION_TEMPLATES } from "./description_telmplates";
@@ -36,6 +36,10 @@ export const UseTreataments = create<TreatamentsStore>((set) => ({
   searchTerm: "",
   setSearchTerm: (searchTerm) => set({ searchTerm }),
 
+  imageIlustation: {} as ImageTreatment,
+  setImageIlustration: (imageIlustation: ImageTreatment) =>
+    set({ imageIlustation }),
+
   handleGetProcedure: async (id) => {
     const { setProcedures } = UseTreataments.getState();
     const { setIsLoading } = useAuth.getState();
@@ -58,10 +62,14 @@ export const UseTreataments = create<TreatamentsStore>((set) => ({
 
   handleSaveProcedure: async (objtosave, clinicId) => {
     const { procedures, setProcedures, newProcedure } =
-      UseTreataments.getState();
+      UseTreataments.getState() as TreatamentsStore;
+
     const { addCustomTreatment } = useQuote.getState();
 
-    const newObjtosave = { ...objtosave, clinicId };
+    const newObjtosave = {
+      ...objtosave,
+      clinicId,
+    };
     try {
       const res = await api.post("/treatments/create", newObjtosave);
 
@@ -113,7 +121,7 @@ export const UseTreataments = create<TreatamentsStore>((set) => ({
       name: procedure.name,
       description: procedure.description,
       price: Number(procedure.price) || 0,
-      image: procedure.image || "",
+      photo: procedure.photo || "",
     });
     setEditingId(procedure.id);
     setShowForm(true);
@@ -127,7 +135,7 @@ export const UseTreataments = create<TreatamentsStore>((set) => ({
       name: "",
       description: "",
       price: 0,
-      image: "",
+      photo: "",
     });
     setEditingId(null);
     setShowForm(false);
@@ -135,7 +143,7 @@ export const UseTreataments = create<TreatamentsStore>((set) => ({
 
   handleFileUploaded: (file: File, preview: string) => {
     const { setNewProcedure, newProcedure } = UseTreataments.getState();
-    setNewProcedure({ ...newProcedure, image: preview });
+    setNewProcedure({ ...newProcedure, photo: preview });
   },
 
   handleTemplateChange: (value: string) => {
@@ -169,6 +177,7 @@ export const UseTreataments = create<TreatamentsStore>((set) => ({
       setEditingId,
       handleSaveProcedure,
       setButtonLoading,
+      imageIlustation,
     } = UseTreataments.getState();
     const { clinic } = useAuth.getState();
 
@@ -184,6 +193,7 @@ export const UseTreataments = create<TreatamentsStore>((set) => ({
     }
     const procedureToSave = {
       ...newProcedure,
+      photo: imageIlustation?.url || "",
       price: Number(newProcedure.price) || 0,
     };
     setButtonLoading(true);
@@ -208,7 +218,7 @@ export const UseTreataments = create<TreatamentsStore>((set) => ({
       name: "",
       description: "",
       price: 0,
-      image: "",
+      photo: "",
     });
     setShowForm(false);
   },

@@ -45,7 +45,7 @@ export const UseImportation = create<UseImportationProps>((set) => ({
           price:
             parseFloat(columns[2]?.replace(/[^\d.,]/g, "").replace(",", ".")) ||
             0,
-          image: "",
+          photo: "",
         };
         treatments.push(treatment);
       }
@@ -90,7 +90,7 @@ export const UseImportation = create<UseImportationProps>((set) => ({
                       .replace(/[^\d.,]/g, "")
                       .replace(",", ".")
                   ) || 0,
-                image: "",
+                photo: "",
               };
               if (treatment.name) {
                 treatments.push(treatment);

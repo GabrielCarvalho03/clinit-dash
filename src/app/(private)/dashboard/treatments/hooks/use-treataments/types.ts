@@ -1,5 +1,9 @@
 import { StandardTreatment } from "@/@types/quotes";
 
+export type ImageTreatment = {
+  url: string;
+  type: string;
+};
 export interface TreatamentsStore {
   buttonLoading: boolean;
   setButtonLoading: (buttonLoading: boolean) => void;
@@ -23,6 +27,9 @@ export interface TreatamentsStore {
 
   templateType: string;
   setTemplateType: (templateType: string) => void;
+
+  imageIlustation: ImageTreatment;
+  setImageIlustration: ({ url, type }: ImageTreatment) => void;
 
   handleSaveProcedure: (
     objtosave: StandardTreatment,

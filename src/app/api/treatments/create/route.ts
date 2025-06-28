@@ -18,7 +18,7 @@ export const POST = async (request: Request) => {
       name: body.name,
       description: body.description,
       price: body.price,
-      photo: body.image ?? "",
+      photo: body.photo ?? "",
     });
 
     return NextResponse.json({ id: customId }, { status: 200 });

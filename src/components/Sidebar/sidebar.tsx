@@ -3,8 +3,8 @@ import {
   User,
   FileText,
   BarChart3,
-  MessageCircleQuestion,
   LogOut,
+  Sparkles,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -55,8 +55,8 @@ export const Sidebar = () => {
   return (
     <div
       className={cn(
-        "flex flex-col min-h-screen border-r bg-white p-4 shadow-sm transition-all duration-300",
-        isCollapsed ? "w-16" : "w-64"
+        "flex flex-col min-h-screen border-r bg-white px-4 pt-4 shadow-sm transition-all duration-300",
+        isCollapsed ? "w-16" : "w-64 overflow-y-auto sidebar-scrollbar"
       )}
     >
       <div className="flex items-center justify-between pb-6">
@@ -111,6 +111,11 @@ export const Sidebar = () => {
           to="/dashboard/quote/new-quote"
           icon={<FileText size={20} />}
           label="Gerar Orçamento"
+        />
+        <NavLink
+          to="/dashboard/simulation"
+          icon={<Sparkles size={20} />}
+          label="Simulação IA"
         />
         <NavLink
           to="/dashboard/reports"

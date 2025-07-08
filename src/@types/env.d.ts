@@ -29,6 +29,7 @@ declare namespace NodeJS {
     STRIPE_WEBHOOK_SECRET: string;
     STRIPE_PRICE_CLINITT_DEFAULT: string;
     RESEND_API_KEY: string;
-    NEXT_PUBLIC_URL:string;
+    NEXT_PUBLIC_URL: string;
+    GOOGLE_API_KEY: string;
   }
 }

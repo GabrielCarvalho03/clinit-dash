@@ -29,14 +29,14 @@ export const SupportWidget = ({ isCollapsed = false }: SupportWidgetProps) => {
 
   return (
     <div className="p-2">
-      <Card className="bg-red-300 bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20 shadow-sm">
+      <Card className=" bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20 shadow-sm">
         <CardContent className=" px-2">
           <div className="flex items-start gap-3">
             <div className="mt-0.5 p-1.5 rounded-md bg-primary/10">
               <MessageCircle size={16} className="text-primary" />
             </div>
             <div className="w-10/12">
-              <h4 className="text-sm font-semibold text-foreground mb-1">
+              <h4 className="text-sm font-semibold text-foreground mb-1 -mt-3">
                 Precisa de ajuda?
               </h4>
               <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
@@ -44,7 +44,7 @@ export const SupportWidget = ({ isCollapsed = false }: SupportWidgetProps) => {
               </p>
               <button
                 onClick={handleSupportClick}
-                className="w-10/12 text-xs bg-primary text-primary-foreground px-3 py-2 rounded-md hover:bg-primary/90 transition-colors font-medium shadow-sm"
+                className="w-10/12 text-xs bg-primary text-primary-foreground px-3 py-2 -mb-5 rounded-md hover:bg-primary/90 transition-colors font-medium shadow-sm"
               >
                 Fale conosco
               </button>

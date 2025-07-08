@@ -20,6 +20,8 @@ export default {
     },
   },
 
+  plugins: [require("tailwind-scrollbar")],
+
   corePlugins: {
     preflight: true, // Se você estiver usando algum reset
   },

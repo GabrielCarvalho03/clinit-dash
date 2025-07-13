@@ -28,9 +28,8 @@ import { toast } from "sonner";
 import { ImageCompare } from "../compare-image/Compare-image";
 import { useSimulationResults } from "../../hooks/use-simulation-results/use-simulation-results";
 import { useSimulationHistoric } from "../../hooks/use-simulation-historic/use-simulation-results";
-import { SimulationHistoric } from "../../hooks/use-simulation-historic/types";
 import { useAuth } from "@/hooks/use-auth/use-auth";
-import { useSimulations } from "../../hooks/use-simulations/use-simulation-results";
+import { useSimulations } from "../../hooks/use-simulations/use-simulation";
 import { useRouter } from "next/navigation";
 
 interface SimulacaoResultadosProps {
@@ -131,23 +130,8 @@ export const SimulacaoResultados = ({
     );
   };
 
-  const getConfiguracaoTexto = () => {
-    if (!simulationResult?.config?.configuracoes) return "";
-
-    const config = simulationResult.config.configuracoes;
-
-    if (simulationResult.tipo === "sorriso") {
-      const detalhes = [];
-      if (config.corDentes) detalhes.push(`Cor: ${config.corDentes}`);
-      if (config.aspectoDentes)
-        detalhes.push(`Aspecto: ${config.aspectoDentes}`);
-      if (config.alinhamento)
-        detalhes.push(`Alinhamento: ${config.alinhamento}`);
-      return detalhes.join(", ");
-    } else {
-      const procedimentos = config.procedimentos || [];
-      return procedimentos.join(", ");
-    }
+  const handlebacktoSimulation = () => {
+    setActiveTab("upload");
   };
 
   if (!originalImage || !simulationResult) {
@@ -200,7 +184,7 @@ export const SimulacaoResultados = ({
       />
 
       {/* Tratamento Aplicado */}
-      <Card>
+      {/* <Card>
         <CardHeader>
           <CardTitle className="text-lg">Configurações Aplicadas</CardTitle>
         </CardHeader>
@@ -214,18 +198,9 @@ export const SimulacaoResultados = ({
                 {getConfiguracaoTexto() || "Nenhuma configuração específica"}
               </p>
             </div>
-
-            <div>
-              <p className="text-sm font-medium mb-2">
-                Prompt completo usado na IA:
-              </p>
-              <p className="text-sm text-muted-foreground bg-muted/30 p-3 rounded">
-                {simulationResult.config?.prompt || "Nenhum prompt disponível"}
-              </p>
-            </div>
           </div>
         </CardContent>
-      </Card>
+      </Card> */}
 
       {/* Área de Refazer */}
       {showRefazer && (
@@ -266,7 +241,11 @@ export const SimulacaoResultados = ({
       <Card>
         <CardContent className="p-6">
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Button onClick={() => {}} variant="outline" size="lg">
+            <Button
+              onClick={() => handlebacktoSimulation()}
+              variant="outline"
+              size="lg"
+            >
               <ArrowLeft className="mr-2 h-4 w-4" />
               Voltar
             </Button>

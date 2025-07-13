@@ -34,6 +34,7 @@ import {
 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { api } from "@/lib/axios/axios";
+import { useSimulationConfig } from "../../hooks/use-simulation-config/use-simulation-config";
 
 interface SimulationConfigProps {
   tipo: "sorriso" | "harmonizacao" | "completo";
@@ -46,11 +47,14 @@ export const SimulationConfig = ({
   onGenerate,
   isGenerating,
 }: SimulationConfigProps) => {
-  // Configurações para sorriso
-  const [areaDentes, setAreaDentes] = useState("ambos");
-  const [corDentes, setCorDentes] = useState("natural");
-  const [aspectoDentes, setAspectoDentes] = useState("natural");
-  const [alinhamento, setAlinhamento] = useState("natural");
+  const {
+    corDentes,
+    aspectoDentes,
+    alinhamento,
+    setCorDentes,
+    setAspectoDentes,
+    setAlinhamento,
+  } = useSimulationConfig();
 
   // Configurações para harmonização
   const [procedimentosHarmonizacao, setProcedimentosHarmonizacao] = useState<
@@ -116,48 +120,12 @@ export const SimulationConfig = ({
 
     if (tipo === "sorriso" || tipo === "completo") {
       configuracoes.sorriso = {
-        areaDentes,
         corDentes,
         aspectoDentes,
         alinhamento,
       };
 
       prompt += `TRATAMENTO DENTAL ESPECÍFICO - MODIFIQUE APENAS OS DENTES: `;
-
-      // Área dos dentes com INSTRUÇÕES MUITO MAIS ESPECÍFICAS
-      if (areaDentes === "superiores") {
-        prompt += "ATENÇÃO CRÍTICA - ARCADA ESPECÍFICA: ";
-        prompt +=
-          "MODIFIQUE EXCLUSIVAMENTE OS DENTES SUPERIORES (arcada de cima, dentes que ficam na parte superior da boca). ";
-        prompt +=
-          "OS DENTES INFERIORES (arcada de baixo, dentes que ficam na parte inferior da boca) DEVEM PERMANECER EXATAMENTE IGUAIS À IMAGEM ORIGINAL. ";
-        prompt +=
-          "NÃO TOQUE, NÃO ALTERE, NÃO MODIFIQUE EM NADA os dentes de baixo. ";
-        prompt +=
-          "APENAS os dentes superiores podem ser alterados conforme especificações abaixo. ";
-        prompt +=
-          "CONFIRME: Dentes superiores = PODEM SER ALTERADOS | Dentes inferiores = MANTER ORIGINAL. ";
-      } else if (areaDentes === "inferiores") {
-        prompt += "ATENÇÃO CRÍTICA - ARCADA ESPECÍFICA: ";
-        prompt +=
-          "MODIFIQUE EXCLUSIVAMENTE OS DENTES INFERIORES (arcada de baixo, dentes que ficam na parte inferior da boca). ";
-        prompt +=
-          "OS DENTES SUPERIORES (arcada de cima, dentes que ficam na parte superior da boca) DEVEM PERMANECER EXATAMENTE IGUAIS À IMAGEM ORIGINAL. ";
-        prompt +=
-          "NÃO TOQUE, NÃO ALTERE, NÃO MODIFIQUE EM NADA os dentes de cima. ";
-        prompt +=
-          "APENAS os dentes inferiores podem ser alterados conforme especificações abaixo. ";
-        prompt +=
-          "CONFIRME: Dentes inferiores = PODEM SER ALTERADOS | Dentes superiores = MANTER ORIGINAL. ";
-      } else {
-        prompt += "ATENÇÃO - AMBAS ARCADAS: ";
-        prompt +=
-          "Modifique TANTO os dentes superiores (arcada de cima) QUANTO os dentes inferiores (arcada de baixo). ";
-        prompt +=
-          "Aplique as alterações em AMBAS as arcadas dentárias, mantendo harmonia entre elas. ";
-        prompt +=
-          "CONFIRME: Dentes superiores E inferiores = PODEM SER ALTERADOS. ";
-      }
 
       // Cor dos dentes
       if (corDentes !== "natural") {
@@ -212,18 +180,6 @@ export const SimulationConfig = ({
         prompt +=
           "Mantenha alinhamento natural dos dentes da(s) arcada(s) especificada(s). ";
       }
-
-      // Reforço final da especificação da arcada
-      if (areaDentes === "superiores") {
-        prompt +=
-          "LEMBRETE FINAL CRÍTICO: Altere APENAS dentes superiores. Dentes inferiores devem ficar IDÊNTICOS ao original. ";
-      } else if (areaDentes === "inferiores") {
-        prompt +=
-          "LEMBRETE FINAL CRÍTICO: Altere APENAS dentes inferiores. Dentes superiores devem ficar IDÊNTICOS ao original. ";
-      } else {
-        prompt +=
-          "LEMBRETE FINAL: Altere ambas as arcadas dentárias (superior e inferior). ";
-      }
     }
 
     prompt += "VERIFICAÇÃO FINAL OBRIGATÓRIA: ";
@@ -247,33 +203,6 @@ export const SimulationConfig = ({
 
     onGenerate(config);
   };
-
-  const getAreaOptions = () => [
-    {
-      value: "superiores",
-      label: "Dentes Superiores",
-      desc: "Apenas arcada superior",
-      icon: "⬆️",
-      color: "bg-blue-50 text-blue-700 border-blue-200",
-      border: "border-blue-200",
-    },
-    {
-      value: "inferiores",
-      label: "Dentes Inferiores",
-      desc: "Apenas arcada inferior",
-      icon: "⬇️",
-      color: "bg-green-50 text-green-700 border-green-200",
-      border: "border-green-200",
-    },
-    {
-      value: "ambos",
-      label: "Ambas as Arcadas",
-      desc: "Superior e inferior",
-      icon: "↕️",
-      color: "bg-purple-50 text-purple-700 border-purple-200",
-      border: "border-purple-200",
-    },
-  ];
 
   const getCoresOptions = () => [
     {
@@ -444,43 +373,6 @@ export const SimulationConfig = ({
         </CardHeader>
 
         <CardContent className="space-y-6">
-          {/* Área dos Dentes */}
-          <div className="space-y-3">
-            <Label className="text-base font-medium">Área dos Dentes</Label>
-            <Select value={areaDentes} onValueChange={setAreaDentes}>
-              <SelectTrigger className="w-full bg-gray-100 min-h-10">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {getAreaOptions().map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    <div className="flex items-center gap-3">
-                      <span className="text-lg">{option.icon}</span>
-                      <div className="flex flex-col">
-                        <span className="font-medium">{option.label}</span>
-                        <span className="text-sm text-muted-foreground">
-                          {option.desc}
-                        </span>
-                      </div>
-                      <div
-                        className={
-                          option.color +
-                          `w-full px-3 py-1 rounded-full text-sm text-center border-[0.5px] ${option.border}`
-                        }
-                      >
-                        {option.value === "ambos"
-                          ? "Completo"
-                          : option.value === "superiores"
-                          ? "Superior"
-                          : "Inferior"}
-                      </div>
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
           {/* Cor dos Dentes */}
           <div className="space-y-3">
             <Label className="text-base font-medium flex items-center gap-2">
@@ -972,38 +864,6 @@ export const SimulationConfig = ({
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
-          {/* Área dos Dentes */}
-          <div className="space-y-3">
-            <Label className="text-base font-medium">Área dos Dentes</Label>
-            <Select value={areaDentes} onValueChange={setAreaDentes}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {getAreaOptions().map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    <div className="flex items-center gap-3">
-                      <span className="text-lg">{option.icon}</span>
-                      <div className="flex flex-col">
-                        <span className="font-medium">{option.label}</span>
-                        <span className="text-sm text-muted-foreground">
-                          {option.desc}
-                        </span>
-                      </div>
-                      <Badge className={option.color}>
-                        {option.value === "ambos"
-                          ? "Completo"
-                          : option.value === "superiores"
-                          ? "Superior"
-                          : "Inferior"}
-                      </Badge>
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
           {/* Cor dos Dentes */}
           <div className="space-y-3">
             <Label className="text-base font-medium flex items-center gap-2">

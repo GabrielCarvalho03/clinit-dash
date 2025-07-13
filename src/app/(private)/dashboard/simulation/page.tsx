@@ -9,7 +9,7 @@ import { SimulationUpload } from "./components/simulation-upload/Simulation-uplo
 import { SimulacaoResultados } from "./components/simulation-results/Simulation-results";
 import { SimulationHistoric } from "./components/simulation-historic/simulation-historic";
 import { toast } from "sonner";
-import { useSimulations } from "./hooks/use-simulations/use-simulation-results";
+import { useSimulations } from "./hooks/use-simulations/use-simulation";
 import { useAuth } from "@/hooks/use-auth/use-auth";
 import { getUserRefresh } from "@/utils/get-user-refresh";
 import { useSimulationHistoric } from "./hooks/use-simulation-historic/use-simulation-results";

@@ -24,8 +24,9 @@ import { toast } from "sonner";
 import { SimulationConfig } from "../simulation-config/Simulation-config";
 import { api } from "@/lib/axios/axios";
 import { useSimulationResults } from "../../hooks/use-simulation-results/use-simulation-results";
-import { useSimulations } from "../../hooks/use-simulations/use-simulation-results";
+import { useSimulations } from "../../hooks/use-simulations/use-simulation";
 import { Label } from "@/components/ui/label";
+import { useSimulationConfig } from "../../hooks/use-simulation-config/use-simulation-config";
 
 interface SimulationUploadProps {
   onImageUpload: (imageUrl: string) => void;
@@ -38,9 +39,10 @@ export const SimulationUpload = ({
 }: SimulationUploadProps) => {
   const { setImageResult } = useSimulationResults();
   const { setActiveTab } = useSimulations();
+  const { uploadedImage, uploadedFile, setUploadedImage, setUploadedFile } =
+    useSimulationConfig();
+
   const [dragActive, setDragActive] = useState(false);
-  const [uploadedImage, setUploadedImage] = useState<string | null>(null);
-  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [showConfig, setShowConfig] = useState(false);
   const [selectedType, setSelectedType] = useState<

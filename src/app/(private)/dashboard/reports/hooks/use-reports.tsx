@@ -10,6 +10,7 @@ import { prepareQuotePdfData } from "@/utils/quoteDataPreparation";
 import { addDays, subMonths, subYears } from "date-fns";
 import { format } from "date-fns";
 import { api } from "@/lib/axios/axios";
+import { toast } from "sonner";
 
 export const useReport = create<useReportProps>((set) => ({
   dentistFilter: "all",
@@ -98,7 +99,12 @@ export const useReport = create<useReportProps>((set) => ({
     if (!quote || !clinic) return;
 
     const dentist = dentists?.find((d) => d.id === quote.dentistId);
-    if (!dentist) return;
+    if (!dentist) {
+      toast.error("Impossivel abrir orçamento", {
+        description: "Adicione um dentista ao orçamento e tente novamente",
+      });
+      return;
+    }
 
     const quotePdfData = prepareQuotePdfData(quote, clinic, dentist);
 

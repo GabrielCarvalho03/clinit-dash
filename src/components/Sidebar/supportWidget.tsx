@@ -8,7 +8,7 @@ interface SupportWidgetProps {
 export const SupportWidget = ({ isCollapsed = false }: SupportWidgetProps) => {
   const handleSupportClick = () => {
     window.open(
-      "https://wa.me/5512988893431?text=Preciso de ajuda com a Clinitt.ai",
+      "https://wa.me/5512991861358?text=Preciso de ajuda com a Clinitt",
       "_blank"
     );
   };

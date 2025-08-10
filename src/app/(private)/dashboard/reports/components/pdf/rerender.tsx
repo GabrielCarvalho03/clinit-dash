@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Image,
   Font,
+  Link,
 } from "@react-pdf/renderer";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -20,6 +21,7 @@ import giftIcon from "../../../../../../../public/png/gift.png";
 import { formatPhone } from "@/utils/text-formarter/phone-formarter";
 import { formatCurrency } from "@/utils/formart";
 import { formatCNPJ } from "@/utils/text-formarter/cnpj-formarter";
+import { getIntroductionText } from "@/utils/getIntroductionText";
 
 // --- 1. REGISTRO DE FONTES ---
 // É CRÍTICO que você registre as fontes que seu Tailwind CSS usa
@@ -68,9 +70,6 @@ const green600 = "#059669"; // text-green-600
 // Funções de formatação (para usar no ambiente do Node.js/Navegador onde o React-PDF roda)
 // Se essas funções vêm de um arquivo utilitário externo, você precisaria importá-las
 // ou recriar uma versão simples aqui.
-
-const getIntroductionText = (name: string, gender: string, profile: string) =>
-  `Prezado(a) ${name}, com base na avaliação realizada, elaboramos esta proposta de tratamento especialmente para você, para atender às suas necessidades de saúde e bem-estar.`;
 
 // --- 3. ESTILOS DO DOCUMENTO PDF ---
 const styles = StyleSheet.create({
@@ -466,6 +465,8 @@ const styles = StyleSheet.create({
   },
   phoneNumberText: {
     fontSize: 10,
+    color: textGray800, // mesma cor do texto normal
+    textDecoration: "none", // remove sublinhado
   },
   contactItem: {
     flexDirection: "row",
@@ -548,8 +549,8 @@ export const MyPDFDocument = ({ quoteData }: MyPDFDocumentProps) => {
 
   const introductionText = getIntroductionText(
     patientName,
-    patientGender || "masculino", // Ajuste para valor padrão
-    patientProfile || "paciente" // Ajuste para valor padrão
+    patientGender || "male", // Ajuste para valor padrão
+    patientProfile || "neutral-general" // Ajuste para valor padrão
   );
 
   return (
@@ -731,18 +732,27 @@ export const MyPDFDocument = ({ quoteData }: MyPDFDocumentProps) => {
               <View style={styles.contactItem}>
                 {/* Ícone de Whatsapp/Telefone (substitua pelo seu SVG/PNG) */}
                 <Image style={styles.contactIcon} src={WhatsapIcon.src} />
-                <Text style={styles.phoneNumberText}>
+                <Link
+                  src={`https://wa.me/${clinic.phoneNumber.replace(/\D/g, "")}`}
+                  style={styles.phoneNumberText}
+                >
                   {formatPhone(clinic.phoneNumber)}
-                </Text>
+                </Link>
               </View>
             )}
             {clinic.phoneNumber2 && (
               <View style={styles.contactItem}>
                 {/* Ícone de Whatsapp/Telefone (substitua pelo seu SVG/PNG) */}
                 <Image style={styles.contactIcon} src={WhatsapIcon.src} />
-                <Text style={styles.phoneNumberText}>
+                <Link
+                  src={`https://wa.me/${clinic.phoneNumber2.replace(
+                    /\D/g,
+                    ""
+                  )}`}
+                  style={styles.phoneNumberText}
+                >
                   {formatPhone(clinic.phoneNumber2)}
-                </Text>
+                </Link>
               </View>
             )}
             {clinic.socialMedia?.whatsapp && (

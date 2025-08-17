@@ -20,6 +20,7 @@ import { AnalyticsDashboard } from "./components/analytics/AnalyticsDashboard";
 import { useAnalytics } from "@/hooks/use-analitycs/use-analitycs";
 import { useQuote } from "@/hooks/use-cotes/use-cotes";
 import { useRouter } from "next/navigation";
+import { useDashboard } from "@/hooks/useDashboard/useDashboard";
 
 const Dashboard = () => {
   const route = useRouter();
@@ -33,6 +34,7 @@ const Dashboard = () => {
   } = useAuth();
   const { getQuote, quotes } = useQuote();
   const { handleGetDentists, dentists } = useAnalytics();
+  const { handleAccessDayChange } = useDashboard();
 
   useEffect(() => {
     if (!clinic?.id || !dentists.length || !quotes.length) loadScreen();
@@ -44,6 +46,7 @@ const Dashboard = () => {
     Promise.all([
       handleGetDentists(clinicData?.id || ""),
       getQuote(clinicData?.id || ""),
+      handleAccessDayChange(clinicData || ""),
     ]);
   };
 

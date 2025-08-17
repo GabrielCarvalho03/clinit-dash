@@ -21,6 +21,7 @@ export interface Clinic {
     website?: string;
     whatsapp?: string;
   };
+  lastAccess?: string;
   dentists?: Dentist[];
 }
 

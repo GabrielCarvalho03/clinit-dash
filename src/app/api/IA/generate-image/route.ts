@@ -1,4 +1,4 @@
-import { GoogleGenAI, Modality } from "@google/genai";
+import { GoogleGenAI } from "@google/genai";
 import { NextRequest } from "next/server";
 import axios from "axios";
 
@@ -7,8 +7,7 @@ const genAI = new GoogleGenAI({
 });
 
 export async function POST(req: NextRequest) {
-  const body = await req.json();
-  const { prompt, imagemOriginal } = body;
+  const { prompt, imagemOriginal } = await req.json();
 
   if (!prompt || !imagemOriginal) {
     return new Response(
@@ -18,13 +17,13 @@ export async function POST(req: NextRequest) {
   }
 
   const match = imagemOriginal.match(/^data:(image\/(png|jpeg));base64,/);
-
   if (!match) {
     return new Response(
-      JSON.stringify({ error: "Formato de imagem não suportado." }),
+      JSON.stringify({ error: "Formato de imagem não suportado" }),
       { status: 400 }
     );
   }
+
   const mimeType = match[1];
   const base64Data = imagemOriginal.replace(
     /^data:image\/(png|jpeg);base64,/,
@@ -32,98 +31,91 @@ export async function POST(req: NextRequest) {
   );
 
   try {
-   const response = await genAI.models.generateContent({
-  model: "gemini-2.0-flash",
-  contents: [
-    {
-      role: "user",
-      parts: [
-        { text: prompt },
+    /**
+     * 1️⃣ GEMINI → entende a imagem e melhora o prompt
+     */
+    const visionResponse = await genAI.models.generateContent({
+      model: "gemini-2.0-flash",
+      contents: [
         {
-          inlineData: {
-            mimeType,
-            data: base64Data,
-          },
+          role: "user",
+          parts: [
+            {
+              text: `Descreva a imagem e aplique esta instrução: ${prompt}`,
+            },
+            {
+              inlineData: {
+                mimeType,
+                data: base64Data,
+              },
+            },
+          ],
         },
       ],
-    },
-  ],
-});
+    });
 
-    const parts = response.candidates?.[0]?.content?.parts || [];
-    const imagePart = parts.find((p) => p.inlineData);
-    const textPart = parts.find((p) => p.text);
+    const refinedPrompt =
+      visionResponse.candidates?.[0]?.content?.parts
+        ?.map((p) => p.text)
+        ?.join(" ") || prompt;
 
-    // Extrai a imagem gerada (base64)
-    if (!imagePart?.inlineData?.data) {
-      return new Response(
-        JSON.stringify({ error: "Não foi possível gerar a imagem." }),
-        {
-          status: 500,
-        }
-      );
+    /**
+     * 2️⃣ IMAGEN → gera a imagem final
+     * (Vertex AI obrigatório)
+     */
+    const imagenResponse = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict?key=${process.env.GOOGLE_API_KEY}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          instances: [{ prompt: refinedPrompt }],
+          parameters: {
+            sampleCount: 1,
+          },
+        }),
+      }
+    );
+
+    const imagenData = await imagenResponse.json();
+
+    if (!imagenData.predictions?.length) {
+      throw new Error("Imagen não retornou imagem");
     }
 
-    console.log("Imagem gerada com sucesso, salvando no S3...");
+    const imageBase64 = imagenData.predictions[0].bytesBase64Encoded;
 
-    // Salva a imagem no AWS S3
+    /**
+     * 3️⃣ Salva no S3 (mantido igual ao teu fluxo)
+     */
     const uploadResponse = await axios.post(
       `${process.env.NEXT_PUBLIC_URL}/api/files/create`,
       {
-        imageData: imagePart.inlineData.data,
+        imageData: imageBase64,
       }
     );
 
     if (!uploadResponse.data?.url) {
-      return new Response(
-        JSON.stringify({ error: "Erro ao salvar imagem no S3." }),
-        { status: 500 }
-      );
+      throw new Error("Erro ao salvar imagem no S3");
     }
-
-    console.log("Imagem salva no S3:", uploadResponse.data.url);
 
     return new Response(
       JSON.stringify({
         url: uploadResponse.data.url,
-        description: textPart?.text || "",
+        description: refinedPrompt,
       }),
       { status: 200 }
     );
   } catch (error: any) {
     console.error("Erro na geração de imagem:", error);
 
-    // Verificar se é erro de API não habilitada
-    const errorMessage = error instanceof Error ? error.message : String(error);
+    const message = error?.message || "Erro desconhecido";
 
-    if (
-      errorMessage.includes("GOOGLE_API_KEY") ||
-      errorMessage.includes("401")
-    ) {
-      return new Response(
-        JSON.stringify({
-          error:
-            "Chave da API Google não configurada ou inválida. Configure GOOGLE_API_KEY no .env.local",
-        }),
-        { status: 500 }
-      );
-    }
-
-    if (
-      errorMessage.includes("SERVICE_DISABLED") ||
-      errorMessage.includes("403 Forbidden")
-    ) {
-      return new Response(
-        JSON.stringify({
-          error:
-            "API Gemini não habilitada. Habilite em: https://console.developers.google.com/apis/api/generativelanguage.googleapis.com/overview",
-        }),
-        { status: 500 }
-      );
-    }
-
-    return new Response(JSON.stringify({ error: "Erro ao gerar imagem." }), {
-      status: 500,
-    });
+    return new Response(
+      JSON.stringify({
+        error: message,
+      }),
+      { status: 500 }
+    );
   }
 }

@@ -32,26 +32,23 @@ export async function POST(req: NextRequest) {
   );
 
   try {
-    const response = await genAI.models.generateContent({
-      model: "gemini-2.0-flash-preview-image-generation",
-      contents: [
+   const response = await genAI.models.generateContent({
+  model: "gemini-2.0-flash",
+  contents: [
+    {
+      role: "user",
+      parts: [
+        { text: prompt },
         {
-          role: "user",
-          parts: [
-            { text: prompt },
-            {
-              inlineData: {
-                mimeType,
-                data: base64Data,
-              },
-            },
-          ],
+          inlineData: {
+            mimeType,
+            data: base64Data,
+          },
         },
       ],
-      config: {
-        responseModalities: [Modality.TEXT, Modality.IMAGE],
-      },
-    });
+    },
+  ],
+});
 
     const parts = response.candidates?.[0]?.content?.parts || [];
     const imagePart = parts.find((p) => p.inlineData);
